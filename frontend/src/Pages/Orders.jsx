@@ -7,10 +7,10 @@ import { toast } from 'react-toastify';
 const Orders = () => {
   const { currency, backendUrl, token } = useContext(ShopContext);
 
-  // Orders data
+  // Dados dos pedidos
   const [orderData, setOrderData] = useState([]);
 
-  // Fetch the orders data
+  // Buscar dados dos pedidos
   const fetchOrderData = async () => {
     try {
       if (!token) {
@@ -46,24 +46,24 @@ const Orders = () => {
     fetchOrderData();
   }, [token]);
 
-  // Function to format the current date
+  // Função para formatar a data atual
   const formatDate = (date) => {
     const options = { day: '2-digit', month: 'short', year: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleDateString('pt-BR', options);
   };
 
-  // Get the current date
+  // Obter a data atual
   const currentDate = formatDate(new Date());
 
   return (
     <div className='pt-16 border-t'>
       <div className='mb-3 text-2xl'>
-        <Title text1={'MY'} text2={'ORDERS'} />
+        <Title text1={'MEUS'} text2={'PEDIDOS'} />
       </div>
       <div>{}</div>
 
       {orderData.length === 0 ? (
-        <p className='text-gray-500'>You have no orders.</p>
+        <p className='text-gray-500'>Você não tem pedidos.</p>
       ) : (
         <div>
           {orderData.map((item, index) => {
@@ -83,14 +83,14 @@ const Orders = () => {
                         {currency}
                         {item.price}
                       </p>
-                      <p>Quantity: {item.quantity}</p>
-                      <p>Size: {item.size}</p>
+                      <p>Quantidade: {item.quantity}</p>
+                      <p>Tamanho: {item.size}</p>
                     </div>
                     <p className='mt-1'>
-                      Date: <span className='text-gray-400'>{currentDate}</span>
+                      Data: <span className='text-gray-400'>{currentDate}</span>
                     </p>
                     <p className='mt-1'>
-                      Payment Method:{' '}
+                      Método de Pagamento:{' '}
                       <span className='text-gray-400'>
                         {item.paymentMethod}
                       </span>
@@ -107,7 +107,7 @@ const Orders = () => {
                     onClick={fetchOrderData}
                     className='border px-4 py-2 text-sm font-medium rounded-sm text-gray-700 cursor-pointer hover:bg-gray-100'
                   >
-                    Track Order
+                    Rastrear Pedido
                   </button>
                 </div>
               </div>

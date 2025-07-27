@@ -13,14 +13,14 @@ const ShopContextProvider = ({ children }) => {
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
-  const [orders, setOrders] = useState([]); // New state to hold orders
-  const navigate = useNavigate(); // to navigate to different pages
+  const [orders, setOrders] = useState([]); // Novo estado para armazenar os pedidos
+  const navigate = useNavigate(); // para navegar entre páginas
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState('');
 
   const addToCart = async (itemId, size) => {
     if (!size) {
-      toast.error('Please select a size');
+      toast.error('Por favor, selecione um tamanho');
       return;
     }
 
@@ -55,7 +55,7 @@ const ShopContextProvider = ({ children }) => {
         if (response.data.success) {
           toast.success(response.data.message);
         } else {
-          console.log('error', response.data.message);
+          console.log('erro', response.data.message);
           toast.error(response.data.message);
         }
       } catch (error) {
@@ -81,16 +81,16 @@ const ShopContextProvider = ({ children }) => {
       }
     }
     setOrders([...tempOrders, ...newOrder]);
-    //setCartItems({}); // Clear cart after placing the order
+    //setCartItems({}); // Limpa o carrinho após fazer o pedido
   };
 
   const getCartCount = () => {
     let totalCount = 0;
     for (const item in cartItems) {
-      // Check if this item ID exists in the products array
+      // Verifica se esse ID de item existe no array de produtos
       const productExists = products.find((product) => product._id === item);
 
-      // Only count items that exist in the database
+      // Conta apenas itens que existem no banco de dados
       if (productExists) {
         for (const size in cartItems[item]) {
           if (cartItems[item][size] > 0) {
@@ -140,7 +140,7 @@ const ShopContextProvider = ({ children }) => {
               totalAmount += productInfo.price * cartItems[item][size];
             }
           } catch (error) {
-            console.log('error', error);
+            console.log('erro', error);
           }
         }
       }
@@ -207,7 +207,7 @@ const ShopContextProvider = ({ children }) => {
     getCartCount,
     updateQuantity,
     getCartAmount,
-    addOrder, // Add this to allow placing orders
+    addOrder, // Adiciona para permitir fazer pedidos
     orders,
     navigate,
     backendUrl,

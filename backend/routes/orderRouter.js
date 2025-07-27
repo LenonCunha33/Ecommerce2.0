@@ -9,7 +9,7 @@ import {
   verifyStrpePayment,
 } from '../controllers/orderController.js';
 
-import adminAuth from '../middlewares/adminAuth.js';
+import  adminAuth from '../middlewares/adminAuth.js';
 import { userAuth } from '../middlewares/userAuth.js';
 
 const orderRouter = express.Router();

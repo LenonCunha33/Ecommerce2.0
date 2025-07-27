@@ -13,7 +13,7 @@ const Contact = () => {
   return (
     <div>
       <div className='to-current text-2xl pt-10 border-t'>
-        <Title text1={'CONTACT'} text2={'US'} />
+        <Title text1={'CONTATO'} text2={'CONOSCO'} />
       </div>
 
       <div className='flex flex-col justify-center sm:flex-row gap-10 my-10 mb-28'>
@@ -24,7 +24,7 @@ const Contact = () => {
         />
 
         <div className='flex flex-col justify-center items-start gap-4'>
-          <p className='font-semibold text-altext-gray-600'>Our Store</p>
+          <p className='font-semibold text-altext-gray-600'>Nossa Loja</p>
           <p className='text-gray-500'>
             7298 King Lodge
             <br />
@@ -38,16 +38,16 @@ const Contact = () => {
             Email: <span className='text-gray-500'>admin@forever.com</span>
           </p>
 
-          <p className='text-gray-500'>Careers at Forever</p>
+          <p className='text-gray-500'>Carreiras na Forever</p>
           <p className='text-gray-500'>
-            Learn more about our teams and job openings.
+            Saiba mais sobre nossas equipes e vagas em aberto.
           </p>
 
           <button
             className='border border-black px-8 py-4 text-sm hover:bg-black hover:text-white  transition-all duration-500 '
             onClick={scrollToTop}
           >
-            Explore Jobs
+            Explorar Vagas
           </button>
         </div>
       </div>

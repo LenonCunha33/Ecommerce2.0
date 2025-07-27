@@ -29,9 +29,9 @@ const Collection = () => {
   };
 
   const applyFilter = () => {
-    if (!products || products.length === 0) return; // Ensure products are available
+    if (!products || products.length === 0) return; // Garante que os produtos estejam disponíveis
 
-    let productsCopy = products.slice(); // Create a shallow copy of products
+    let productsCopy = products.slice(); // Cria uma cópia superficial dos produtos
 
     if (showSearch && search) {
       productsCopy = productsCopy.filter((item) =>
@@ -50,13 +50,13 @@ const Collection = () => {
       );
     }
 
-    setFilterProducts(productsCopy); // Update the filtered products state
+    setFilterProducts(productsCopy); // Atualiza o estado dos produtos filtrados
   };
 
   const sortProducts = () => {
-    if (filterProducts.length === 0) return; // Ensure there are products to sort
+    if (filterProducts.length === 0) return; // Garante que há produtos para ordenar
 
-    let filteredProdCopy = [...filterProducts]; // Create a shallow copy of filtered products
+    let filteredProdCopy = [...filterProducts]; // Cria uma cópia superficial dos produtos filtrados
 
     switch (sortType) {
       case 'low-high':
@@ -74,7 +74,7 @@ const Collection = () => {
         break;
     }
 
-    setFilterProducts(filteredProdCopy); // Update the filtered products state
+    setFilterProducts(filteredProdCopy); // Atualiza o estado dos produtos filtrados
   };
 
   useEffect(() => {
@@ -87,7 +87,7 @@ const Collection = () => {
 
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
-      {/* Filter Option */}
+      {/* Opções de Filtro */}
 
       <div className='min-w-52'>
         <p
@@ -96,8 +96,7 @@ const Collection = () => {
           }}
           className='my-2 text-xl flex items-center cursor-pointer gap-2'
         >
-          {' '}
-          Filters
+          Filtros
           <img
             src={assets.dropdown_icon}
             alt=''
@@ -105,14 +104,14 @@ const Collection = () => {
           />
         </p>
 
-        {/* Category Filter */}
+        {/* Filtro por Categoria */}
         <div
           className={`border border-gray-300 pl-5 py-3 mt-6 ${
             showFilter ? '' : 'hidden'
           } 
             sm:block`}
         >
-          <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
+          <p className='mb-3 text-sm font-medium'>CATEGORIAS</p>
 
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
             <p className='flex gap-2'>
@@ -122,7 +121,7 @@ const Collection = () => {
                 value={'Men'}
                 onChange={toggleCategory}
               />
-              MEN
+              MASCULINO
             </p>
             <p className='flex gap-2'>
               <input
@@ -131,7 +130,7 @@ const Collection = () => {
                 value={'Women'}
                 onChange={toggleCategory}
               />
-              WOMEN
+              FEMININO
             </p>
             <p className='flex gap-2'>
               <input
@@ -140,19 +139,19 @@ const Collection = () => {
                 value={'Kids'}
                 onChange={toggleCategory}
               />
-              KIDS
+              INFANTIL
             </p>
           </div>
         </div>
 
-        {/* Sub Catrgory Filter */}
+        {/* Filtro por Subcategoria */}
         <div
           className={`border border-gray-300 pl-5 py-3 my-5 ${
             showFilter ? '' : 'hidden'
           } 
             sm:block`}
         >
-          <p className='mb-3 text-sm font-medium'>TYPES</p>
+          <p className='mb-3 text-sm font-medium'>TIPOS</p>
 
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
             <p className='flex gap-2'>
@@ -162,7 +161,7 @@ const Collection = () => {
                 value={'Topwear'}
                 onChange={toggleSubCategory}
               />
-              Topwear
+              Parte de Cima
             </p>
             <p className='flex gap-2'>
               <input
@@ -171,7 +170,7 @@ const Collection = () => {
                 value={'Bottomwear'}
                 onChange={toggleSubCategory}
               />
-              Bottomwear
+              Parte de Baixo
             </p>
             <p className='flex gap-2'>
               <input
@@ -180,20 +179,20 @@ const Collection = () => {
                 value={'Winterwear'}
                 onChange={toggleSubCategory}
               />
-              Winterwear
+              Roupas de Inverno
             </p>
           </div>
         </div>
       </div>
 
-      {/* Right Side --> Product List */}
+      {/* Lado Direito --> Lista de Produtos */}
 
       <div className='flex-1'>
-        {/* Title */}
+        {/* Título */}
         <div className='flex justify-between text-sm sm:text-xl lg:text-2xl mb-4'>
-          <Title text1={'ALL'} text2={'COLLECTIONS'} />
+          <Title text1={'TODAS AS'} text2={'COLEÇÕES'} />
 
-          {/* Product Sort */}
+          {/* Ordenação dos Produtos */}
           <select
             onChange={(e) => {
               setSortType(e.target.value);
@@ -201,14 +200,13 @@ const Collection = () => {
             value={sortType}
             className='border border-gray-300 text-sm px-2'
           >
-            <option value='relevent'>Sort by: Relevent</option>
-            <option value='low-high'>Sort by: Low to High</option>
-            <option value='high-low'>Sort by: High to Low</option>
+            <option value='relevent'>Ordenar por: Relevância</option>
+            <option value='low-high'>Ordenar por: Menor Preço</option>
+            <option value='high-low'>Ordenar por: Maior Preço</option>
           </select>
         </div>
 
-        {/* Product List */}
-
+        {/* Lista de Produtos */}
         <div className='grid grid-cols-2  lg:grid-cols-3 xl:grid-cols-4 gap-4 gap-y-6'>
           {filterProducts.map((product) => (
             <ProductItem

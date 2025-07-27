@@ -14,10 +14,10 @@ const LatestCollection = () => {
   return (
     <div className='my-10'>
       <div className='py-8 text-center text-3xl'>
-        <Title text1={'LATEST'} text2={'COLLECTIONS'} />
+        <Title text1={'ÚLTIMAS'} text2={'COLEÇÕES'} />
         <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-          Discover our newest arrivals that blend style and comfort. Explore the
-          latest trends in fashion, curated just for you.
+          Descubra nossas novidades que unem estilo e conforto. Explore as
+          últimas tendências da moda, selecionadas especialmente para você.
         </p>
       </div>
 
@@ -30,7 +30,7 @@ const LatestCollection = () => {
             image={product.image}
             name={product.name}
             price={product.price}
-          /> // another way to pass props to a component is to use the spread operator (<ProductItem key={idx} {...product} />)
+          /> // outra forma de passar props para um componente é usar o spread operator (<ProductItem key={idx} {...product} />)
         ))}
       </div>
     </div>

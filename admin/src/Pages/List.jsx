@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 const List = ({ token }) => {
   const [list, setList] = useState([]);
 
-  const fetchList = async () => {
+  const buscarLista = async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/product/list`, {
         headers: { token },
@@ -23,7 +23,7 @@ const List = ({ token }) => {
     }
   };
 
-  const removeProduct = async (id) => {
+  const removerProduto = async (id) => {
     try {
       const response = await axios.post(
         `${backendUrl}/api/product/remove`,
@@ -35,7 +35,7 @@ const List = ({ token }) => {
 
       if (response.data.success) {
         toast.success(response.data.message);
-        fetchList();
+        buscarLista();
       } else {
         toast.error(response.data.message);
       }
@@ -46,29 +46,28 @@ const List = ({ token }) => {
   };
 
   useEffect(() => {
-    fetchList();
+    buscarLista();
   }, []);
 
   return (
     <>
-      <p className='mb-2'>All Products List</p>
+      <p className='mb-2'>Lista de Todos os Produtos</p>
 
       <div className='flex flex-col gap-2'>
-        {/* list table title */}
+        {/* Título da tabela */}
         <div className='hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm text-gray-500'>
-          <b>Image</b>
-          <b>Name</b>
-          <b>Category</b>
-          <b>Price</b>
-          <b className='text-center'>Action</b>
+          <b>Imagem</b>
+          <b>Nome</b>
+          <b>Categoria</b>
+          <b>Preço</b>
+          <b className='text-center'>Ação</b>
         </div>
 
-        {/* Product List  */}
-
+        {/* Lista de produtos */}
         {list.map((product, index) => (
           <div
             key={index}
-            className='grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center gap-2 py-1 px-2 border  text-sm text-gray-500'
+            className='grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center gap-2 py-1 px-2 border text-sm text-gray-500'
           >
             <img
               src={product.image[0]}
@@ -82,8 +81,8 @@ const List = ({ token }) => {
               {product.price}
             </p>
             <button
-              onClick={() => removeProduct(product._id)}
-              className='text-right md:text-center text-lg  cursor-pointer'
+              onClick={() => removerProduto(product._id)}
+              className='text-right md:text-center text-lg cursor-pointer'
             >
               X
             </button>

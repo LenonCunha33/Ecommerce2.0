@@ -34,7 +34,6 @@ const PlaceOrder = () => {
   const onChangeHandler = (e) => {
     const name = e.target.name;
     const value = e.target.value;
-    // setFormData({ ...formData, [name]: value });
     setFormData((data) => ({ ...data, [name]: value }));
   };
 
@@ -65,7 +64,7 @@ const PlaceOrder = () => {
         amount: getCartAmount() + delivery_fee,
       };
       switch (paymentMethod) {
-        // API calls for COD payment method
+        // Chamadas da API para pagamento via dinheiro na entrega
         case 'cod': {
           const response = await axios.post(
             `${backendUrl}/api/order/place`,
@@ -75,14 +74,14 @@ const PlaceOrder = () => {
 
           if (response.data.success) {
             setCartItems({});
-            navigate('/orders');
+            navigate('/pedidos');
           } else {
             toast.error(response.data.message);
           }
           break;
         }
 
-        // API calls for Stripe payment method
+        // Chamadas da API para pagamento via Stripe
         case 'stripe': {
           const response = await axios.post(
             `${backendUrl}/api/order/stripe`,
@@ -113,11 +112,11 @@ const PlaceOrder = () => {
       onSubmit={onSubmitHandler}
       className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'
     >
-      {/* --------------- Left Side ----------------------- */}
+      {/* --------------- Lado Esquerdo ----------------------- */}
 
       <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
         <div className='text-xl sm:text-2xl my-3 '>
-          <Title text1={'DELIVERY'} text2={'INFORMATION'} />
+          <Title text1={'INFORMAÇÕES'} text2={'DE ENTREGA'} />
         </div>
         <div className='flex flex-col sm:flex-row  gap-3'>
           <input
@@ -126,8 +125,8 @@ const PlaceOrder = () => {
             value={formData.firstName}
             type='text'
             required
-            placeholder='First Name'
-            className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder='Nome'
+            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
           />
           <input
             name='lastName'
@@ -135,8 +134,8 @@ const PlaceOrder = () => {
             value={formData.lastName}
             type='text'
             required
-            placeholder='Last Name'
-            className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder='Sobrenome'
+            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
           />
         </div>
         <input
@@ -145,8 +144,8 @@ const PlaceOrder = () => {
           value={formData.email}
           type='email'
           required
-          placeholder='Email Address'
-          className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+          placeholder='E-mail'
+          className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
         />
         <input
           name='street'
@@ -154,8 +153,8 @@ const PlaceOrder = () => {
           value={formData.street}
           type='text'
           required
-          placeholder='Street'
-          className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+          placeholder='Rua'
+          className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
         />
         <div className='flex flex-col sm:flex-row  gap-3'>
           <input
@@ -164,8 +163,8 @@ const PlaceOrder = () => {
             value={formData.city}
             type='text'
             required
-            placeholder='City'
-            className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder='Cidade'
+            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
           />
           <input
             name='state'
@@ -173,8 +172,8 @@ const PlaceOrder = () => {
             value={formData.state}
             type='text'
             required
-            placeholder='State'
-            className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder='Estado'
+            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
           />
         </div>
         <div className='flex flex-col sm:flex-row  gap-3'>
@@ -184,8 +183,8 @@ const PlaceOrder = () => {
             value={formData.zipcode}
             type='text'
             required
-            placeholder='Zipcode'
-            className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder='CEP'
+            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
           />
           <input
             name='country'
@@ -193,8 +192,8 @@ const PlaceOrder = () => {
             value={formData.country}
             type='text'
             required
-            placeholder='Country'
-            className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder='País'
+            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
           />
         </div>
         <input
@@ -203,12 +202,12 @@ const PlaceOrder = () => {
           value={formData.phone}
           type='number'
           required
-          placeholder='Phone '
-          className='border  border-gray-300 rounded py-1.5 px-3.5 w-full'
+          placeholder='Telefone'
+          className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
         />
       </div>
 
-      {/* --------------- Right Side ----------------------- */}
+      {/* --------------- Lado Direito ----------------------- */}
 
       <div className='mt-8'>
         <div className='mt8 min-w-80'>
@@ -216,9 +215,9 @@ const PlaceOrder = () => {
         </div>
 
         <div className='mt-12'>
-          <Title text1={'PAYMENT'} text2={'METHOD'} />
+          <Title text1={'MÉTODO DE'} text2={'PAGAMENTO'} />
 
-          {/* -------------- Payment method selection -------------- */}
+          {/* -------------- Seleção do método de pagamento -------------- */}
 
           <div className='flex flex-col lg:flex-row gap-4'>
             <div
@@ -246,21 +245,19 @@ const PlaceOrder = () => {
                 }`}
               ></p>
               <p className='text-gray-500 text-sm font-medium mx-4'>
-                {' '}
-                CASH ON DELIVARY
+                DINHEIRO NA ENTREGA
               </p>
             </div>
           </div>
 
-          {/* -------------- Payment method selection -------------- */}
+          {/* -------------- Botão de finalizar -------------- */}
 
           <div className='w-full text-end mt-8'>
             <button
               type='submit'
-              // onClick={() => navigate('/orders')}
               className='bg-black text-white px-16 py-3 text-sm cursor-pointer'
             >
-              PLACE ORDER
+              FINALIZAR PEDIDO
             </button>
           </div>
         </div>

@@ -30,10 +30,10 @@ const Cart = () => {
   return (
     <div className='pt-14 border-t'>
       <div className='mb-3 text-2xl'>
-        <Title text1={'YOUR'} text2={'CART'} />
+        <Title text1={'SEU'} text2={'CARRINHO'} />
       </div>
 
-      {/* Cart Items      */}
+      {/* Itens do Carrinho */}
 
       <div>
         {cartData.map((item, index) => {
@@ -41,7 +41,7 @@ const Cart = () => {
             (product) => product._id === item._id
           );
 
-          // Skip rendering this item if we can't find the product data
+          // Pula a renderização deste item se não encontrar os dados do produto
           if (!productsData) {
             return null;
           }
@@ -107,12 +107,12 @@ const Cart = () => {
           <div className='w-full text-end'>
             <button
               onClick={() => {
-                addOrder(); // Call addOrder to move items to orders state
-                navigate('/place-order');
+                addOrder(); // Chama addOrder para mover os itens para o estado de pedidos
+                navigate('/fazer-pedido');
               }}
               className='my-8 px-8 py-3 bg-black text-white text-sm cursor-pointer'
             >
-              PROCEED TO CHECKOUT
+              FINALIZAR COMPRA
             </button>
           </div>
         </div>

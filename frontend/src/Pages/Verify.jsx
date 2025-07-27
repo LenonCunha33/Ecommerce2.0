@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../Context/ShopContext';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-
 import { toast } from 'react-toastify';
 
 const Verify = () => {
@@ -28,9 +27,9 @@ const Verify = () => {
 
       if (response.data.success) {
         setCartItems({});
-        navigate('/orders');
+        navigate('/pedidos');
       } else {
-        navigate('/cart');
+        navigate('/carrinho');
         toast.error(response.data.message);
       }
     } catch (error) {
@@ -42,9 +41,10 @@ const Verify = () => {
   useEffect(() => {
     verifyStripePayment();
   }, [token]);
+
   return (
     <div>
-      <p className='text-gray-500'>Verifying payment...</p>
+      <p className='text-gray-500'>Verificando pagamento...</p>
     </div>
   );
 };

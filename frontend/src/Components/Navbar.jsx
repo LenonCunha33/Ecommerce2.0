@@ -29,19 +29,19 @@ const Navbar = () => {
 
       <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
         <NavLink to='/' className='flex flex-col items-center gap-1'>
-          <p>HOME</p>
+          <p>Início</p>
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
         </NavLink>
-        <NavLink to='/collection' className='flex flex-col items-center gap-1'>
-          <p>COLLECTION</p>
+        <NavLink to='/colecoes' className='flex flex-col items-center gap-1'>
+          <p>Coleções</p>
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
         </NavLink>
-        <NavLink to='/about' className='flex flex-col items-center gap-1'>
-          <p>ABOUT</p>
+        <NavLink to='/sobre' className='flex flex-col items-center gap-1'>
+          <p>Sobre</p>
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
         </NavLink>
-        <NavLink to='/contact' className='flex flex-col items-center gap-1'>
-          <p>CONTACT</p>
+        <NavLink to='/contato' className='flex flex-col items-center gap-1'>
+          <p>Contato</p>
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
         </NavLink>
       </ul>
@@ -66,22 +66,22 @@ const Navbar = () => {
           {token && (
             <div className='group-hover:block hidden absolute dropdown-menu right-0 pt-4 '>
               <div className='flex flex-col gap-2 w-36 px-5 bg-slate-100 text-gray-500 rounded-md'>
-                <p className='cursor-pointer hover:text-black'>My Profile</p>
+                <p className='cursor-pointer hover:text-black'>Meu Perfil</p>
                 <p
-                  onClick={() => navigate('/orders')}
+                  onClick={() => navigate('/pedidos')}
                   className='cursor-pointer hover:text-black'
                 >
-                  Orders
+                  Pedidos
                 </p>
                 <p onClick={logout} className='cursor-pointer hover:text-black'>
-                  Logout
+                  Sair
                 </p>
               </div>
             </div>
           )}
         </div>
 
-        <Link to='/cart' className='relative'>
+        <Link to='/carrinho' className='relative'>
           <img src={assets.cart_icon} alt='' className='w-5 min-w-5 ' />
           <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
             {getCartCount()}
@@ -112,7 +112,7 @@ const Navbar = () => {
             className='flex items-center gap-4 p-3 cursor-pointer'
           >
             <img src={assets.dropdown_icon} alt='' className='h-4 rotate-180' />
-            <p className='font-semibold'>Back</p>
+            <p className='font-semibold'>Voltar</p>
           </div>
 
           {/* Links */}
@@ -123,34 +123,34 @@ const Navbar = () => {
             className='py-2 pl-6 border'
             to='/'
           >
-            HOME
+            INÍCIO
           </NavLink>
           <NavLink
             onClick={() => {
               setVisible(false);
             }}
             className='py-2 pl-6 border'
-            to='/collection'
+            to='/colecoes'
           >
-            COLLECTION
+            COLEÇÃO
           </NavLink>
           <NavLink
             onClick={() => {
               setVisible(false);
             }}
             className='py-2 pl-6 border'
-            to='/about'
+            to='/sobre'
           >
-            ABOUT
+            SOBRE
           </NavLink>
           <NavLink
             onClick={() => {
               setVisible(false);
             }}
             className='py-2 pl-6 border'
-            to='/contact'
+            to='/contato'
           >
-            CONTACT
+            CONTATO
           </NavLink>
         </div>
       </div>

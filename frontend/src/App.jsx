@@ -28,14 +28,14 @@ function App() {
 
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/collection' element={<Collection />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/contact' element={<Contact />} />
+        <Route path='/colecoes' element={<Collection />} />
+        <Route path='/sobre' element={<About />} />
+        <Route path='/contato' element={<Contact />} />
         <Route path='/product/:productId' element={<Product />} />
-        <Route path='/cart' element={<Cart />} />
+        <Route path='/carrinho' element={<Cart />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/place-order' element={<PlaceOrder />} />
-        <Route path='/orders' element={<Orders />} />
+        <Route path='/fazer-pedido' element={<PlaceOrder />} />
+        <Route path='/pedidos' element={<Orders />} />
         <Route path='/verify' element={<Verify />} />
       </Routes>
 
