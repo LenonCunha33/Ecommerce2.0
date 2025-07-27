@@ -1,122 +1,137 @@
-import { useContext, useEffect, useState } from 'react';
-import { ShopContext } from '../Context/ShopContext';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { useContext, useEffect, useState } from "react";
+import { ShopContext } from "../Context/ShopContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
-  const [currentState, setCurrentState] = useState('Entrar');
+  const [currentState, setCurrentState] = useState("Entrar");
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      if (currentState === 'Cadastrar') {
-        const response = await axios.post(backendUrl + '/api/user/register', {
-          name,
-          email,
-          password,
-        });
+      const endpoint =
+        currentState === "Cadastrar"
+          ? "/api/user/register"
+          : "/api/user/login";
 
-        const token = response.data.data.token;
-        if (response.data.success) {
-          setToken(token);
-          localStorage.setItem('token', token);
-          toast.success('Cadastro realizado com sucesso!');
-        } else {
-          toast.error(response.data.message);
-        }
+      const payload =
+        currentState === "Cadastrar"
+          ? { name, email, password }
+          : { email, password };
+
+      const response = await axios.post(backendUrl + endpoint, payload);
+
+      const token = response.data.data.token;
+      if (response.data.success) {
+        setToken(token);
+        localStorage.setItem("token", token);
+        toast.success(
+          currentState === "Cadastrar"
+            ? "Cadastro realizado com sucesso!"
+            : "Login realizado com sucesso!"
+        );
       } else {
-        const response = await axios.post(backendUrl + '/api/user/login', {
-          email,
-          password,
-        });
-        const token = response.data.data.token;
-        if (response.data.success) {
-          setToken(token);
-          localStorage.setItem('token', token);
-          toast.success('Login realizado com sucesso!');
-        } else {
-          toast.error(response.data.message);
-        }
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message); // Mostra mensagem de erro se a requisição falhar
+      toast.error(error.response?.data?.message || "Erro ao autenticar");
     }
   };
 
   useEffect(() => {
     if (token) {
-      navigate('/');
+      navigate("/");
     }
   }, [token]);
 
   return (
-    <form
+    <motion.form
       onSubmit={onSubmitHandler}
-      className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800'
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="max-w-md w-full px-6 py-10 mt-16 mx-auto bg-white rounded-lg shadow-md flex flex-col gap-5 text-gray-800"
     >
-      <div className='inline-flex items-center gap-2 mb-2 mt-10'>
-        <p className='prata-regular text 3x1'> {currentState}</p>
-        <hr className='border-none h-[1.5px] w-8 bg-gray-800 ' />
-      </div>
+      {/* Título com linha animada */}
+      <motion.div
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.4 }}
+        className="flex items-center gap-3 self-start"
+      >
+        <h2 className="text-2xl font-semibold tracking-wide">{currentState}</h2>
+        <hr className="h-[2px] w-10 bg-gray-800 border-none" />
+      </motion.div>
 
-      <div className='w-full px-3 py-2 flex flex-col gap-4'>
-        {currentState === 'Entrar' ? null : (
+      {/* Campos de entrada */}
+      <div className="flex flex-col gap-4">
+        {currentState === "Cadastrar" && (
           <input
-            onChange={(e) => setName(e.target.value)}
+            type="text"
             value={name}
-            type='text'
-            className='w-Full px-3 py-2 border border-gray-880'
-            placeholder='Nome'
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Nome completo"
+            className="input"
             required
           />
         )}
-
         <input
-          onChange={(e) => setEmail(e.target.value)}
+          type="email"
           value={email}
-          type='email'
-          className='w-Full px-3 py-2 border border-gray-880'
-          placeholder='Email'
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="E-mail"
+          className="input"
           required
         />
         <input
-          onChange={(e) => setPassword(e.target.value)}
+          type="password"
           value={password}
-          type='password'
-          className='w-Full px-3 py-2 border border-gray-880'
-          placeholder='Senha'
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Senha"
+          className="input"
           required
         />
+      </div>
 
-        <div className='w-full flex justify-between text-sm mt-[-8px]'>
-          <p className=' cursor-pointer'>Esqueceu sua senha?</p>
-          {currentState === 'Entrar' ? (
-            <p
-              onClick={() => setCurrentState('Cadastrar')}
-              className='cursor-pointer'
-            >
-              Criar Conta
-            </p>
-          ) : (
-            <p
-              onClick={() => setCurrentState('Entrar')}
-              className='cursor-pointer'
-            >
-              Já tenho conta
-            </p>
-          )}
-        </div>
-        <button className='w-1/2 m-auto bg-black text-white px-8 py-2 mt-4 cursor-pointer '>
-          {currentState === 'Entrar' ? 'Entrar' : 'Cadastrar'}
+      {/* Links de ação */}
+      <div className="flex justify-between text-sm text-gray-600">
+        <button
+          type="button"
+          className="hover:underline transition"
+          onClick={() => toast.info("Função de recuperação ainda não implementada")}
+        >
+          Esqueceu a senha?
+        </button>
+
+        <button
+          type="button"
+          onClick={() =>
+            setCurrentState(currentState === "Entrar" ? "Cadastrar" : "Entrar")
+          }
+          className="hover:underline transition"
+        >
+          {currentState === "Entrar"
+            ? "Criar uma conta"
+            : "Já tenho uma conta"}
         </button>
       </div>
-    </form>
+
+      {/* Botão principal */}
+      <motion.button
+        whileTap={{ scale: 0.97 }}
+        type="submit"
+        className="bg-black hover:bg-gray-900 text-white font-medium py-2.5 rounded-lg w-full transition"
+      >
+        {currentState === "Entrar" ? "Entrar" : "Cadastrar"}
+      </motion.button>
+    </motion.form>
   );
 };
 

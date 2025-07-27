@@ -3,6 +3,7 @@ import { ShopContext } from '../Context/ShopContext';
 import Title from '../Components/Title';
 import { assets } from '../assets/assets';
 import CartTotal from '../Components/CartTotal';
+import { motion } from 'framer-motion';
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate, addOrder } =
@@ -28,93 +29,91 @@ const Cart = () => {
   }, [cartItems, products]);
 
   return (
-    <div className='pt-14 border-t'>
-      <div className='mb-3 text-2xl'>
-        <Title text1={'SEU'} text2={'CARRINHO'} />
+    <div className='pt-16 px-4 sm:px-6 lg:px-20 border-t'>
+      <div className='mb-6 text-2xl'>
+        <Title text1='SEU' text2='CARRINHO' />
       </div>
 
       {/* Itens do Carrinho */}
-
-      <div>
+      <div className='space-y-6'>
         {cartData.map((item, index) => {
           const productsData = products.find(
             (product) => product._id === item._id
           );
 
-          // Pula a renderização deste item se não encontrar os dados do produto
-          if (!productsData) {
-            return null;
-          }
+          if (!productsData) return null;
 
           return (
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
               key={index}
-              className='py-3 border-b border-t text-gray-700 grid  grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4'
+              className='p-4 rounded-xl shadow-md border border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white'
             >
-              <div className='flex items-start gap-6'>
+              {/* Produto */}
+              <div className='flex items-start gap-4'>
                 <img
                   src={productsData.image[0]}
-                  alt=''
-                  className='w-16 sm:w-20'
+                  alt={productsData.name}
+                  className='w-20 h-20 rounded-lg object-cover'
                 />
                 <div>
-                  <p className='text-sm sm:text-lg font-medium'>
+                  <p className='text-base font-semibold text-gray-800'>
                     {productsData.name}
                   </p>
-
-                  <div className='flex items-center gap-5 mt-2'>
-                    <p className=' '>
+                  <div className='flex items-center gap-4 mt-2'>
+                    <p className='text-sm text-gray-700'>
                       {currency}
                       {productsData.price}
                     </p>
-                    <p className='px-2 sm:px-3 sm:py-1 border bg-slate-50 '>
+                    <span className='text-xs bg-slate-100 text-gray-600 px-2 py-1 rounded-md border'>
                       {item.size}
-                    </p>
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <input
-                onChange={(e) => {
-                  e.target.value === '' || e.target.value < 0
-                    ? null
-                    : updateQuantity(
-                        item._id,
-                        item.size,
-                        Number(e.target.value)
-                      );
-                }}
-                className='border  max-w-10 sm:max-w-20 px-1 sm:px-2 py-1 '
-                type='number'
-                min={1}
-                defaultValue={item.quantity}
-              />
-              <img
-                onClick={() => updateQuantity(item._id, item.size, 0)}
-                src={assets.bin_icon}
-                alt=''
-                className='w-4 mr-4 sm:w-5 cursor-pointer'
-              />
-            </div>
+              {/* Ações */}
+              <div className='flex items-center gap-4'>
+                <input
+                  type='number'
+                  min={1}
+                  defaultValue={item.quantity}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    if (value > 0) {
+                      updateQuantity(item._id, item.size, value);
+                    }
+                  }}
+                  className='w-16 text-center border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-black/60'
+                />
+                <img
+                  onClick={() => updateQuantity(item._id, item.size, 0)}
+                  src={assets.bin_icon}
+                  alt='Remover'
+                  className='w-5 cursor-pointer hover:scale-110 transition-transform duration-200'
+                />
+              </div>
+            </motion.div>
           );
         })}
       </div>
 
-      <div className='flex justify-end my-20'>
-        <div className='w-full sm:w-[450px]'>
+      {/* Total e Finalizar */}
+      <div className='flex justify-end mt-16 mb-8'>
+        <div className='w-full sm:w-[400px] bg-white rounded-xl shadow-lg p-6 space-y-6'>
           <CartTotal />
 
-          <div className='w-full text-end'>
-            <button
-              onClick={() => {
-                addOrder(); // Chama addOrder para mover os itens para o estado de pedidos
-                navigate('/fazer-pedido');
-              }}
-              className='my-8 px-8 py-3 bg-black text-white text-sm cursor-pointer'
-            >
-              FINALIZAR COMPRA
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              addOrder();
+              navigate('/fazer-pedido');
+            }}
+            className='w-full py-3 bg-black text-white text-sm font-semibold rounded-md hover:bg-gray-800 transition-colors duration-300'
+          >
+            FINALIZAR COMPRA
+          </button>
         </div>
       </div>
     </div>

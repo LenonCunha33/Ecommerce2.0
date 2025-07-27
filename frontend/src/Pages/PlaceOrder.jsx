@@ -1,10 +1,11 @@
-import { useContext, useState } from 'react';
-import { assets } from '../assets/assets';
-import CartTotal from '../Components/CartTotal';
-import Title from '../Components/Title';
-import { ShopContext } from '../Context/ShopContext';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { useContext, useState } from "react";
+import { assets } from "../assets/assets";
+import CartTotal from "../Components/CartTotal";
+import Title from "../Components/Title";
+import { ShopContext } from "../Context/ShopContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 const PlaceOrder = () => {
   const {
@@ -18,22 +19,21 @@ const PlaceOrder = () => {
     products,
   } = useContext(ShopContext);
 
-  const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [paymentMethod, setPaymentMethod] = useState("cod");
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    street: '',
-    city: '',
-    state: '',
-    zipcode: '',
-    country: '',
-    phone: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    street: "",
+    city: "",
+    state: "",
+    zipcode: "",
+    country: "",
+    phone: "",
   });
 
   const onChangeHandler = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
+    const { name, value } = e.target;
     setFormData((data) => ({ ...data, [name]: value }));
   };
 
@@ -63,206 +63,190 @@ const PlaceOrder = () => {
         items: orderItems,
         amount: getCartAmount() + delivery_fee,
       };
-      switch (paymentMethod) {
-        // Chamadas da API para pagamento via dinheiro na entrega
-        case 'cod': {
-          const response = await axios.post(
-            `${backendUrl}/api/order/place`,
-            orderData,
-            { headers: { token } }
-          );
 
-          if (response.data.success) {
-            setCartItems({});
-            navigate('/pedidos');
-          } else {
-            toast.error(response.data.message);
-          }
-          break;
+      const endpoint =
+        paymentMethod === "stripe"
+          ? `${backendUrl}/api/order/stripe`
+          : `${backendUrl}/api/order/place`;
+
+      const response = await axios.post(endpoint, orderData, {
+        headers: { token },
+      });
+
+      if (response.data.success) {
+        if (paymentMethod === "stripe") {
+          window.location.replace(response.data.session_url);
+        } else {
+          setCartItems({});
+          navigate("/pedidos");
         }
-
-        // Chamadas da API para pagamento via Stripe
-        case 'stripe': {
-          const response = await axios.post(
-            `${backendUrl}/api/order/stripe`,
-            orderData,
-            { headers: { token } }
-          );
-
-          if (response.data.success) {
-            const { session_url } = response.data;
-            window.location.replace(session_url);
-          } else {
-            toast.error(response.data.message);
-          }
-          break;
-        }
-
-        default:
-          break;
+      } else {
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Erro ao finalizar pedido");
     }
   };
 
   return (
-    <form
+    <motion.form
       onSubmit={onSubmitHandler}
-      className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col lg:flex-row gap-10 px-4 md:px-10 pt-8 pb-16 border-t max-w-screen-xl mx-auto"
     >
-      {/* --------------- Lado Esquerdo ----------------------- */}
-
-      <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
-        <div className='text-xl sm:text-2xl my-3 '>
-          <Title text1={'INFORMAÇÕES'} text2={'DE ENTREGA'} />
+      {/* ----------- Lado Esquerdo - Informações ----------- */}
+      <div className="flex-1 space-y-5">
+        <div className="text-2xl font-semibold">
+          <Title text1={"INFORMAÇÕES"} text2={"DE ENTREGA"} />
         </div>
-        <div className='flex flex-col sm:flex-row  gap-3'>
+
+        <div className="flex flex-col md:flex-row gap-4">
           <input
-            name='firstName'
+            name="firstName"
             onChange={onChangeHandler}
             value={formData.firstName}
-            type='text'
+            type="text"
             required
-            placeholder='Nome'
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder="Nome"
+            className="input"
           />
           <input
-            name='lastName'
+            name="lastName"
             onChange={onChangeHandler}
             value={formData.lastName}
-            type='text'
+            type="text"
             required
-            placeholder='Sobrenome'
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder="Sobrenome"
+            className="input"
           />
         </div>
+
         <input
-          name='email'
+          name="email"
           onChange={onChangeHandler}
           value={formData.email}
-          type='email'
+          type="email"
           required
-          placeholder='E-mail'
-          className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+          placeholder="E-mail"
+          className="input"
         />
         <input
-          name='street'
+          name="street"
           onChange={onChangeHandler}
           value={formData.street}
-          type='text'
+          type="text"
           required
-          placeholder='Rua'
-          className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+          placeholder="Rua"
+          className="input"
         />
-        <div className='flex flex-col sm:flex-row  gap-3'>
+
+        <div className="flex flex-col md:flex-row gap-4">
           <input
-            name='city'
+            name="city"
             onChange={onChangeHandler}
             value={formData.city}
-            type='text'
+            type="text"
             required
-            placeholder='Cidade'
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder="Cidade"
+            className="input"
           />
           <input
-            name='state'
+            name="state"
             onChange={onChangeHandler}
             value={formData.state}
-            type='text'
+            type="text"
             required
-            placeholder='Estado'
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder="Estado"
+            className="input"
           />
         </div>
-        <div className='flex flex-col sm:flex-row  gap-3'>
+
+        <div className="flex flex-col md:flex-row gap-4">
           <input
-            name='zipcode'
+            name="zipcode"
             onChange={onChangeHandler}
             value={formData.zipcode}
-            type='text'
+            type="text"
             required
-            placeholder='CEP'
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder="CEP"
+            className="input"
           />
           <input
-            name='country'
+            name="country"
             onChange={onChangeHandler}
             value={formData.country}
-            type='text'
+            type="text"
             required
-            placeholder='País'
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+            placeholder="País"
+            className="input"
           />
         </div>
+
         <input
-          name='phone'
+          name="phone"
           onChange={onChangeHandler}
           value={formData.phone}
-          type='number'
+          type="tel"
           required
-          placeholder='Telefone'
-          className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+          placeholder="Telefone"
+          className="input"
         />
       </div>
 
-      {/* --------------- Lado Direito ----------------------- */}
-
-      <div className='mt-8'>
-        <div className='mt8 min-w-80'>
+      {/* ----------- Lado Direito - Total e Pagamento ----------- */}
+      <div className="flex-1">
+        <div className="mb-6">
           <CartTotal />
         </div>
 
-        <div className='mt-12'>
-          <Title text1={'MÉTODO DE'} text2={'PAGAMENTO'} />
+        <div className="mt-10 space-y-4">
+          <Title text1={"MÉTODO DE"} text2={"PAGAMENTO"} />
 
-          {/* -------------- Seleção do método de pagamento -------------- */}
-
-          <div className='flex flex-col lg:flex-row gap-4'>
+          {/* Métodos de Pagamento */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <div
-              onClick={() => {
-                setPaymentMethod('stripe');
-              }}
-              className='flex items-center gap-3 border p-2 px-3 cursor-pointer'
+              onClick={() => setPaymentMethod("stripe")}
+              className="flex items-center gap-3 border p-3 rounded-lg shadow-sm cursor-pointer hover:shadow transition"
             >
-              <p
-                className={` min-w-3.5 h-3.5 border rounded-full ${
-                  paymentMethod === 'stripe' ? 'bg-green-400' : ''
+              <div
+                className={`w-4 h-4 rounded-full border ${
+                  paymentMethod === "stripe" ? "bg-green-400" : ""
                 }`}
-              ></p>
-              <img className='h5 mx-4' src={assets.stripe_logo} alt='' />
+              ></div>
+              <img src={assets.stripe_logo} alt="Stripe" className="h-6" />
             </div>
+
             <div
-              onClick={() => {
-                setPaymentMethod('cod');
-              }}
-              className='flex items-center gap-3 border p-2 px-3 cursor-pointer'
+              onClick={() => setPaymentMethod("cod")}
+              className="flex items-center gap-3 border p-3 rounded-lg shadow-sm cursor-pointer hover:shadow transition"
             >
-              <p
-                className={` min-w-3.5 h-3.5 border rounded-full ${
-                  paymentMethod === 'cod' ? 'bg-green-400' : ''
+              <div
+                className={`w-4 h-4 rounded-full border ${
+                  paymentMethod === "cod" ? "bg-green-400" : ""
                 }`}
-              ></p>
-              <p className='text-gray-500 text-sm font-medium mx-4'>
-                DINHEIRO NA ENTREGA
-              </p>
+              ></div>
+              <span className="text-sm text-gray-600 font-medium">
+                Dinheiro na Entrega
+              </span>
             </div>
           </div>
 
-          {/* -------------- Botão de finalizar -------------- */}
-
-          <div className='w-full text-end mt-8'>
-            <button
-              type='submit'
-              className='bg-black text-white px-16 py-3 text-sm cursor-pointer'
+          {/* Botão de Finalizar */}
+          <div className="text-end pt-6">
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              type="submit"
+              className="bg-black hover:bg-gray-800 text-white py-3 px-12 rounded-lg text-base font-medium transition"
             >
               FINALIZAR PEDIDO
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
-    </form>
+    </motion.form>
   );
 };
 

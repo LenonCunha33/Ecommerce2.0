@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../Context/ShopContext';
 import Title from '../Components/Title';
 import ProductItem from '../Components/ProductItem';
+import { motion } from 'framer-motion';
 
 const LatestCollection = () => {
   const { products } = useContext(ShopContext);
@@ -11,29 +12,56 @@ const LatestCollection = () => {
     const latest = products.slice(0, 10);
     setLatestProducts(latest);
   }, [products]);
-  return (
-    <div className='my-10'>
-      <div className='py-8 text-center text-3xl'>
-        <Title text1={'ÚLTIMAS'} text2={'COLEÇÕES'} />
-        <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-          Descubra nossas novidades que unem estilo e conforto. Explore as
-          últimas tendências da moda, selecionadas especialmente para você.
-        </p>
-      </div>
 
-      {/* Rendering Products */}
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
+  return (
+    <section className='py-12 px-4 sm:px-6 lg:px-16 bg-white'>
+      {/* Título */}
+      <motion.div 
+        className='text-center mb-10'
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Title text1='ÚLTIMAS' text2='COLEÇÕES' />
+        <p className='mt-4 max-w-xl mx-auto text-sm sm:text-base text-gray-600'>
+          Descubra nossas novidades que unem estilo e conforto. Explore as últimas tendências da moda, selecionadas especialmente para você.
+        </p>
+      </motion.div>
+
+      {/* Produtos */}
+      <motion.div 
+        className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6'
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+            },
+          },
+        }}
+      >
         {latestProducts.map((product, idx) => (
-          <ProductItem
+          <motion.div
             key={idx}
-            id={product._id}
-            image={product.image}
-            name={product.name}
-            price={product.price}
-          /> // outra forma de passar props para um componente é usar o spread operator (<ProductItem key={idx} {...product} />)
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
+            <ProductItem
+              id={product._id}
+              image={product.image}
+              name={product.name}
+              price={product.price}
+            />
+          </motion.div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </section>
   );
 };
 

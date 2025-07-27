@@ -4,43 +4,43 @@ import { assets } from '../assets/assets';
 import { useLocation } from 'react-router-dom';
 
 const SearchBar = () => {
-  // Extrai valores do contexto relacionados à busca e visibilidade a partir do ShopContext
+  // Extract context values related to search and visibility from ShopContext
   const { search, setSearch, showSearch, setShowSearch } =
     useContext(ShopContext);
 
-  // Estado local para controlar visibilidade e animação da barra de busca
+  // Local state to control visibility and animation of the search bar
   const [visible, setVisible] = useState(showSearch);
   const [animate, setAnimate] = useState('');
 
-  // Obtém o caminho atual da URL
+  // Get current URL path
   const location = useLocation();
 
-  // Efeito para atualizar a visibilidade e animação da barra de busca com base na URL e showSearch
+  // Effect to update the search bar visibility and animation based on URL path and showSearch
 
   useEffect(() => {
     if (location.pathname.includes('collection')) {
-      // Mostra a barra de busca e aplica animação de expansão se incluir a página 'collection'
+      // Show the search bar and apply the scale-up animation if it includes 'collection' page
 
       setVisible(true);
       setAnimate('animate-scale-up-center');
     } else {
-      // Oculta a barra de busca se não incluir a página 'collection'
+      // Hide the search bar if doesn`t includes 'collection' page
       setVisible(false);
     }
-  }, [location, showSearch]); // Atualiza a visibilidade quando location ou showSearch mudarem
+  }, [location, showSearch]); // Update visibility when location and showSearch change
 
   const handleClose = () => {
     setAnimate('animate-scale-down-center');
-    setTimeout(() => setShowSearch(false), 400); // Oculta a barra de busca após um atraso para coincidir com a duração da animação de recolhimento
+    setTimeout(() => setShowSearch(false), 400); // Hide the search bar after a delay to match the duration of the scale-down animation
   };
 
-  // Renderiza condicionalmente a barra de busca com base nos estados de visibilidade e showSearch
+  // Conditionally render the search bar based on visibility and showSearch state
   return visible && showSearch ? (
     <div className={`border-t border-b bg-gray-50 text-center ${animate} `}>
       <div className='w-[450px] inline-flex items-center justify-center border border-gray-400 px-5 py-2 my-8 rounded-full '>
         <input
           type='text'
-          placeholder='Buscar...'
+          placeholder='Search...'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className=' flex-1 outline-none bg-inherit text-sm '
@@ -54,7 +54,7 @@ const SearchBar = () => {
         onClick={handleClose}
       />
     </div>
-  ) : null; // Não renderiza nada se visible ou showSearch for false
+  ) : null; // Render nothing if visible or showSearch is false
 };
 
 export default SearchBar;

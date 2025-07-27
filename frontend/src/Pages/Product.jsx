@@ -1,95 +1,100 @@
-import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { ShopContext } from '../Context/ShopContext';
-import { assets } from '../assets/assets';
-import RelatedProducts from '../Components/RelatedProducts';
+import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ShopContext } from "../Context/ShopContext";
+import { assets } from "../assets/assets";
+import RelatedProducts from "../Components/RelatedProducts";
+import { motion } from "framer-motion";
 
 const Product = () => {
   const { productId } = useParams();
   const { products, currency, addToCart } = useContext(ShopContext);
-  const [productsData, setProductsData] = useState(false);
-  const [image, setImage] = useState('');
-  const [size, setSize] = useState('');
-
-  const fetchProductsData = () => {
-    products.map((product) => {
-      if (product._id === productId) {
-        setProductsData(product);
-        setImage(product.image[0]);
-        return null;
-      }
-    });
-  };
+  const [productsData, setProductsData] = useState(null);
+  const [image, setImage] = useState("");
+  const [size, setSize] = useState("");
 
   useEffect(() => {
-    fetchProductsData();
+    const foundProduct = products.find((p) => p._id === productId);
+    if (foundProduct) {
+      setProductsData(foundProduct);
+      setImage(foundProduct.image[0]);
+    }
   }, [productId, products]);
 
   return productsData ? (
-    <div className='border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100'>
-      {/* ---------------------- Dados do Produto ---------------------- */}
-      <div className='flex gap-12 sm:gap-12 flex-col sm:flex-row'>
-        {/* ---------------------- Imagens do Produto ---------------------- */}
-
-        <div className='flex-1 flex flex-col-reverse gap-3 sm:flex-row '>
-          {/* ---------------------- Lista de Imagens ---------------------- */}
-          <div className='flex sm:flex-col  overflow-x-auto sm:overflow-y-scroll justify-between  sm:justify-normal sm:w-[18.7%] w-full'>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="pt-12 px-6 md:px-12 max-w-screen-xl mx-auto text-lg"
+    >
+      {/* Produto */}
+      <div className="flex flex-col lg:flex-row gap-14">
+        {/* Imagens */}
+        <div className="flex flex-col lg:flex-row gap-6 w-full lg:w-1/2">
+          {/* Miniaturas */}
+          <div className="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto">
             {productsData.image.map((item, index) => (
-              <img
+              <motion.img
+                whileHover={{ scale: 1.05 }}
                 key={index}
                 src={item}
-                alt='produto'
+                alt="produto"
                 onClick={() => setImage(item)}
-                className='cursor-pointer w-[24%]  sm:w-full sm:mb-3 flex-shrink-0 object-cover'
+                className={`w-24 h-24 object-cover cursor-pointer border rounded-md ${
+                  image === item ? "border-orange-500" : "border-gray-200"
+                }`}
               />
             ))}
           </div>
 
-          {/* ---------------------- Imagem Principal ---------------------- */}
-          <div className='w-full sm:w-[80%]'>
-            <img
-              src={image}
-              alt='produto'
-              className='w-full h-auto object-cover'
-            />
-          </div>
+          {/* Imagem Principal */}
+          <motion.img
+            key={image}
+            initial={{ opacity: 0.6, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            src={image}
+            alt="produto"
+            className="w-full max-h-[600px] object-cover rounded-2xl shadow-lg"
+          />
         </div>
 
-        {/* ---------------------- Detalhes do Produto ---------------------- */}
-        <div className='flex-1'>
-          <h1 className='font-medium text-2xl mt-2'>{productsData.name}</h1>
+        {/* Detalhes */}
+        <div className="w-full lg:w-1/2 space-y-8">
+          <h1 className="text-3xl font-semibold text-gray-800 leading-snug">
+            {productsData.name}
+          </h1>
 
-          <div className='flex items-center gap-1 mt-2'>
-            <img src={assets.star_icon} alt='' className='w-3 5' />
-            <img src={assets.star_icon} alt='' className='w-3 5' />
-            <img src={assets.star_icon} alt='' className='w-3 5' />
-            <img src={assets.star_icon} alt='' className='w-3 5' />
-            <img src={assets.star_dull_icon} alt='' className='w-3 5' />
-
-            <p className='pl-2'>(122)</p>
+          <div className="flex items-center gap-1">
+            {[...Array(4)].map((_, i) => (
+              <img key={i} src={assets.star_icon} alt="" className="w-5" />
+            ))}
+            <img src={assets.star_dull_icon} alt="" className="w-5" />
+            <p className="text-base text-gray-500 pl-2">(122)</p>
           </div>
 
-          <p className='mt-5 text-3xl font-medium'>
+          <p className="text-4xl font-bold text-gray-900">
             {currency}
             {productsData.price}
           </p>
-          <p className='mt-5 text-gray-500 md:w-4/5 '>
+
+          <p className="text-gray-600 text-[1.05rem] leading-relaxed">
             {productsData.description}
           </p>
 
-          {/* Seleção de Tamanho */}
-          <div className='flex flex-col gap-4 my-8'>
-            <p>Selecionar Tamanho</p>
-            <div className='flex gap-2'>
+          {/* Tamanhos */}
+          <div className="space-y-3">
+            <p className="font-medium text-lg">Selecionar Tamanho</p>
+            <div className="flex flex-wrap gap-3">
               {productsData.sizes.map((item, index) => (
                 <button
                   key={index}
-                  onClick={() => {
-                    setSize(item);
-                  }}
-                  className={`w-8 h-8 border bg-gray-100 flex items-center justify-center cursor-pointer
-                  ${item === size ? 'border-orange-500' : ''}
-                  `}
+                  onClick={() => setSize(item)}
+                  className={`w-11 h-11 flex items-center justify-center border rounded-md text-base font-medium ${
+                    item === size
+                      ? "border-orange-500 bg-orange-100"
+                      : "border-gray-300 bg-white"
+                  } transition-all`}
                 >
                   {item}
                 </button>
@@ -97,57 +102,61 @@ const Product = () => {
             </div>
           </div>
 
-          <button
+          <motion.button
+            whileTap={{ scale: 0.96 }}
             onClick={() => addToCart(productsData._id, size)}
-            className='bg-black text-white py-3 px-8 text-sm active:bg-gray-700 cursor-pointer'
+            className="w-full md:w-auto bg-black hover:bg-gray-800 text-white py-4 px-8 rounded-md shadow transition-colors text-lg"
           >
             ADICIONAR AO CARRINHO
-          </button>
+          </motion.button>
 
-          <hr className='mt-8 sm:w-4/5' />
-
-          <div className='flex flex-col gap-1 mt-5 text-sm text-gray-500'>
-            <p>Produto 100% original</p>
-            <p>Entrega gratuita para pedidos acima de R$ 49</p>
-            <p>Política de troca e devolução fácil em até 7 dias</p>
-          </div>
+          <ul className="text-base text-gray-600 mt-5 space-y-1">
+            <li>✓ Produto 100% original</li>
+            <li>✓ Entrega gratuita para pedidos acima de R$ 49</li>
+            <li>✓ Política de troca e devolução em até 7 dias</li>
+          </ul>
         </div>
       </div>
 
-      {/* ---------------------- Descrição e Avaliações ---------------------- */}
-      <div className='mt-10'>
-        <div className='flex'>
-          <b className='px-5 py-3 text-sm border'>Descrição</b>
-          <p className='px-5 py-3 text-sm border'>Avaliações (122)</p>
+      {/* Tabs Descrição / Avaliação */}
+      <div className="mt-16">
+        <div className="flex border-b text-lg font-medium">
+          <button className="px-6 py-4 border-b-2 border-black">
+            Descrição
+          </button>
+          <button className="px-6 py-4 text-gray-500 hover:text-black">
+            Avaliações (122)
+          </button>
         </div>
 
-        <div className='flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500'>
+        <div className="px-6 py-6 text-gray-600 space-y-5 text-base leading-relaxed border rounded-b-lg">
           <p>
             Um site de e-commerce é uma plataforma online que facilita a compra
             e venda de produtos ou serviços pela internet. Ele funciona como um
             mercado virtual onde empresas e indivíduos podem exibir seus
             produtos, interagir com clientes e realizar transações sem a
-            necessidade de uma presença física. Os sites de e-commerce ganharam
-            enorme popularidade devido à sua conveniência, acessibilidade e
-            alcance global.
+            necessidade de uma presença física.
           </p>
           <p>
             Sites de e-commerce normalmente exibem produtos ou serviços com
             descrições detalhadas, imagens, preços e variações disponíveis (por
-            exemplo, tamanhos, cores). Cada produto geralmente possui sua
-            própria página com todas as informações relevantes.
+            exemplo, tamanhos, cores).
           </p>
         </div>
       </div>
 
-      {/* ---------------------- Produtos Relacionados ---------------------- */}
-      <RelatedProducts
-        category={productsData.category}
-        subCategory={productsData.subCategory}
-      />
-    </div>
+      {/* Produtos Relacionados */}
+      <div className="mt-20">
+        <RelatedProducts
+          category={productsData.category}
+          subCategory={productsData.subCategory}
+        />
+      </div>
+    </motion.div>
   ) : (
-    <div className='opacity-0'></div>
+    <div className="h-96 flex items-center justify-center animate-pulse text-gray-400 text-xl">
+      Carregando produto...
+    </div>
   );
 };
 

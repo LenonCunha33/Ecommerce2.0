@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../Context/ShopContext';
 import Title from './Title';
 import ProductItem from './ProductItem';
+import { motion } from 'framer-motion';
 
 const BestSeller = () => {
   const { products } = useContext(ShopContext);
@@ -15,27 +16,61 @@ const BestSeller = () => {
   }, [products]);
 
   return (
-    <div className='my-10'>
-      <div className='text-center text-3xl py-8'>
-        <Title text1={'MELHORES'} text2={'VENDEDORES'} />
-        <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
+    <motion.section
+      className="w-full px-4 sm:px-6 lg:px-16 py-12 bg-white"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+      viewport={{ once: true }}
+    >
+      {/* Título */}
+      <motion.div
+        className="text-center mb-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Title text1="MELHORES" text2="VENDEDORES" />
+        <p className="mt-4 max-w-xl mx-auto text-sm sm:text-base text-gray-600">
           Nossos produtos mais vendidos que nossos clientes não se cansam de comprar.
           Compre os itens mais populares da nossa loja.
         </p>
-      </div>
+      </motion.div>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
+      {/* Grid de Produtos */}
+      <motion.div
+        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+            },
+          },
+        }}
+      >
         {bestSeller.map((product, idx) => (
-          <ProductItem
-            key={idx}
-            id={product._id}
-            image={product.image}
-            name={product.name}
-            price={product.price}
-          />
+          <motion.div
+            key={product._id}
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
+            <ProductItem
+              id={product._id}
+              image={product.image}
+              name={product.name}
+              price={product.price}
+            />
+          </motion.div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.section>
   );
 };
 

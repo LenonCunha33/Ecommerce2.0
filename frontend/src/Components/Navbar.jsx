@@ -1,10 +1,11 @@
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { assets } from '../assets/assets';
 import { Link, NavLink } from 'react-router-dom';
 import { ShopContext } from '../Context/ShopContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
-  const [visible, setVisible] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const {
     setShowSearch,
     getCartCount,
@@ -22,139 +23,126 @@ const Navbar = () => {
   };
 
   return (
-    <div className='flex items-center justify-between py-5 font-medium'>
-      <Link to='/'>
-        <img src={assets.logo} alt='logo' className='w-36' />
+    <nav className="flex items-center justify-between py-5 px-4 sm:px-8 lg:px-20 bg-white shadow-sm sticky top-0 z-50">
+      {/* LOGO */}
+      <Link to="/" className="flex-shrink-0">
+        <img src={assets.logo} alt="logo" className="w-28 sm:w-36" />
       </Link>
 
-      <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
-        <NavLink to='/' className='flex flex-col items-center gap-1'>
-          <p>Início</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/colecoes' className='flex flex-col items-center gap-1'>
-          <p>Coleções</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/sobre' className='flex flex-col items-center gap-1'>
-          <p>Sobre</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/contato' className='flex flex-col items-center gap-1'>
-          <p>Contato</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
+      {/* LINKS */}
+      <ul className="hidden sm:flex gap-8 text-gray-700 text-sm font-medium">
+        {['/', '/colecoes', '/sobre', '/contato'].map((path, idx) => (
+          <NavLink
+            key={idx}
+            to={path}
+            className={({ isActive }) =>
+              `relative py-1 group ${
+                isActive ? 'text-gray-900 font-semibold' : 'hover:text-gray-900'
+              }`
+            }
+          >
+            <span className="capitalize">{path === '/' ? 'Início' : path.slice(1)}</span>
+            <motion.div
+              className="absolute bottom-0 left-0 right-0 h-[2px] bg-black scale-x-0 origin-left"
+              whileHover={{ scaleX: 1 }}
+              transition={{ duration: 0.3 }}
+            />
+          </NavLink>
+        ))}
       </ul>
 
-      <div className='flex items-center gap-6'>
-        <img
-          onClick={() => {
-            setShowSearch(true);
-          }}
+      {/* ICONES AÇÃO */}
+      <div className="flex items-center gap-6">
+        <motion.img
           src={assets.search_icon}
-          alt=''
-          className='w-5 cursor-pointer '
+          alt="Buscar"
+          className="w-5 cursor-pointer"
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setShowSearch(true)}
         />
-        <div className='group relative'>
-          <img
-            onClick={() => (token ? null : navigate('/login'))}
+        <div className="relative group">
+          <motion.img
             src={assets.profile_icon}
-            alt=''
-            className='w-5 cursor-pointer'
+            alt="Perfil"
+            className="w-5 cursor-pointer"
+            whileTap={{ scale: 0.9 }}
+            onClick={() => (token ? null : navigate('/login'))}
           />
-          {/* Dropdown Menu */}
           {token && (
-            <div className='group-hover:block hidden absolute dropdown-menu right-0 pt-4 '>
-              <div className='flex flex-col gap-2 w-36 px-5 bg-slate-100 text-gray-500 rounded-md'>
-                <p className='cursor-pointer hover:text-black'>Meu Perfil</p>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              whileHover={{ opacity: 1, y: 0 }}
+              className="absolute right-0 mt-2 bg-white shadow-lg rounded-md text-gray-600 py-2 w-36 space-y-1 hidden group-hover:block"
+            >
+              {['Meu Perfil', 'Pedidos', 'Sair'].map((label, i) => (
                 <p
-                  onClick={() => navigate('/pedidos')}
-                  className='cursor-pointer hover:text-black'
+                  key={i}
+                  onClick={i === 2 ? logout : () => navigate(i === 1 ? '/pedidos' : '/perfil')}
+                  className="px-4 py-2 hover:text-gray-900 cursor-pointer text-sm"
                 >
-                  Pedidos
+                  {label}
                 </p>
-                <p onClick={logout} className='cursor-pointer hover:text-black'>
-                  Sair
-                </p>
-              </div>
-            </div>
+              ))}
+            </motion.div>
           )}
         </div>
-
-        <Link to='/carrinho' className='relative'>
-          <img src={assets.cart_icon} alt='' className='w-5 min-w-5 ' />
-          <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
+        <Link to="/carrinho" className="relative">
+          <motion.img
+            src={assets.cart_icon}
+            alt="Carrinho"
+            className="w-5 cursor-pointer"
+            whileTap={{ scale: 0.9 }}
+          />
+          <span className="absolute -right-1 -bottom-1 w-4 h-4 bg-black text-white text-[8px] leading-[1] rounded-full flex items-center justify-center">
             {getCartCount()}
-          </p>
+          </span>
         </Link>
-
-        <img
+        {/* Hamburger mobile */}
+        <motion.img
           src={assets.menu_icon}
-          alt=''
-          className='w-5 cursor-pointer sm:hidden'
-          onClick={() => setVisible(!visible)}
+          alt="Menu"
+          className="w-5 cursor-pointer sm:hidden"
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setMenuOpen(!menuOpen)}
         />
       </div>
 
-      {/* Sidebar menu for small screens */}
-
-      <div
-        className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white ease-in duration-300 ${
-          visible ? 'w-full' : 'w-0'
-        }`}
-      >
-        {/* dropdown menu */}
-        <div className='flex flex-col text-gray-600'>
-          <div
-            onClick={() => {
-              setVisible(false);
-            }}
-            className='flex items-center gap-4 p-3 cursor-pointer'
+      {/* MENU MOBILE LATERAL */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.3 }}
+            className="fixed top-0 right-0 bottom-0 w-full max-w-xs bg-white shadow-lg z-50"
           >
-            <img src={assets.dropdown_icon} alt='' className='h-4 rotate-180' />
-            <p className='font-semibold'>Voltar</p>
-          </div>
-
-          {/* Links */}
-          <NavLink
-            onClick={() => {
-              setVisible(false);
-            }}
-            className='py-2 pl-6 border'
-            to='/'
-          >
-            INÍCIO
-          </NavLink>
-          <NavLink
-            onClick={() => {
-              setVisible(false);
-            }}
-            className='py-2 pl-6 border'
-            to='/colecoes'
-          >
-            COLEÇÃO
-          </NavLink>
-          <NavLink
-            onClick={() => {
-              setVisible(false);
-            }}
-            className='py-2 pl-6 border'
-            to='/sobre'
-          >
-            SOBRE
-          </NavLink>
-          <NavLink
-            onClick={() => {
-              setVisible(false);
-            }}
-            className='py-2 pl-6 border'
-            to='/contato'
-          >
-            CONTATO
-          </NavLink>
-        </div>
-      </div>
-    </div>
+            <div className="flex items-center justify-between p-4 border-b">
+              <p className="text-lg font-semibold">Menu</p>
+              <motion.img
+                src={assets.dropdown_icon}
+                alt="Fechar"
+                className="w-5 h-5 cursor-pointer rotate-180"
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setMenuOpen(false)}
+              />
+            </div>
+            <nav className="flex flex-col text-gray-600 text-base">
+              {['/', '/colecoes', '/sobre', '/contato'].map((path, idx) => (
+                <NavLink
+                  key={idx}
+                  to={path}
+                  onClick={() => setMenuOpen(false)}
+                  className="py-4 px-6 border-b hover:bg-gray-100"
+                >
+                  {path === '/' ? 'Início' : path.slice(1)}
+                </NavLink>
+              ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
   );
 };
 

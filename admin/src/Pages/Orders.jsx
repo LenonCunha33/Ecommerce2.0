@@ -3,6 +3,7 @@ import axios from 'axios';
 import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
 import { assets } from '../assets/assets';
+import { motion } from 'framer-motion';
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
@@ -22,8 +23,8 @@ const Orders = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+      console.error(error);
+      toast.error(error.message || 'Erro ao buscar pedidos.');
     }
   };
 
@@ -36,10 +37,11 @@ const Orders = ({ token }) => {
       );
       if (response.data.success) {
         await buscarPedidos();
+        toast.success('Status atualizado com sucesso!');
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message);
+      console.error(error);
+      toast.error(error?.response?.data?.message || 'Erro ao atualizar status.');
     }
   };
 
@@ -48,69 +50,84 @@ const Orders = ({ token }) => {
   }, [token]);
 
   return (
-    <div>
-      <h3>Página de Pedidos</h3>
-      <div>
+    <section className="px-4 sm:px-6 md:px-12 lg:px-20 py-10">
+      <motion.h2
+        className="text-2xl sm:text-3xl font-bold mb-8 text-center text-gray-800"
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        Pedidos Recentes
+      </motion.h2>
+
+      <div className="space-y-6">
         {orders.map((order, index) => (
-          <div
+          <motion.div
             key={index}
-            className='grid grid-cols-1 md:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-300 p-5 md:p-8 my-3 md:my-4 text-xs sm:text-sm text-gray-700'
+            className="grid grid-cols-1 md:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-4 items-start border border-gray-200 rounded-xl shadow-sm bg-white p-4 sm:p-6 text-xs sm:text-sm text-gray-700"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            viewport={{ once: true }}
           >
-            <img className='w-12' src={assets.parcel_icon} alt='Ícone de pacote' />
+            {/* Ícone */}
+            <div className="flex justify-center items-start">
+              <img className="w-10 sm:w-12" src={assets.parcel_icon} alt="Ícone de pacote" />
+            </div>
+
+            {/* Itens e endereço */}
             <div>
-              <div>
-                {order.items.map((item, index) => (
-                  <p className='py-0.5' key={index}>
-                    {item.name} x {item.quantity} <span>{item.size}</span>
+              <div className="mb-2">
+                {order.items.map((item, idx) => (
+                  <p className="text-gray-800" key={idx}>
+                    {item.name} x {item.quantity} <span className="text-gray-500">{item.size}</span>
                   </p>
                 ))}
               </div>
-              <p className='mt-3 mb-2 font-medium'>
-                {order.address.firstName + ' ' + order.address.lastName}
+              <p className="mt-3 mb-2 font-medium text-gray-900">
+                {order.address.firstName} {order.address.lastName}
               </p>
-
-              <div>
-                <p>{order.address.street + ','}</p>
+              <div className="text-gray-600">
+                <p>{order.address.street},</p>
                 <p>
-                  {order.address.city +
-                    ', ' +
-                    order.address.state +
-                    ', ' +
-                    order.address.country +
-                    ', ' +
-                    order.address.zipcode}
+                  {order.address.city}, {order.address.state}, {order.address.country},{' '}
+                  {order.address.zipcode}
                 </p>
+                <p className="mt-1">{order.address.phone}</p>
               </div>
-              <p>{order.address.phone}</p>
             </div>
 
-            <div>
-              <p className='text-sm sm:text-[15px]'>Itens: {order.items.length}</p>
-              <p className='mt-3'>Método: {order.paymentMethod}</p>
-              <p>Status do Pagamento: {order.payment ? 'Pago' : 'Pendente'}</p>
+            {/* Informações de pagamento */}
+            <div className="space-y-1 text-gray-700">
+              <p className="text-sm sm:text-base">Itens: {order.items.length}</p>
+              <p>Método: {order.paymentMethod}</p>
+              <p>Status do Pagamento: <span className={order.payment ? 'text-green-600 font-semibold' : 'text-red-500'}>{order.payment ? 'Pago' : 'Pendente'}</span></p>
               <p>Data: {new Date(order.date).toLocaleDateString()}</p>
             </div>
 
-            <p className='text-sm sm:text-[15px]'>
-              Valor: {currency}
-              {order.amount}
-            </p>
+            {/* Valor */}
+            <div className="font-semibold text-sm sm:text-base text-gray-900">
+              {currency}{order.amount}
+            </div>
 
-            <select
-              onChange={(event) => atualizarStatusPedido(event, order._id)}
-              value={order.orderStatus}
-              className='p-2 font-semibold cursor-pointer'
-            >
-              <option value='Order Placed'>Pedido Realizado</option>
-              <option value='Packing'>Embalando</option>
-              <option value='Shipped'>Enviado</option>
-              <option value='Out for Delivery'>Saiu para Entrega</option>
-              <option value='Delivered'>Entregue</option>
-            </select>
-          </div>
+            {/* Status do pedido */}
+            <div>
+              <select
+                onChange={(event) => atualizarStatusPedido(event, order._id)}
+                value={order.orderStatus}
+                className="w-full p-2 rounded-md border border-gray-300 bg-white text-sm sm:text-base font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer transition"
+              >
+                <option value="Order Placed">Pedido Realizado</option>
+                <option value="Packing">Embalando</option>
+                <option value="Shipped">Enviado</option>
+                <option value="Out for Delivery">Saiu para Entrega</option>
+                <option value="Delivered">Entregue</option>
+              </select>
+            </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
