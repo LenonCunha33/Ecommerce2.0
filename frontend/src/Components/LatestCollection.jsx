@@ -22,9 +22,9 @@ const LatestCollection = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <Title text1='ÚLTIMAS' text2='COLEÇÕES' />
+        <Title text1='ÚLTIMA' text2='COLEÇÃO' />
         <p className='mt-4 max-w-xl mx-auto text-sm sm:text-base text-gray-600'>
-          Descubra nossas novidades que unem estilo e conforto. Explore as últimas tendências da moda, selecionadas especialmente para você.
+          Selecionamos o melhor da moda com estilo e conforto para você se sentir incrível.
         </p>
       </motion.div>
 

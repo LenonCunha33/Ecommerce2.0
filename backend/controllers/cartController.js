@@ -23,7 +23,7 @@ export const addToCart = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Item added to cart successfully',
+      message: 'Produto Adicionado ao Carrinho!',
     });
   } catch (error) {
     console.error(error);
@@ -48,7 +48,7 @@ export const updateCart = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Cart updated successfully',
+      message: 'Carrinho Atualizado com Sucesso',
     });
   } catch (error) {
     console.error(error);

@@ -30,10 +30,9 @@ const BestSeller = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <Title text1="MELHORES" text2="VENDEDORES" />
+        <Title text1="MAIS" text2="VENDIDOS" />
         <p className="mt-4 max-w-xl mx-auto text-sm sm:text-base text-gray-600">
-          Nossos produtos mais vendidos que nossos clientes não se cansam de comprar.
-          Compre os itens mais populares da nossa loja.
+          Amados pelos clientes, prontos para você!
         </p>
       </motion.div>
 

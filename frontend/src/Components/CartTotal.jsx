@@ -18,7 +18,7 @@ const CartTotal = () => {
     >
       {/* Título */}
       <div className="mb-6">
-        <Title text1="CARRINHO" text2="TOTAL" />
+        <Title text2="TOTAL" />
       </div>
 
       {/* Resumo do carrinho */}

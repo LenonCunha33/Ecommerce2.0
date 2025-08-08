@@ -6,13 +6,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+
   const {
-    setShowSearch,
     getCartCount,
     navigate,
     token,
     setToken,
     setCartItems,
+    search,
+    setSearch,
   } = useContext(ShopContext);
 
   const logout = () => {
@@ -26,12 +29,12 @@ const Navbar = () => {
     <nav className="flex items-center justify-between py-5 px-4 sm:px-8 lg:px-20 bg-white shadow-sm sticky top-0 z-50">
       {/* LOGO */}
       <Link to="/" className="flex-shrink-0">
-        <img src={assets.logo} alt="logo" className="w-28 sm:w-36" />
+        <img src={assets.logo} alt="logo Marima" className="w-28 sm:w-36" />
       </Link>
 
       {/* LINKS */}
       <ul className="hidden sm:flex gap-8 text-gray-700 text-sm font-medium">
-        {['/', '/colecoes', '/sobre', '/contato'].map((path, idx) => (
+        {['/', '/outlet', '/sobre', '/contato'].map((path, idx) => (
           <NavLink
             key={idx}
             to={path}
@@ -41,7 +44,9 @@ const Navbar = () => {
               }`
             }
           >
-            <span className="capitalize">{path === '/' ? 'Início' : path.slice(1)}</span>
+            <span className="capitalize">
+              {path === '/' ? 'Início' : path === '/outlet' ? 'Outlet' : path.slice(1)}
+            </span>
             <motion.div
               className="absolute bottom-0 left-0 right-0 h-[2px] bg-black scale-x-0 origin-left"
               whileHover={{ scaleX: 1 }}
@@ -52,14 +57,38 @@ const Navbar = () => {
       </ul>
 
       {/* ICONES AÇÃO */}
-      <div className="flex items-center gap-6">
-        <motion.img
-          src={assets.search_icon}
-          alt="Buscar"
-          className="w-5 cursor-pointer"
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setShowSearch(true)}
-        />
+      <div className="flex items-center gap-6 relative">
+        {/* ÍCONE DE BUSCA + BARRA */}
+        <div className="flex items-center gap-2">
+          <motion.img
+            src={assets.search_icon}
+            alt="Buscar"
+            className="w-5 cursor-pointer"
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowSearch(!showSearch)}
+          />
+          <AnimatePresence>
+            {showSearch && (
+              <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: '160px', opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <input
+                  type="text"
+                  placeholder="Pesquisar..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="text-sm bg-transparent border-b border-gray-300 outline-none px-2 py-1 w-full text-gray-700 placeholder:text-gray-400"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ÍCONE PERFIL */}
         <div className="relative group">
           <motion.img
             src={assets.profile_icon}
@@ -86,6 +115,8 @@ const Navbar = () => {
             </motion.div>
           )}
         </div>
+
+        {/* ÍCONE CARRINHO */}
         <Link to="/carrinho" className="relative">
           <motion.img
             src={assets.cart_icon}
@@ -97,7 +128,8 @@ const Navbar = () => {
             {getCartCount()}
           </span>
         </Link>
-        {/* Hamburger mobile */}
+
+        {/* ÍCONE MENU MOBILE */}
         <motion.img
           src={assets.menu_icon}
           alt="Menu"
@@ -128,14 +160,14 @@ const Navbar = () => {
               />
             </div>
             <nav className="flex flex-col text-gray-600 text-base">
-              {['/', '/colecoes', '/sobre', '/contato'].map((path, idx) => (
+              {['/', '/outlet', '/sobre', '/contato'].map((path, idx) => (
                 <NavLink
                   key={idx}
                   to={path}
                   onClick={() => setMenuOpen(false)}
                   className="py-4 px-6 border-b hover:bg-gray-100"
                 >
-                  {path === '/' ? 'Início' : path.slice(1)}
+                  {path === '/' ? 'Início' : path === '/outlet' ? 'Outlet' : path.slice(1)}
                 </NavLink>
               ))}
             </nav>

@@ -1,7 +1,7 @@
 import { ShopContext } from '../Context/ShopContext';
 import { useContext, useEffect, useState } from 'react';
 import Title from './Title';
-import ProductdItem from './ProductItem';
+import ProductItem from './ProductItem';
 import { motion } from 'framer-motion';
 
 const RelatedProducts = ({ category, subCategory }) => {
@@ -48,7 +48,7 @@ const RelatedProducts = ({ category, subCategory }) => {
             }}
             transition={{ duration: 0.4 }}
           >
-            <ProductdItem
+            <ProductItem
               id={item._id}
               name={item.name}
               price={item.price}

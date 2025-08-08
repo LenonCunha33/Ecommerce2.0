@@ -48,18 +48,18 @@ const Contact = () => {
           </p>
 
           <div className="mt-4">
-            <h4 className="font-medium text-gray-800">Carreiras na Forever</h4>
+            <h4 className="font-medium text-gray-800">Suporte Marima</h4>
             <p className="text-gray-500 mt-1">
-              Saiba mais sobre nossas equipes e vagas em aberto.
+              Saiba mais sobre nosso suporte ao cliente!
             </p>
           </div>
 
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={scrollToTop}
-            className="mt-4 border border-black px-6 py-3 text-sm text-black hover:bg-black hover:text-white transition-all duration-300 rounded-md"
+            className="mt-4 border border-black w-50 px-10 py-3 text-sm text-black hover:bg-black hover:text-white transition-all duration-300 rounded-md cursor-pointer"
           >
-            Explorar Vagas
+            Redes Sociais
           </motion.button>
         </motion.div>
 

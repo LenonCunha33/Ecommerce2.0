@@ -15,10 +15,10 @@ const NewsLetterBox = () => {
       className="text-center px-4 sm:px-8 py-16 bg-white"
     >
       <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800">
-        Inscreva-se agora e ganhe 20% de desconto
+        Cadastre-se agora e receba 20% OFF na sua primeira compra!
       </h2>
       <p className="text-sm sm:text-base text-gray-500 mt-3 max-w-xl mx-auto">
-        Seja o primeiro a saber sobre novidades, promoções e descontos!
+        Fique por dentro das novidades e receba promoções exclusivas em primeira mão!
       </p>
 
       <form

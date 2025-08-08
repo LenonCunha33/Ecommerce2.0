@@ -130,9 +130,9 @@ const Add = ({ token }) => {
             value={category}
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
           >
-            <option value="Men">Masculino</option>
+            
             <option value="Women">Feminino</option>
-            <option value="Kids">Infantil</option>
+            
           </select>
         </div>
 
@@ -145,7 +145,7 @@ const Add = ({ token }) => {
           >
             <option value="Topwear">Parte de Cima</option>
             <option value="Bottomwear">Parte de Baixo</option>
-            <option value="Winterwear">Inverno</option>
+            
           </select>
         </div>
 

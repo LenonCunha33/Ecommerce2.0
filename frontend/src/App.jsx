@@ -11,7 +11,6 @@ import PlaceOrder from './Pages/PlaceOrder';
 import Orders from './Pages/Orders';
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
-import SearchBar from './Components/SearchBar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Verify from './Pages/Verify';
@@ -24,11 +23,10 @@ function App() {
       <ToastContainer />
 
       <Navbar />
-      <SearchBar />
 
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/colecoes' element={<Collection />} />
+        <Route path='/outlet' element={<Collection />} />
         <Route path='/sobre' element={<About />} />
         <Route path='/contato' element={<Contact />} />
         <Route path='/product/:productId' element={<Product />} />

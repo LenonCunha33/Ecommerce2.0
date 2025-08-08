@@ -4,7 +4,7 @@ export const userAuth = async (req, res, next) => {
   const { token } = req.headers;
 
   if (!token) {
-    return res.status(401).json({ message: 'Not authorized, Login again' });
+    return res.status(401).json({ message: 'Não autorizado, faça login novamente' });
   }
 
   try {

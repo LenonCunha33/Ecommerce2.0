@@ -18,7 +18,7 @@ export const loginUser = async (req, res) => {
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: 'User doesn`t exist ' });
+        .json({ success: false, message: 'Usuário não Exisente!' });
     }
 
     // Check if the password is correct
@@ -27,14 +27,14 @@ export const loginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res
         .status(400)
-        .json({ success: false, message: 'Invalid email or password' });
+        .json({ success: false, message: 'Email ou Senha estão Incorreto!' });
     }
 
     let token = createToken(user._id);
 
     res.status(200).json({
       success: true,
-      message: 'User signed in successfully',
+      message: 'Usuário conectado com sucesso',
       data: {
         token,
         user,
@@ -59,20 +59,20 @@ export const registerUser = async (req, res) => {
     if (userExists) {
       return res
         .status(400)
-        .json({ success: false, message: 'User already exists' });
+        .json({ success: false, message: 'O usuário já existe' });
     }
 
     // validating email format & strong password
     if (!validator.isEmail(email)) {
       return res
         .status(400)
-        .json({ success: false, message: 'Please enter a valid email' });
+        .json({ success: false, message: 'Por favor, insira um e-mail válido' });
     }
 
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        message: 'Password should be at least 6 characters',
+        message: 'A senha deve ter pelo menos 6 caracteres',
       });
     }
 
@@ -92,7 +92,7 @@ export const registerUser = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'User created successfully',
+      message: 'Usuário criado com sucesso',
       data: {
         user: savedUser,
         token,
@@ -118,7 +118,7 @@ export const adminLogin = async (req, res) => {
       let token = jwt.sign(email + password, process.env.JWT_SECRET);
       return res.status(200).json({
         success: true,
-        message: 'Admin signed in successfully',
+        message: 'Administrador conectado com sucesso',
         data: {
           token,
         },
@@ -126,7 +126,7 @@ export const adminLogin = async (req, res) => {
     } else {
       return res.status(400).json({
         success: false,
-        message: 'Invalid email or password',
+        message: 'E-mail ou senha inválidos',
       });
     }
     res.send('Admin login');

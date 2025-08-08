@@ -21,36 +21,46 @@ const Footer = () => {
       >
         {/* Logo e descrição */}
         <div>
-          <img src={assets.logo} alt="Logo Forever" className="w-36 mb-5" />
+          <img src={assets.logo} alt="Logo Marima" className="w-36 mb-5" />
           <p className="text-sm sm:text-base text-gray-600 max-w-md leading-relaxed">
-            Compre com a <span className="font-semibold">Forever</span> e experimente a conveniência das compras online como nunca antes.
+            Compre com a <span className="font-semibold">Marima</span> e transforme sua forma de comprar online.
           </p>
         </div>
 
-        {/* Links da empresa */}
-        <div>
-          <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">EMPRESA</h3>
-          <ul className="space-y-2 text-sm sm:text-base text-gray-600">
-            {['Início', 'Sobre Nós', 'Entrega', 'Política de Privacidade'].map((item, index) => (
-              <motion.li
-                key={index}
-                onClick={scrollToTop}
-                whileHover={{ x: 5 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                className="cursor-pointer hover:text-black transition-colors"
-              >
-                {item}
-              </motion.li>
-            ))}
-          </ul>
-        </div>
+{/* Links da empresa */}
+<div>
+  <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">EMPRESA</h3>
+  <ul className="space-y-2 text-sm sm:text-base text-gray-600">
+    {['Início', 'Sobre Nós', 'Entrega', 'Política de Privacidade'].map((item, index) => (
+      <motion.li
+        key={index}
+        onClick={() => {
+          if (item === 'Início') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else if (item === 'Sobre Nós') {
+            window.location.href = '/sobre';
+          } else if (item === 'Entrega') {
+            window.location.href = '/entrega';
+          } else if (item === 'Política de Privacidade') {
+            window.location.href = '/privacidade';
+          }
+        }}
+        whileHover={{ x: 5 }}
+        transition={{ type: 'spring', stiffness: 300 }}
+        className="cursor-pointer hover:text-black transition-colors"
+      >
+        {item}
+      </motion.li>
+    ))}
+  </ul>
+</div>
 
         {/* Contato */}
         <div>
-          <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">ENTRE EM CONTATO</h3>
+          <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">Suporte</h3>
           <ul className="space-y-2 text-sm sm:text-base text-gray-600">
-            <li className="hover:text-black transition-colors">+123 456 7890</li>
-            <li className="hover:text-black transition-colors">contact@forevryou.com</li>
+            <li className="hover:text-black transition-colors">(24) 99849-6984</li>
+            <li className="hover:text-black transition-colors">ContatoLojaMarimaSuporte@gmail.com</li>
           </ul>
         </div>
       </motion.div>
@@ -64,7 +74,7 @@ const Footer = () => {
       >
         <hr className="border-t border-gray-300" />
         <p className="text-center text-xs sm:text-sm py-5 text-gray-500">
-          © 2025 forever.com — Todos os Direitos Reservados
+          © 2025 Marima — Todos os Direitos Reservados
         </p>
       </motion.div>
     </footer>

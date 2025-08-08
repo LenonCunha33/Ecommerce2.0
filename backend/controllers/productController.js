@@ -26,7 +26,7 @@ export const addProduct = async (req, res) => {
 
     // Check if images are not available then it`ll throw an error
     if (images.length === 0) {
-      throw new Error('Please upload at least one image');
+      throw new Error('Por favor, carregue pelo menos uma imagem');
     }
 
     let imageUrl = await Promise.all(
@@ -55,7 +55,7 @@ export const addProduct = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Product added successfully',
+      message: 'Produto Adicionado!',
       product,
     });
   } catch (error) {
@@ -88,14 +88,14 @@ export const removeProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found',
+        message: 'Produto Não Encontrado!',
       });
     }
 
     // await product.remove();
     res.status(200).json({
       success: true,
-      message: 'Product removed successfully',
+      message: 'Produto Removido Com Sucesso',
     });
   } catch (error) {
     res.status(500).json({
@@ -113,7 +113,7 @@ export const getSingleProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found',
+        message: 'Produto Não Encontrado!',
       });
     }
 

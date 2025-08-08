@@ -117,11 +117,11 @@ const Orders = ({ token }) => {
                 value={order.orderStatus}
                 className="w-full p-2 rounded-md border border-gray-300 bg-white text-sm sm:text-base font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer transition"
               >
-                <option value="Order Placed">Pedido Realizado</option>
-                <option value="Packing">Embalando</option>
-                <option value="Shipped">Enviado</option>
-                <option value="Out for Delivery">Saiu para Entrega</option>
-                <option value="Delivered">Entregue</option>
+                <option value="Pedido Realizado">Pedido Realizado</option>
+                <option value="Embalando">Embalando</option>
+                <option value="Enviado">Enviado</option>
+                <option value="Saiu para Entrega">Saiu para Entrega</option>
+                <option value="Entregue">Entregue</option>
               </select>
             </div>
           </motion.div>

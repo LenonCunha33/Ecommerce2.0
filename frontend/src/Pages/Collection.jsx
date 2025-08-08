@@ -6,7 +6,7 @@ import ProductItem from '../Components/ProductItem';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Collection = () => {
-  const { products, search, showSearch } = useContext(ShopContext);
+  const { products, search } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -31,18 +31,21 @@ const Collection = () => {
     if (!products || products.length === 0) return;
     let productsCopy = [...products];
 
-    if (showSearch && search) {
+    // 🔍 Filtrar por busca (sem depender de showSearch)
+    if (search && search.trim() !== '') {
       productsCopy = productsCopy.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase().trim())
       );
     }
 
+    // 📂 Filtro por categoria
     if (category.length > 0) {
       productsCopy = productsCopy.filter((item) =>
         category.includes(item.category)
       );
     }
 
+    // 👖 Filtro por subcategoria
     if (subCategory.length > 0) {
       productsCopy = productsCopy.filter((item) =>
         subCategory.includes(item.subCategory)
@@ -62,7 +65,7 @@ const Collection = () => {
         sortedProducts.sort((a, b) => b.price - a.price);
         break;
       default:
-        applyFilter();
+        applyFilter(); // Reaplica o filtro como "relevância"
         return;
     }
     setFilterProducts(sortedProducts);
@@ -70,7 +73,7 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [category, subCategory, search, showSearch, products]);
+  }, [category, subCategory, search, products]);
 
   useEffect(() => {
     sortProducts();
@@ -106,21 +109,15 @@ const Collection = () => {
         >
           <p className="mb-3 font-semibold text-sm text-gray-700">CATEGORIAS</p>
           <div className="flex flex-col gap-2 text-sm text-gray-600">
-            {['Men', 'Women', 'Kids'].map((cat) => (
-              <label key={cat} className="flex gap-2 items-center">
-                <input
-                  type="checkbox"
-                  value={cat}
-                  onChange={toggleCategory}
-                  className="accent-black"
-                />
-                {cat === 'Men'
-                  ? 'MASCULINO'
-                  : cat === 'Women'
-                  ? 'FEMININO'
-                  : 'INFANTIL'}
-              </label>
-            ))}
+            <label className="flex gap-2 items-center">
+              <input
+                type="checkbox"
+                value="Women"
+                onChange={toggleCategory}
+                className="accent-black"
+              />
+              FEMININO
+            </label>
           </div>
         </div>
 
@@ -131,7 +128,7 @@ const Collection = () => {
         >
           <p className="mb-3 font-semibold text-sm text-gray-700">TIPOS</p>
           <div className="flex flex-col gap-2 text-sm text-gray-600">
-            {['Topwear', 'Bottomwear', 'Winterwear'].map((sub) => (
+            {['Topwear', 'Bottomwear'].map((sub) => (
               <label key={sub} className="flex gap-2 items-center">
                 <input
                   type="checkbox"
@@ -139,11 +136,7 @@ const Collection = () => {
                   onChange={toggleSubCategory}
                   className="accent-black"
                 />
-                {sub === 'Topwear'
-                  ? 'Parte de Cima'
-                  : sub === 'Bottomwear'
-                  ? 'Parte de Baixo'
-                  : 'Roupas de Inverno'}
+                {sub === 'Topwear' ? 'Parte de Cima' : 'Parte de Baixo'}
               </label>
             ))}
           </div>
@@ -153,7 +146,7 @@ const Collection = () => {
       {/* Produtos */}
       <div className="flex-1">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
-          <Title text1={'TODAS AS'} text2={'COLEÇÕES'} />
+          <Title text1={'TODOS OS'} text2={'PRODUTOS'} />
           <select
             onChange={(e) => setSortType(e.target.value)}
             value={sortType}

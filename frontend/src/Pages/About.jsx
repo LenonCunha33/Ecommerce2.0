@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 const About = () => {
   return (
-    <div className='px-4 sm:px-8 lg:px-20 pt-16 space-y-20'>
+    <div className='px-4 sm:px-8 lg:px-20 space-y-20'>
       {/* Título principal */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

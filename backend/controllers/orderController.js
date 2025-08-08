@@ -20,7 +20,7 @@ export const placeOrderCOD = async (req, res) => {
       items,
       amount,
       address,
-      paymentMethod: 'COD',
+      paymentMethod: 'Retirada na Loja',
       payment: false,
       date: Date.now(),
     };
@@ -31,7 +31,7 @@ export const placeOrderCOD = async (req, res) => {
     await UserModel.findByIdAndUpdate(userId, { cartData: {} });
     res.status(200).json({
       success: true,
-      message: 'Order placed successfully',
+      message: 'Ordem Realizada com Sucesso',
     });
   } catch (error) {
     console.log(error);
@@ -115,13 +115,13 @@ export const verifyStrpePayment = async (req, res) => {
       await UserModel.findByIdAndUpdate(userId, { cartData: {} });
       res.status(200).json({
         success: true,
-        message: 'Payment successful',
+        message: 'Pagamento Realizado!',
       });
     } else {
       await orderModel.findByIdAndDelete(orderId);
       res.status(200).json({
         success: false,
-        message: 'Payment failed',
+        message: 'Falha no Pagamento!',
       });
     }
   } catch (error) {
@@ -181,7 +181,7 @@ export const updateOrderStatus = async (req, res) => {
     await orderModel.findByIdAndUpdate(orderId, { orderStatus });
     res.status(200).json({
       success: true,
-      message: 'Order status updated successfully',
+      message: 'Status do Pedido Atualizado com Sucesso',
     });
   } catch (error) {
     console.log(error);

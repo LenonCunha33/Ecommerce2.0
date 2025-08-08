@@ -25,10 +25,10 @@ app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
 
 app.get('/', (req, res) => {
-  res.send('Hello World');
+  res.send('Olá');
 });
 
 // Listener
 app.listen(port, () => {
-  console.log(`Server running on port http://localhost:${port}`);
+  console.log(`Servidor Iniciado no Link = http://localhost:${port}`);
 });

@@ -72,15 +72,15 @@ const Hero = () => {
           animate={{ y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Explore coleções que conectam moda e atitude.
+          Explore a coleção que conecta moda e atitude.
         </motion.p>
         <motion.button
-          onClick={() => navigate('/colecoes')}
+          onClick={() => navigate('/outlet')}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="bg-white text-black font-medium px-6 py-2 rounded-full shadow-lg transition-all duration-300 hover:bg-gray-100"
         >
-          Confira agora
+          Explorar
         </motion.button>
       </motion.div>
 
@@ -99,7 +99,7 @@ const Hero = () => {
             Vista o futuro <br /> com autenticidade
           </h2>
           <p className="mt-2 text-sm sm:text-base opacity-90 drop-shadow">
-            Explore coleções que conectam moda e atitude.
+            Explore a coleção que conecta moda e atitude.
           </p>
         </motion.div>
       )}
