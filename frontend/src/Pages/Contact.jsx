@@ -20,7 +20,7 @@ const Contact = () => {
       className="px-5 sm:px-10 lg:px-20 pt-12 pb-28 border-t max-w-screen-xl mx-auto"
     >
       {/* Título */}
-      <div className="text-2xl mb-10">
+      <div className="text-2xl mb-2">
         <Title text1="CONTATO" text2="CONOSCO" />
       </div>
 
@@ -35,22 +35,22 @@ const Contact = () => {
         >
           <h3 className="font-semibold text-lg text-gray-800">Nossa Loja</h3>
           <p className="text-gray-500 leading-relaxed">
-            7298 King Lodge <br />
-            North Elton, Illinois 78154
+            Localizada Totalmente Digital <br />
+            Fundada em Volta Redonda - Rio de Janeiro
           </p>
 
           <p>
-            Tel: <span className="text-gray-500">+1 800 123 1234</span>
+            Tel: <span className="text-gray-500">+55 24 99845-7985</span>
           </p>
           <p>
             Email:{" "}
-            <span className="text-gray-500">admin@forever.com</span>
+            <span className="text-gray-500">suporte.marima.loja@gmail.com</span>
           </p>
 
           <div className="mt-4">
             <h4 className="font-medium text-gray-800">Suporte Marima</h4>
             <p className="text-gray-500 mt-1">
-              Saiba mais sobre nosso suporte ao cliente!
+              Saiba Mais Sobre Nosso Canal de Suporte ao Cliente!
             </p>
           </div>
 
@@ -59,7 +59,7 @@ const Contact = () => {
             onClick={scrollToTop}
             className="mt-4 border border-black w-50 px-10 py-3 text-sm text-black hover:bg-black hover:text-white transition-all duration-300 rounded-md cursor-pointer"
           >
-            Redes Sociais
+            Saiba Mais
           </motion.button>
         </motion.div>
 

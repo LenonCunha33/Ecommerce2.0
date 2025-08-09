@@ -13,18 +13,13 @@ export const addProduct = async (req, res) => {
       bestseller,
     } = req.body;
 
-    // Check if images are availabe in req.files then it`ll store image in image variable
     const image1 = req.files.image1 && req.files.image1[0];
     const image2 = req.files.image2 && req.files.image2[0];
     const image3 = req.files.image3 && req.files.image3[0];
     const image4 = req.files.image4 && req.files.image4[0];
 
-    // Filter out undefined images
-    const images = [image1, image2, image3, image4].filter(
-      (image) => image !== undefined
-    );
+    const images = [image1, image2, image3, image4].filter(Boolean);
 
-    // Check if images are not available then it`ll throw an error
     if (images.length === 0) {
       throw new Error('Por favor, carregue pelo menos uma imagem');
     }
@@ -45,9 +40,10 @@ export const addProduct = async (req, res) => {
       category,
       subCategory,
       sizes: JSON.parse(sizes),
-      bestseller: bestseller === 'true' ? true : false,
+      bestseller: bestseller === 'true',
       image: imageUrl,
       date: Date.now(),
+      visible: true, // Campo padrão de visibilidade
     };
 
     const product = new ProductModel(productData);
@@ -92,7 +88,6 @@ export const removeProduct = async (req, res) => {
       });
     }
 
-    // await product.remove();
     res.status(200).json({
       success: true,
       message: 'Produto Removido Com Sucesso',
@@ -126,5 +121,55 @@ export const getSingleProduct = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+
+// NOVA: Atualizar informações do produto
+export const updateProduct = async (req, res) => {
+  try {
+    const { id, name, category, price } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'ID do produto é obrigatório' });
+    }
+
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      id,
+      { name, category, price },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: 'Produto não encontrado' });
+    }
+
+    res.json({ success: true, message: 'Produto atualizado com sucesso', product: updatedProduct });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// NOVA: Alterar visibilidade do produto
+export const toggleVisibility = async (req, res) => {
+  try {
+    const { id, visible } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'ID do produto é obrigatório' });
+    }
+
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      id,
+      { visible },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: 'Produto não encontrado' });
+    }
+
+    res.json({ success: true, message: 'Visibilidade atualizada', product: updatedProduct });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

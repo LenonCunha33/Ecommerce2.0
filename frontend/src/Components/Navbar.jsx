@@ -1,12 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { assets } from '../assets/assets';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ShopContext } from '../Context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const location = useLocation(); // Para verificar a rota atual
 
   const {
     getCartCount,
@@ -24,6 +25,8 @@ const Navbar = () => {
     setCartItems({});
     navigate('/login');
   };
+
+  const isOutletPage = location.pathname === '/outlet';
 
   return (
     <nav className="flex items-center justify-between py-5 px-4 sm:px-8 lg:px-20 bg-white shadow-sm sticky top-0 z-50">
@@ -60,32 +63,42 @@ const Navbar = () => {
       <div className="flex items-center gap-6 relative">
         {/* ÍCONE DE BUSCA + BARRA */}
         <div className="flex items-center gap-2">
-          <motion.img
-            src={assets.search_icon}
-            alt="Buscar"
-            className="w-5 cursor-pointer"
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowSearch(!showSearch)}
-          />
-          <AnimatePresence>
-            {showSearch && (
-              <motion.div
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: '160px', opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <input
-                  type="text"
-                  placeholder="Pesquisar..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="text-sm bg-transparent border-b border-gray-300 outline-none px-2 py-1 w-full text-gray-700 placeholder:text-gray-400"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isOutletPage ? (
+            <>
+              <motion.img
+                src={assets.search_icon}
+                alt="Buscar"
+                className="w-5 cursor-pointer"
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowSearch(!showSearch)}
+              />
+              <AnimatePresence>
+                {showSearch && (
+                  <motion.div
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: '160px', opacity: 1 }}
+                    exit={{ width: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <input
+                      type="text"
+                      placeholder="Pesquisar..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="text-sm bg-transparent border-b border-gray-300 outline-none px-2 py-1 w-full text-gray-700 placeholder:text-gray-400"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          ) : (
+            <img
+              src={assets.search_icon}
+              alt="Buscar"
+              className="w-5 cursor-pointer opacity-60"
+            />
+          )}
         </div>
 
         {/* ÍCONE PERFIL */}

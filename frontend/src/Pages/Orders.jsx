@@ -22,13 +22,16 @@ const Orders = () => {
       if (response.data.success) {
         let allOrderItem = [];
         response.data.orders.forEach((order) => {
-          order.items.forEach((item) => {
-            item.orderStatus = order.orderStatus;
-            item.payment = order.payment;
-            item.paymentMethod = order.paymentMethod;
-            item.date = order.date;
-            allOrderItem.push(item);
-          });
+          // Filtra ordens que não estão finalizadas
+          if (order.orderStatus !== "Finalizado") {
+            order.items.forEach((item) => {
+              item.orderStatus = order.orderStatus;
+              item.payment = order.payment;
+              item.paymentMethod = order.paymentMethod;
+              item.date = order.date;
+              allOrderItem.push(item);
+            });
+          }
         });
         setOrderData(allOrderItem);
       }

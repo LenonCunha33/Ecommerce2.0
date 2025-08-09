@@ -4,16 +4,18 @@ import {
   removeProduct,
   getSingleProduct,
   getListProducts,
+  updateProduct,      // importar a função nova
+  toggleVisibility,   // importar a função nova
 } from '../controllers/productController.js';
 import upload from '../middlewares/multer.js';
 import adminAuth from '../middlewares/adminAuth.js';
 
 const productRouter = express.Router();
 
-// /api/product
+// /api/product/list
 productRouter.get('/list', getListProducts);
 
-// /api/product
+// /api/product/add
 productRouter.post(
   '/add',
   adminAuth,
@@ -31,5 +33,11 @@ productRouter.post('/remove', adminAuth, removeProduct);
 
 // /api/product/single
 productRouter.post('/single', getSingleProduct);
+
+// NOVA ROTA - Atualizar produto
+productRouter.put('/update', adminAuth, updateProduct);
+
+// NOVA ROTA - Toggle visibilidade
+productRouter.patch('/toggle-visibility', adminAuth, toggleVisibility);
 
 export default productRouter;

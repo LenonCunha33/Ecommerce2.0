@@ -1,5 +1,5 @@
 import logo from './logo.png';
-import hero_img from './hero_img.png';
+import banner from './Banner.png';
 import cart_icon from './cart_icon.png';
 import bin_icon from './bin_icon.png';
 import dropdown_icon from './dropdown_icon.png';
@@ -11,16 +11,18 @@ import star_dull_icon from './star_dull_icon.png';
 import star_icon from './star_icon.png';
 import support_img from './support_img.png';
 import menu_icon from './menu_icon.png';
-import about_img from './about_img.png';
-import contact_img from './contact_img.png';
+import about_img from './about_img.jpeg';
+import contact_img from './contact_img.jpeg';
 import razorpay_logo from './razorpay_logo.png';
 import stripe_logo from './stripe_logo.png';
 import cross_icon from './cross_icon.png';
 import hero_video from './1.mp4';
+import suporte from './Suporte.jpeg'
+
 
 export const assets = {
   logo,
-  hero_img,
+  banner,
   cart_icon,
   dropdown_icon,
   exchange_icon,
@@ -37,5 +39,6 @@ export const assets = {
   razorpay_logo,
   stripe_logo,
   cross_icon,
-  hero_video
+  hero_video,
+  suporte
 };

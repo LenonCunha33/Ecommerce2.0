@@ -4,6 +4,7 @@ import { assets } from '../assets/assets';
 import Title from '../Components/Title';
 import ProductItem from '../Components/ProductItem';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 
 const Collection = () => {
   const { products, search } = useContext(ShopContext);
@@ -11,7 +12,18 @@ const Collection = () => {
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
+  const [typeFilter, setTypeFilter] = useState([]);
   const [sortType, setSortType] = useState('relevent');
+
+  const [searchParams] = useSearchParams();
+
+  // 📌 Inicializa filtros a partir da URL
+  useEffect(() => {
+    const typeFromURL = searchParams.get('type');
+    if (typeFromURL) {
+      setTypeFilter([typeFromURL]);
+    }
+  }, [searchParams]);
 
   const toggleCategory = (e) => {
     const value = e.target.value;
@@ -27,28 +39,45 @@ const Collection = () => {
       : setSubCategory((prev) => [...prev, value]);
   };
 
+  const toggleTypeFilter = (e) => {
+    const value = e.target.value;
+    typeFilter.includes(value)
+      ? setTypeFilter((prev) => prev.filter((item) => item !== value))
+      : setTypeFilter((prev) => [...prev, value]);
+  };
+
   const applyFilter = () => {
     if (!products || products.length === 0) return;
-    let productsCopy = [...products];
 
-    // 🔍 Filtrar por busca (sem depender de showSearch)
+    let productsCopy = products.filter((product) => product.visible !== false);
+
+    // 🔍 Busca
     if (search && search.trim() !== '') {
       productsCopy = productsCopy.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase().trim())
       );
     }
 
-    // 📂 Filtro por categoria
+    // 📂 Categoria
     if (category.length > 0) {
       productsCopy = productsCopy.filter((item) =>
         category.includes(item.category)
       );
     }
 
-    // 👖 Filtro por subcategoria
+    // 👖 Subcategoria
     if (subCategory.length > 0) {
       productsCopy = productsCopy.filter((item) =>
         subCategory.includes(item.subCategory)
+      );
+    }
+
+    // 🎯 Tipo (Top, Macacão, Short, etc.)
+    if (typeFilter.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        typeFilter.some((tipo) =>
+          item.name.toLowerCase().includes(tipo.toLowerCase())
+        )
       );
     }
 
@@ -65,7 +94,7 @@ const Collection = () => {
         sortedProducts.sort((a, b) => b.price - a.price);
         break;
       default:
-        applyFilter(); // Reaplica o filtro como "relevância"
+        applyFilter();
         return;
     }
     setFilterProducts(sortedProducts);
@@ -73,7 +102,7 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [category, subCategory, search, products]);
+  }, [category, subCategory, typeFilter, search, products]);
 
   useEffect(() => {
     sortProducts();
@@ -96,37 +125,38 @@ const Collection = () => {
           <img
             src={assets.dropdown_icon}
             alt="dropdown"
-            className={`h-3 sm:hidden transition-transform ${
-              showFilter ? 'rotate-90' : ''
-            }`}
+            className={`h-3 sm:hidden transition-transform ${showFilter ? 'rotate-90' : ''}`}
           />
         </p>
 
+        {/* Categoria */}
         <div
           className={`border border-gray-300 px-4 py-4 rounded-md mb-6 ${
             showFilter ? 'block' : 'hidden'
           } sm:block`}
         >
-          <p className="mb-3 font-semibold text-sm text-gray-700">CATEGORIAS</p>
+          <p className="mb-3 font-semibold text-sm text-gray-700">Categoria</p>
           <div className="flex flex-col gap-2 text-sm text-gray-600">
             <label className="flex gap-2 items-center">
               <input
                 type="checkbox"
                 value="Women"
                 onChange={toggleCategory}
+                checked={category.includes('Women')}
                 className="accent-black"
               />
-              FEMININO
+              Feminino
             </label>
           </div>
         </div>
 
+        {/* Subcategoria */}
         <div
-          className={`border border-gray-300 px-4 py-4 rounded-md ${
+          className={`border border-gray-300 px-4 py-4 rounded-md mb-6 ${
             showFilter ? 'block' : 'hidden'
           } sm:block`}
         >
-          <p className="mb-3 font-semibold text-sm text-gray-700">TIPOS</p>
+          <p className="mb-3 font-semibold text-sm text-gray-700">Categoria de Uso</p>
           <div className="flex flex-col gap-2 text-sm text-gray-600">
             {['Topwear', 'Bottomwear'].map((sub) => (
               <label key={sub} className="flex gap-2 items-center">
@@ -134,6 +164,7 @@ const Collection = () => {
                   type="checkbox"
                   value={sub}
                   onChange={toggleSubCategory}
+                  checked={subCategory.includes(sub)}
                   className="accent-black"
                 />
                 {sub === 'Topwear' ? 'Parte de Cima' : 'Parte de Baixo'}
@@ -141,9 +172,32 @@ const Collection = () => {
             ))}
           </div>
         </div>
+
+        {/* Tipo */}
+        <div
+          className={`border border-gray-300 px-4 py-4 rounded-md ${
+            showFilter ? 'block' : 'hidden'
+          } sm:block`}
+        >
+          <p className="mb-3 font-semibold text-sm text-gray-700">Segmento</p>
+          <div className="flex flex-col gap-2 text-sm text-gray-600">
+            {['Top', 'Macacão', 'Short', 'Calça'].map((tipo) => (
+              <label key={tipo} className="flex gap-2 items-center">
+                <input
+                  type="checkbox"
+                  value={tipo}
+                  onChange={toggleTypeFilter}
+                  checked={typeFilter.includes(tipo)}
+                  className="accent-black"
+                />
+                {tipo}
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Produtos */}
+      {/* Lista de Produtos */}
       <div className="flex-1">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
           <Title text1={'TODOS OS'} text2={'PRODUTOS'} />

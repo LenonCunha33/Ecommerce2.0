@@ -10,9 +10,10 @@ const productSchema = new mongoose.Schema({
   sizes: { type: Array, required: true },
   bestseller: { type: Boolean },
   date: { type: Number, required: true },
+  visible: { type: Boolean, default: true } // Novo campo de visibilidade
 });
 
 const ProductModel =
-  mongoose.model.product || mongoose.model('Product', productSchema);
+  mongoose.models.Product || mongoose.model('Product', productSchema);
 
 export default ProductModel;

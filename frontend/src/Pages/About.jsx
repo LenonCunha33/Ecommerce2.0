@@ -11,7 +11,7 @@ const About = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className='text-3xl text-center border-t pt-10'
+        className='text-3xl text-center mb-2 border-t pt-10'
       >
         <Title text1='SOBRE' text2='NÓS' />
       </motion.div>
@@ -33,20 +33,31 @@ const About = () => {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className='flex flex-col gap-6 text-gray-700 md:w-3/5 text-base leading-relaxed'
+          className='flex flex-col gap-2 text-gray-700 md:w-3/5 text-base leading-relaxed'
         >
-          <p>
-            A <span className='font-semibold text-gray-900'>Forever</span> nasceu da paixão por inovação e do desejo de revolucionar a forma como as pessoas fazem compras online. Nossa jornada começou com uma ideia simples: oferecer uma plataforma onde os clientes possam facilmente descobrir, explorar e comprar uma ampla variedade de produtos no conforto de suas casas.
-          </p>
-          <p>
-            Desde o nosso início, trabalhamos incansavelmente para reunir uma seleção diversificada de produtos de alta qualidade que atendem a todos os gostos e preferências. De moda e beleza a eletrônicos e itens essenciais para o lar, oferecemos uma extensa coleção de marcas e fornecedores confiáveis.
-          </p>
-          <div>
-            <h3 className='text-lg font-semibold text-gray-900 mb-2'>Nossa Missão</h3>
-            <p>
-              Capacitar os clientes com escolha, conveniência e confiança. Somos dedicados a proporcionar uma experiência de compra perfeita que supera as expectativas — desde a navegação e o pedido até a entrega e além.
-            </p>
-          </div>
+          
+<p>
+  A <span className="font-semibold text-gray-900">Marima</span> nasceu no ambiente digital com o propósito de simplificar e transformar a forma como você compra roupas fitness. Nossa história começou com uma visão clara: unir praticidade, agilidade na entrega e zero complicação na hora de receber seu produto, tudo sem abrir mão de estilo e autenticidade.
+</p>
+<p>
+  Desde o início, dedicamo-nos a criar peças que inspiram moda, funcionalidade e confiança. Cada item é pensado para valorizar sua autoestima e acompanhar seu ritmo, seja no treino ou no dia a dia. Mais do que roupas, entregamos motivação e bem-estar para mulheres que buscam se sentir bem por dentro e por fora.
+</p>
+<p>
+  Nossa coleção é desenvolvida com atenção aos detalhes, priorizando tecidos de alta performance, caimento perfeito e design moderno. Trabalhamos com processos ágeis para garantir que cada pedido chegue até você rapidamente, sem burocracias e com toda segurança. Queremos que a experiência de compra seja tão prazerosa quanto vestir a peça pela primeira vez.
+</p>
+<p>
+  Na Marima, acreditamos que moda fitness é mais do que vestir — é um estilo de vida. Por isso, estamos sempre inovando e acompanhando tendências, para que você tenha à disposição peças que expressem sua personalidade e incentivem sua jornada rumo a uma vida mais saudável e confiante.
+</p>
+<div>
+  <h3 className="text-lg font-semibold text-gray-900 mb-2">Nossa Missão</h3>
+  <p>
+    Inspirar saúde e autoestima através da moda fitness, oferecendo produtos de qualidade e uma experiência de compra moderna, acolhedora e eficiente — do clique à entrega.
+  </p>
+</div>
+
+
+
+          
         </motion.div>
       </div>
 
@@ -70,7 +81,7 @@ const About = () => {
           },
           {
             title: 'Comodidade',
-            text: 'Nosso site e aplicativo móvel fáceis de usar tornam simples navegar, comparar e comprar produtos em qualquer lugar.',
+            text: 'Nosso site com design simples facil de usar tornam simples navegar, comparar e comprar produtos em qualquer lugar.',
           },
           {
             title: 'Atendimento ao Cliente Excepcional',

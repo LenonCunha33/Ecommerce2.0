@@ -15,17 +15,18 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-
     cartData: {
       type: Object,
       default: {},
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
   },
   {
     minimize: false,
   }
 );
 
-const UserModel = mongoose.model.user || mongoose.model('User', userSchema);
+const UserModel = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default UserModel;

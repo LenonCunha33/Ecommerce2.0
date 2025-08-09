@@ -12,41 +12,69 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Controle para recuperação de senha
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+
+  // Preenche automaticamente o e-mail vindo da newsletter
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("newsletterEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      localStorage.removeItem("newsletterEmail"); // limpa para não ficar persistente
+    }
+  }, []);
+
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    try {
-      const endpoint =
-        currentState === "Cadastrar"
-          ? "/api/user/register"
-          : "/api/user/login";
 
-      const payload =
-        currentState === "Cadastrar"
-          ? { name, email, password }
-          : { email, password };
+    try {
+      let endpoint = "";
+      let payload = {};
+
+      if (isForgotPassword) {
+        endpoint = "/api/user/forgot-password";
+        payload = { email };
+      } else if (currentState === "Cadastrar") {
+        endpoint = "/api/user/register";
+        payload = { name, email, password };
+      } else {
+        endpoint = "/api/user/login";
+        payload = { email, password };
+      }
 
       const response = await axios.post(backendUrl + endpoint, payload);
 
-      const token = response.data.data.token;
       if (response.data.success) {
-        setToken(token);
-        localStorage.setItem("token", token);
-        toast.success(
-          currentState === "Cadastrar"
-            ? "Cadastro realizado com sucesso!"
-            : "Login realizado com sucesso!"
-        );
+        if (isForgotPassword) {
+          toast.success("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
+          setIsForgotPassword(false);
+          setCurrentState("Entrar");
+        } else {
+          const token = response.data.data.token;
+          setToken(token);
+          localStorage.setItem("token", token);
+          toast.success(
+            currentState === "Cadastrar"
+              ? "Cadastro realizado com sucesso!"
+              : "Login realizado com sucesso!"
+          );
+        }
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Erro ao autenticar");
+      toast.error(error.response?.data?.message || "Erro ao processar solicitação");
     }
   };
 
+  const handleNameChange = (e) => {
+    const value = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "");
+    setName(value);
+  };
+
   useEffect(() => {
-    if (token) {
+    if (token && !isForgotPassword) {
       navigate("/");
     }
   }, [token]);
@@ -59,29 +87,36 @@ const Login = () => {
       transition={{ duration: 0.4 }}
       className="max-w-md w-full px-6 py-10 mt-16 mx-auto bg-white rounded-lg shadow-md flex flex-col gap-5 text-gray-800"
     >
-      {/* Título com linha animada */}
+      {/* Título */}
       <motion.div
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ duration: 0.4 }}
         className="flex items-center gap-3 self-start"
       >
-        <h2 className="text-2xl font-semibold tracking-wide">{currentState}</h2>
+        <h2 className="text-2xl font-semibold tracking-wide">
+          {isForgotPassword
+            ? "Recuperar Senha"
+            : currentState === "Entrar"
+            ? "Entrar"
+            : "Cadastrar"}
+        </h2>
         <hr className="h-[2px] w-10 bg-gray-800 border-none" />
       </motion.div>
 
-      {/* Campos de entrada */}
+      {/* Campos */}
       <div className="flex flex-col gap-4">
-        {currentState === "Cadastrar" && (
+        {!isForgotPassword && currentState === "Cadastrar" && (
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleNameChange}
             placeholder="Nome completo"
             className="input"
             required
           />
         )}
+
         <input
           type="email"
           value={email}
@@ -90,46 +125,70 @@ const Login = () => {
           className="input"
           required
         />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Senha"
-          className="input"
-          required
-        />
+
+        {!isForgotPassword && (
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Senha"
+            className="input"
+            required
+          />
+        )}
       </div>
 
-      {/* Links de ação */}
+      {/* Links */}
       <div className="flex justify-between text-sm text-gray-600">
-        <button
-          type="button"
-          className="hover:underline transition"
-          onClick={() => toast.info("Função de recuperação ainda não implementada")}
-        >
-          Esqueceu a senha?
-        </button>
+        {!isForgotPassword && (
+          <button
+            type="button"
+            className="hover:underline transition"
+            onClick={() => {
+              setIsForgotPassword(true);
+              setCurrentState("Entrar");
+            }}
+          >
+            Esqueceu a senha?
+          </button>
+        )}
 
-        <button
-          type="button"
-          onClick={() =>
-            setCurrentState(currentState === "Entrar" ? "Cadastrar" : "Entrar")
-          }
-          className="hover:underline transition"
-        >
-          {currentState === "Entrar"
-            ? "Criar uma conta"
-            : "Já tenho uma conta"}
-        </button>
+        {!isForgotPassword && (
+          <button
+            type="button"
+            onClick={() =>
+              setCurrentState(currentState === "Entrar" ? "Cadastrar" : "Entrar")
+            }
+            className="hover:underline transition"
+          >
+            {currentState === "Entrar"
+              ? "Criar uma conta"
+              : "Já tenho uma conta"}
+          </button>
+        )}
+
+        {isForgotPassword && (
+          <button
+            type="button"
+            className="hover:underline transition"
+            onClick={() => setIsForgotPassword(false)}
+          >
+            Voltar ao login
+          </button>
+        )}
       </div>
 
-      {/* Botão principal */}
+      {/* Botão */}
       <motion.button
         whileTap={{ scale: 0.97 }}
         type="submit"
         className="bg-black hover:bg-gray-900 text-white font-medium py-2.5 rounded-lg w-full transition"
       >
-        {currentState === "Entrar" ? "Entrar" : "Cadastrar"}
+        {isForgotPassword
+          ? "Enviar E-mail de Recuperação"
+          : currentState === "Entrar"
+          ? "Entrar"
+          : "Cadastrar"}
       </motion.button>
     </motion.form>
   );
