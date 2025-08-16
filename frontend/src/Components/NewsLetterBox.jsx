@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import Title from "./Title";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ShopContext } from "../context/ShopContext"; // ajuste o caminho se necessário
+import { ShopContext } from "../Context/ShopContext"; // ajuste o caminho se necessário
 
 const NewsLetterBox = () => {
   const { token } = useContext(ShopContext); // token indica se o usuário está logado
