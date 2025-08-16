@@ -14,11 +14,11 @@ const titles = [
 ];
 
 const images = [
-  assets.suporte,
-  assets.suporte,
-  assets.suporte,
-  assets.suporte,
-  assets.suporte,
+  assets.macacao,
+  assets.top,
+  assets.calca,
+  assets.short,
+  assets.top,
 ];
 
 const prices = ['R$169,90', 'R$64,50', 'R$124,50', 'R$155,60'];

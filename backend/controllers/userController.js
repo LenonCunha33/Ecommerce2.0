@@ -130,6 +130,52 @@ export const adminLogin = async (req, res) => {
   }
 };
 
+// 📌 PEGAR PERFIL DO USUÁRIO LOGADO
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.body.userId).select('-password -resetPasswordToken -resetPasswordExpires');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+    }
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erro ao carregar perfil.' });
+  }
+};
+
+// 📌 ATUALIZAR PERFIL DO USUÁRIO
+export const updateUserProfile = async (req, res) => {
+  try {
+    const { nome, celular, telefone, whatsapp, email, senha, cpf, nascimento, sexo, promo } = req.body;
+
+    const user = await UserModel.findById(req.body.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+    }
+
+    user.name = nome || user.name;
+    user.celular = celular || user.celular;
+    user.telefone = telefone || user.telefone;
+    user.whatsapp = whatsapp || user.whatsapp;
+    user.email = email || user.email;
+    user.cpf = cpf || user.cpf;
+    user.nascimento = nascimento || user.nascimento;
+    user.sexo = sexo || user.sexo;
+    user.promo = promo ?? user.promo;
+
+    // Alterar senha se enviada
+    if (senha && senha.length >= 6) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(senha, salt);
+    }
+
+    const updatedUser = await user.save();
+    res.json({ success: true, message: 'Perfil atualizado com sucesso!', user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erro ao atualizar perfil.' });
+  }
+};
+
 // 📌 ESQUECI A SENHA
 export const forgotPassword = async (req, res) => {
   try {
@@ -176,7 +222,6 @@ export const resetPassword = async (req, res) => {
     const { password } = req.body;
     const { token } = req.params;
 
-    // 1. Validação inicial
     if (!token) {
       return res.status(400).json({ success: false, message: 'Token de redefinição ausente.' });
     }
@@ -188,10 +233,8 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    // 2. Cria hash do token
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    // 3. Procura usuário pelo token e validade
     const user = await UserModel.findOne({
       resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: Date.now() },
@@ -204,22 +247,18 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    // 4. Criptografa nova senha
-    const salt = await bcrypt.genSalt(12); // custo maior para mais segurança
+    const salt = await bcrypt.genSalt(12);
     user.password = await bcrypt.hash(password, salt);
 
-    // 5. Remove token de reset e expiração
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
 
-    // (Opcional) Invalida sessões anteriores
     if (user.sessionTokens) {
       user.sessionTokens = [];
     }
 
     await user.save();
 
-    // 6. Resposta final
     return res.json({
       success: true,
       message: 'Senha redefinida com sucesso. Faça login novamente.'
@@ -233,5 +272,18 @@ export const resetPassword = async (req, res) => {
       success: false,
       message: 'Erro interno no servidor. Tente novamente mais tarde.'
     });
+  }
+};
+
+// 📌 LISTAR TODOS OS USUÁRIOS (ADMIN)
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await UserModel.find({})
+      .select('-password -resetPasswordToken -resetPasswordExpires')
+      .sort({ createdAt: -1 });
+    
+    res.json({ success: true, users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erro ao carregar usuários' });
   }
 };

@@ -18,6 +18,10 @@ import stripe_logo from './stripe_logo.png';
 import cross_icon from './cross_icon.png';
 import hero_video from './1.mp4';
 import suporte from './Suporte.jpeg'
+import macacao from './02.jpg'
+import top from './04.jpg'
+import calca from './03.jpg'
+import short from './01.jpg'
 
 
 export const assets = {
@@ -40,5 +44,9 @@ export const assets = {
   stripe_logo,
   cross_icon,
   hero_video,
-  suporte
+  suporte,
+  macacao,
+  top,
+  calca,
+  short
 };

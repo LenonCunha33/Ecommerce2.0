@@ -20,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Verify from './Pages/Verify';
 import ResetPassword from './Pages/ResetPassword';
 import { AnimatePresence, motion } from 'framer-motion';
+import Dashboard from './Pages/Dashboard';
 
 function App() {
   const [showGoogleLoader, setShowGoogleLoader] = useState(false);
@@ -67,6 +68,7 @@ function App() {
               <Route path="/verify" element={<Verify />} />
               <Route path="/entrega" element={<Entrega />} />
               <Route path="/privacidade" element={<Privacidade />} />
+              <Route path="/perfil" element={<Dashboard />} />
             </Routes>
 
             <Footer />

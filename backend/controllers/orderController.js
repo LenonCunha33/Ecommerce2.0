@@ -1,7 +1,12 @@
 import orderModel from '../models/orderModel.js';
 import UserModel from '../models/userModel.js';
 import Stripe from 'stripe';
-import Razorpay from 'razorpay';
+
+
+
+
+
+
 
 // global variables
 const currency = 'aed';
@@ -9,6 +14,8 @@ const deliveryCharges = 10; // Delivery charges in AED
 
 // Stripe payment configuration
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+
 
 // Place order using COD method --> /api/order/place
 export const placeOrderCOD = async (req, res) => {
@@ -76,7 +83,7 @@ export const placeOrderStripe = async (req, res) => {
       price_data: {
         currency: currency,
         product_data: {
-          name: 'Delivery Charges',
+          name: 'Taxa de Entrega',
         },
         unit_amount: deliveryCharges * 100,
       },
@@ -102,6 +109,7 @@ export const placeOrderStripe = async (req, res) => {
     });
   }
 };
+
 
 // verify Stripe payment success or failure --> /api/order/verifyStripe
 export const verifyStrpePayment = async (req, res) => {
@@ -132,9 +140,6 @@ export const verifyStrpePayment = async (req, res) => {
     });
   }
 };
-
-// Place order using Razorpay method --> /api/order/razorpay
-export const placeOrderRazorpay = async (req, res) => {};
 
 // Get all order data for admin panel --> /api/order/list
 export const getAllOrders = async (req, res) => {

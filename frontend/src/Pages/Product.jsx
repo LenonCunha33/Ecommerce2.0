@@ -8,17 +8,23 @@ import { motion } from "framer-motion";
 const Product = () => {
   const { productId } = useParams();
   const { products, currency, addToCart } = useContext(ShopContext);
+
   const [productsData, setProductsData] = useState(null);
-  const [image, setImage] = useState("");
+  // Usamos índice ao invés da string da imagem para estabilidade
+  const [activeIndex, setActiveIndex] = useState(0);
   const [size, setSize] = useState("");
 
+  // Atualiza produto e reseta a imagem ativa
   useEffect(() => {
     const foundProduct = products.find((p) => p._id === productId);
     if (foundProduct) {
       setProductsData(foundProduct);
-      setImage(foundProduct.image[0]);
+      setActiveIndex(0);
     }
   }, [productId, products]);
+
+  const images = productsData?.image ?? [];
+  const mainSrc = images[activeIndex] || "";
 
   return productsData ? (
     <motion.div
@@ -30,34 +36,38 @@ const Product = () => {
       {/* Produto */}
       <div className="flex flex-col lg:flex-row gap-14">
         {/* Imagens */}
-        <div className="flex flex-col lg:flex-row gap-6 w-full lg:w-1/2">
-          {/* Miniaturas */}
-          <div className="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto">
-            {productsData.image.map((item, index) => (
-              <motion.img
-                whileHover={{ scale: 1.05 }}
-                key={index}
-                src={item}
-                alt="produto"
-                onClick={() => setImage(item)}
-                className={`w-24 h-24 object-cover cursor-pointer border rounded-md ${
-                  image === item ? "border-orange-500" : "border-gray-200"
-                }`}
-              />
-            ))}
-          </div>
+<div className="flex flex-col lg:flex-row gap-6 w-full lg:w-1/2">
+  {/* Coluna de Miniaturas */}
+  <div className="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto lg:max-h-[600px] w-full lg:w-28 flex-none">
+    {images.map((src, index) => (
+      <motion.img
+        whileHover={{ scale: 1.05 }}
+        key={`${src}-${index}`}
+        src={src}
+        alt={`Miniatura ${index + 1} de ${productsData.name}`}
+        onClick={() => setActiveIndex(index)}
+        loading="lazy"
+        draggable={false}
+        className={[
+          "w-24 h-24 object-cover cursor-pointer border rounded-md",
+          "flex-none shrink-0",
+          activeIndex === index ? "border-orange-500" : "border-gray-200",
+        ].join(" ")}
+      />
+    ))}
+  </div>
 
-          {/* Imagem Principal */}
-          <motion.img
-            key={image}
-            initial={{ opacity: 0.6, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
-            src={image}
-            alt="produto"
-            className="w-full max-h-[600px] object-cover rounded-2xl shadow-lg"
-          />
-        </div>
+  {/* Imagem Principal */}
+  <motion.img
+    initial={{ opacity: 0.6, scale: 0.98 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.4 }}
+    src={mainSrc}
+    alt={productsData.name}
+    draggable={false}
+    className="flex-1 max-w-[500px] max-h-[600px] object-cover rounded-2xl shadow-lg mx-auto"
+  />
+</div>
 
         {/* Detalhes */}
         <div className="w-full lg:w-1/2 space-y-8">
@@ -121,9 +131,7 @@ const Product = () => {
       {/* Tabs Descrição / Avaliação */}
       <div className="mt-16">
         <div className="flex border-b text-lg font-medium">
-          <button className="px-6 py-4 border-b-2 border-black">
-            Descrição
-          </button>
+          <button className="px-6 py-4 border-b-2 border-black">Descrição</button>
           <button className="px-6 py-4 text-gray-500 hover:text-black">
             Avaliações (122)
           </button>

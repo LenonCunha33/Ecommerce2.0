@@ -3,30 +3,29 @@ import {
   getAllOrders,
   getUserOrders,
   placeOrderCOD,
-  placeOrderRazorpay,
   placeOrderStripe,
   updateOrderStatus,
   verifyStrpePayment,
 } from '../controllers/orderController.js';
 
-import  adminAuth from '../middlewares/adminAuth.js';
+import adminAuth from '../middlewares/adminAuth.js';
 import { userAuth } from '../middlewares/userAuth.js';
 
 const orderRouter = express.Router();
 
-// Admin features
+// Admin
 orderRouter.use('/list', adminAuth, getAllOrders);
 orderRouter.use('/status', adminAuth, updateOrderStatus);
 
-// Place order / Payment features
+// Payments
 orderRouter.use('/place', userAuth, placeOrderCOD);
 orderRouter.use('/stripe', userAuth, placeOrderStripe);
-orderRouter.use('/razorpay', placeOrderRazorpay);
 
-// User features
+
+// User
 orderRouter.use('/userorders', userAuth, getUserOrders);
 
-// verify payment
+// Verify
 orderRouter.use('/verifyStripe', userAuth, verifyStrpePayment);
 
 export default orderRouter;

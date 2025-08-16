@@ -19,6 +19,11 @@ const navItems = [
     icon: assets.order_icon,
     label: 'Pedidos',
   },
+  {
+    to: '/user', // 🔹 rota para User.jsx
+    icon: assets.user_icon || assets.order_icon, // troque por um ícone de usuário se tiver
+    label: 'Usuários',
+  },
 ];
 
 const Sidebar = () => {

@@ -1,3 +1,4 @@
+// imports
 import { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import CartTotal from "../Components/CartTotal";
@@ -39,19 +40,20 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    console.log("Método de pagamento selecionado:", paymentMethod);
 
     try {
+      // Monta lista de itens do pedido
       const orderItems = [];
-
-      for (const items in cartItems) {
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
+      for (const productId in cartItems) {
+        for (const size in cartItems[productId]) {
+          if (cartItems[productId][size] > 0) {
             const itemInfo = structuredClone(
-              products.find((product) => product._id === items)
+              products.find((product) => product._id === productId)
             );
             if (itemInfo) {
-              itemInfo.size = item;
-              itemInfo.quantity = cartItems[items][item];
+              itemInfo.size = size;
+              itemInfo.quantity = cartItems[productId][size];
               orderItems.push(itemInfo);
             }
           }
@@ -64,27 +66,28 @@ const PlaceOrder = () => {
         amount: getCartAmount() + delivery_fee,
       };
 
-      const endpoint =
-        paymentMethod === "stripe"
-          ? `${backendUrl}/api/order/stripe`
-          : `${backendUrl}/api/order/place`;
-
-      const response = await axios.post(endpoint, orderData, {
-        headers: { token },
-      });
-
-      if (response.data.success) {
-        if (paymentMethod === "stripe") {
-          window.location.replace(response.data.session_url);
-        } else {
+      if (paymentMethod === "stripe") {
+        console.log("Enviando pedido para Stripe...");
+        const res = await axios.post(`${backendUrl}/api/order/stripe`, orderData, {
+          headers: { token },
+        });
+        console.log("Resposta Stripe:", res.data);
+        if (res.data.success) {
+          window.location.replace(res.data.session_url);
+        }
+      } else {
+        console.log("Finalizando pedido como pagamento na entrega (COD)...");
+        const res = await axios.post(`${backendUrl}/api/order/place`, orderData, {
+          headers: { token },
+        });
+        console.log("Resposta COD:", res.data);
+        if (res.data.success) {
           setCartItems({});
           navigate("/pedidos");
         }
-      } else {
-        toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Erro ao finalizar pedido:", error);
       toast.error(error.response?.data?.message || "Erro ao finalizar pedido");
     }
   };
@@ -196,7 +199,7 @@ const PlaceOrder = () => {
         />
       </div>
 
-      {/* ----------- Lado Direito - Total e Pagamento ----------- */}
+      {/* ----------- Lado Direito ----------- */}
       <div className="flex-1">
         <div className="mb-6">
           <CartTotal />
@@ -205,8 +208,8 @@ const PlaceOrder = () => {
         <div className="mt-10 space-y-4">
           <Title text1={"MÉTODO DE"} text2={"PAGAMENTO"} />
 
-          {/* Métodos de Pagamento */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            {/* Stripe */}
             <div
               onClick={() => setPaymentMethod("stripe")}
               className="flex items-center gap-3 border p-3 rounded-lg shadow-sm cursor-pointer hover:shadow transition"
@@ -219,6 +222,7 @@ const PlaceOrder = () => {
               <img src={assets.stripe_logo} alt="Stripe" className="h-6" />
             </div>
 
+            {/* COD */}
             <div
               onClick={() => setPaymentMethod("cod")}
               className="flex items-center gap-3 border p-3 rounded-lg shadow-sm cursor-pointer hover:shadow transition"
@@ -234,7 +238,6 @@ const PlaceOrder = () => {
             </div>
           </div>
 
-          {/* Botão de Finalizar */}
           <div className="text-end pt-6">
             <motion.button
               whileTap={{ scale: 0.97 }}
