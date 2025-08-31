@@ -1,112 +1,170 @@
-import { assets } from '../assets/assets';
-import NewsLetterBox from '../Components/NewsLetterBox';
-import Title from '../Components/Title';
-import { motion } from 'framer-motion';
+"use client";
+import { assets } from "../assets/assets";
+import NewsLetterBox from "../Components/NewsLetterBox";
+import Title from "../Components/Title";
+import { motion } from "framer-motion";
 
 const About = () => {
   return (
-    <div className='px-4 sm:px-8 lg:px-20 space-y-20'>
+    <div className="px-4 sm:px-8 lg:px-20 space-y-24 text-gray-700">
       {/* Título principal */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className='text-3xl text-center mb-2 border-t pt-10'
+        transition={{ duration: 0.6 }}
+        className="text-center mb-8"
       >
-        <Title text1='SOBRE' text2='NÓS' />
+        <Title text1="SOBRE" text2="NÓS" />
+        <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+          Conheça a <span className="font-semibold text-gray-900">Marima</span>, 
+          um ecommerce especializado em <strong>moda fitness</strong> que une 
+          estilo, tecnologia e inovação para transformar sua experiência de compra online.
+        </p>
       </motion.div>
 
       {/* Sessão principal - imagem + descrição */}
-      <div className='flex flex-col md:flex-row gap-10 items-center'>
+      <div className="flex flex-col md:flex-row gap-10 items-center">
         <motion.img
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
           src={assets.about_img}
-          alt='Sobre nós'
-          className='w-full md:max-w-md rounded-xl shadow-md object-cover'
+          alt="Equipe da Marima - moda fitness"
+          className="w-full md:max-w-md rounded-2xl shadow-lg object-cover"
         />
 
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className='flex flex-col gap-2 text-gray-700 md:w-3/5 text-base leading-relaxed'
+          className="flex flex-col gap-4 md:w-3/5 text-base sm:text-lg leading-relaxed"
         >
-          
-<p>
-  A <span className="font-semibold text-gray-900">Marima</span> nasceu no ambiente digital com o propósito de simplificar e transformar a forma como você compra roupas fitness. Nossa história começou com uma visão clara: unir praticidade, agilidade na entrega e zero complicação na hora de receber seu produto, tudo sem abrir mão de estilo e autenticidade.
-</p>
-<p>
-  Desde o início, dedicamo-nos a criar peças que inspiram moda, funcionalidade e confiança. Cada item é pensado para valorizar sua autoestima e acompanhar seu ritmo, seja no treino ou no dia a dia. Mais do que roupas, entregamos motivação e bem-estar para mulheres que buscam se sentir bem por dentro e por fora.
-</p>
-<p>
-  Nossa coleção é desenvolvida com atenção aos detalhes, priorizando tecidos de alta performance, caimento perfeito e design moderno. Trabalhamos com processos ágeis para garantir que cada pedido chegue até você rapidamente, sem burocracias e com toda segurança. Queremos que a experiência de compra seja tão prazerosa quanto vestir a peça pela primeira vez.
-</p>
-<p>
-  Na Marima, acreditamos que moda fitness é mais do que vestir — é um estilo de vida. Por isso, estamos sempre inovando e acompanhando tendências, para que você tenha à disposição peças que expressem sua personalidade e incentivem sua jornada rumo a uma vida mais saudável e confiante.
-</p>
-<div>
-  <h3 className="text-lg font-semibold text-gray-900 mb-2">Nossa Missão</h3>
-  <p>
-    Inspirar saúde e autoestima através da moda fitness, oferecendo produtos de qualidade e uma experiência de compra moderna, acolhedora e eficiente — do clique à entrega.
-  </p>
-</div>
+          <p>
+            A <span className="font-semibold text-gray-900">Marima</span> nasceu 
+            no ambiente digital com o propósito de simplificar a forma como você 
+            compra roupas fitness online. Nossa visão sempre foi clara: unir{" "}
+            <strong>praticidade</strong>, <strong>rapidez na entrega</strong> e 
+            <strong>segurança</strong> em cada pedido.
+          </p>
+          <p>
+            Desenvolvemos coleções que unem <strong>tecnologia têxtil</strong>, 
+            caimento perfeito e design moderno, criando peças que valorizam a 
+            autoestima e acompanham sua rotina — seja no treino ou no dia a dia.
+          </p>
+          <p>
+            Mais do que um ecommerce, somos uma marca que acredita no poder da 
+            moda fitness como um <strong>estilo de vida saudável e inspirador</strong>.
+          </p>
 
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Nossa Missão
+            </h3>
+            <p>
+              Inspirar saúde e confiança através da moda fitness, oferecendo 
+              produtos de alta qualidade e uma experiência de compra digital 
+              moderna, acolhedora e eficiente.
+            </p>
+          </div>
 
-
-          
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Nossa Visão
+            </h3>
+            <p>
+              Ser referência nacional em <strong>ecommerce fitness</strong>, 
+              entregando inovação, acessibilidade e autenticidade em cada coleção.
+            </p>
+          </div>
         </motion.div>
       </div>
 
-      {/* Título seção motivos */}
+      {/* Motivos */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6 }}
         viewport={{ once: true }}
-        className='text-3xl text-center'
+        className="text-center"
       >
-        <Title text1='POR QUE' text2='ESCOLHER A GENTE' />
+        <Title text1="POR QUE" text2="ESCOLHER A GENTE" />
       </motion.div>
 
-      {/* Cards de motivo */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-6 text-sm'>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           {
-            title: 'Garantia de Qualidade',
-            text: 'Temos orgulho em oferecer apenas produtos da mais alta qualidade, que atendem aos nossos rigorosos padrões de durabilidade, desempenho e valor.',
+            title: "Qualidade Garantida",
+            text: "Peças com tecidos tecnológicos, resistentes e projetados para alta performance.",
           },
           {
-            title: 'Comodidade',
-            text: 'Nosso site com design simples facil de usar tornam simples navegar, comparar e comprar produtos em qualquer lugar.',
+            title: "Compra Segura e Fácil",
+            text: "Navegação intuitiva, checkout otimizado e diversas opções de pagamento.",
           },
           {
-            title: 'Atendimento ao Cliente Excepcional',
-            text: 'Nossa equipe dedicada de atendimento ao cliente está disponível 24 horas por dia para ajudar com qualquer dúvida ou problema que você possa ter.',
+            title: "Atendimento Humanizado",
+            text: "Nossa equipe está disponível 24/7 para ajudar e oferecer suporte rápido.",
           },
         ].map((item, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.2 }}
+            transition={{ duration: 0.5, delay: index * 0.2 }}
             viewport={{ once: true }}
-            className='bg-white border border-gray-200 rounded-lg shadow-md p-6 flex flex-col gap-4 hover:shadow-xl transition-shadow duration-300'
+            className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col gap-4 hover:shadow-xl transition-all duration-300"
           >
-            <h4 className='font-bold text-gray-800 text-base'>{item.title}</h4>
-            <p className='text-gray-600'>{item.text}</p>
+            <h4 className="font-bold text-gray-800 text-lg">{item.title}</h4>
+            <p className="text-gray-600 text-sm sm:text-base">{item.text}</p>
           </motion.div>
         ))}
       </div>
+
+      {/* FAQ */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="space-y-8"
+      >
+        <Title text1="PERGUNTAS" text2="FREQUENTES" />
+
+        <div className="space-y-4 max-w-3xl mx-auto">
+          {[
+            {
+              q: "Qual o prazo de entrega?",
+              a: "Trabalhamos com envios ágeis e a maioria dos pedidos chega entre 2 e 5 dias úteis.",
+            },
+            {
+              q: "Posso trocar ou devolver meu pedido?",
+              a: "Sim! Garantimos até 7 dias para devoluções sem custo adicional.",
+            },
+            {
+              q: "Os produtos possuem garantia?",
+              a: "Sim, todos os produtos têm garantia contra defeitos de fabricação.",
+            },
+          ].map((item, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: idx * 0.2 }}
+              className="p-4 border border-gray-200 rounded-xl bg-gray-50 hover:bg-gray-100 transition"
+            >
+              <h4 className="font-semibold text-gray-800">{item.q}</h4>
+              <p className="text-sm text-gray-600 mt-1">{item.a}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
 
       {/* Newsletter */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
         <NewsLetterBox />

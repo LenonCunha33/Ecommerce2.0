@@ -1,101 +1,145 @@
-import React, { useEffect, useState } from 'react';
-import { assets } from '../assets/assets';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import Title from './Title';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { assets } from "../assets/assets";
+import { useNavigate } from "react-router-dom";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: "easeOut", delay: i * 0.2 },
+  }),
+};
 
 const Banner = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const [hover, setHover] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1024);
+    };
+
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
   }, []);
 
   return (
-    <motion.section
-      className="relative min-h-[70vh] w-full overflow-hidden rounded-3xl border border-gray-300 bg-black group shadow-xl"
-      aria-label="Destaque de Novidades"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
+    <section
+      className="w-full flex flex-col overflow-hidden bg-[#FAFAFA]"
+      aria-label="Seção Banner Destaque"
     >
-      {/* Imagem de fundo */}
-      <motion.img
-        key="hero-image"
-        className={`absolute top-0 left-0 w-full h-full object-cover transition-all duration-700 ${
-          hover ? 'blur-sm scale-105' : ''
-        }`}
-        src={assets.banner}
-        alt="Banner principal"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      />
+      <div className="relative w-full h-[600px] flex items-center justify-center rounded-3xl overflow-hidden shadow-xl border border-gray-200">
+        
+        {/* Imagem Desktop */}
+        {!isMobile && (
+          <motion.div
+            initial={{ scale: 1.2 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute inset-0 hidden md:block"
+          >
+            <img
+              src={assets.banner}
+              alt="Banner Desktop"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+          </motion.div>
+        )}
 
-      {/* Texto central no hover */}
-      <motion.div
-        className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: hover ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div
-          initial={{ y: 20 }}
-          animate={{ y: 0 }}
-          transition={{ delay: 0.1 }}
+        {/* Imagem Mobile */}
+        {isMobile && (
+          <motion.div
+            initial={{ scale: 1.2 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute inset-0 block md:hidden"
+          >
+            <img
+              src={assets.Mobile2}
+              alt="Banner Mobile"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+          </motion.div>
+        )}
+
+        {/* Texto Central - Moda Fitness */}
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 0.4, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          whileHover={{ scale: 1.05, opacity: 0.5 }}
+          className="absolute z-10 text-[60px] md:text-[120px] lg:text-[220px] font-extrabold text-white/40 leading-none select-none text-center"
         >
-          <Title text1="Vista o futuro" text2="com autenticidade" />
+          Moda Fitness
+        </motion.h1>
+
+        {/* Título Performance + Conforto */}
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className={`absolute z-20 ${
+            isMobile || isTablet
+              ? "top-1/4 left-1/2 -translate-x-1/2 text-center"
+              : "top-10 left-155 -translate-x-1/2 text-center"
+          }`}
+        >
+          <motion.h2
+            custom={0}
+            variants={fadeUp}
+            className="text-2xl font-light md:text-4xl font-light lg:text-5xl  text-white drop-shadow-lg"
+          >
+            Performance &
+          </motion.h2>
+          <motion.h2
+            custom={1}
+            variants={fadeUp}
+            className="text-2xl font-light md:text-4xl font-light lg:text-5xl  text-white drop-shadow-lg"
+          >
+            Equilíbrio
+          </motion.h2>
         </motion.div>
 
+        {/* Texto descritivo */}
         <motion.p
-          className="text-white text-base sm:text-lg md:text-xl max-w-xl mb-6 drop-shadow-md"
-          initial={{ y: 30 }}
-          animate={{ y: 0 }}
-          transition={{ delay: 0.2 }}
+          custom={2}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className={`absolute text-sm md:text-lg max-w-xs text-white/90 drop-shadow-lg z-20 ${
+            isMobile || isTablet
+              ? "bottom-24 left-1/2 -translate-x-1/2 text-center"
+              : "bottom-12 right-112 text-right"
+          }`}
         >
-          Explore o Melhor da Coleção Moda e Atitude.
+          Um equilíbrio perfeito entre conforto, qualidade e versatilidade,
+          acompanhando você do treino às atividades do dia a dia com sofisticação.
         </motion.p>
 
+        {/* Botão CTA */}
         <motion.button
-          onClick={() => navigate('/outlet')}
-          whileHover={{ scale: 1.05 }}
+          onClick={() => navigate("/outlet")}
+          whileHover={{ scale: 1.1, backgroundColor: "#f3f3f3" }}
           whileTap={{ scale: 0.95 }}
-          className="bg-white text-black font-medium px-6 py-2 rounded-full shadow-lg transition-all duration-300 hover:bg-gray-100 cursor-pointer"
+          className={`absolute bg-white text-black font-medium px-6 py-2 rounded-full shadow-lg transition-all duration-300 cursor-pointer z-20 ${
+            isMobile || isTablet
+              ? "bottom-10 left-1/2 -translate-x-1/2"
+              : "bottom-10 right-10"
+          }`}
         >
           Explorar
         </motion.button>
-      </motion.div>
-
-      {/* Texto no canto inferior direito (desktop) */}
-      {!hover && (
-        <motion.div
-          className="absolute bottom-6 right-4 sm:bottom-10 sm:right-10 text-right text-white max-w-sm z-10"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: 'easeOut', delay: 0.6 }}
-        >
-          <p className="text-sm sm:text-base font-light tracking-wider uppercase mb-2 opacity-80">
-            Tendência 2025
-          </p>
-          <Title text1="Vista o Futuro" text2="E Não Erre" />
-          <p className="mt-2 text-sm sm:text-base opacity-90 drop-shadow">
-            Navegue Pelos Queridinhos de Todos
-          </p>
-        </motion.div>
-      )}
-
-      {/* Overlay para escurecer imagem em mobile */}
-      {isMobile && (
-        <div className="absolute inset-0 bg-black/60 z-0" />
-      )}
-    </motion.section>
+      </div>
+    </section>
   );
 };
 

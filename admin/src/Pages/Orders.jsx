@@ -59,62 +59,93 @@ const Orders = ({ token }) => {
     buscarPedidos();
   }, [token]);
 
-  // Filtrar pedidos pelo status selecionado
   const pedidosFiltrados =
     statusFiltro === 'Todos'
       ? orders
       : orders.filter((order) => order.orderStatus === statusFiltro);
 
+  // Variants para animação escalonada
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15, ease: 'easeOut' },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 25 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
+
   return (
-    <section className="px-4 sm:px-6 md:px-12 lg:px-20 py-10">
-      <motion.h2
-        className="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800"
+    <section
+      className="px-4 sm:px-6 md:px-12 mt-10 lg:px-20 py-10 max-w-7xl mx-auto"
+      aria-label="Lista de pedidos recentes"
+    >
+      <motion.h1
+        className="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-6 text-center text-gray-900 tracking-tight"
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        Pedidos Recentes
-      </motion.h2>
+        Acompanhe Seus Pedidos em Tempo Real
+      </motion.h1>
 
       {/* Barra de filtros */}
       <motion.div
-        className="flex flex-wrap gap-3 justify-center mb-8"
+        className="flex flex-wrap gap-3 justify-center mb-10"
         initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+        transition={{ duration: 0.4 }}
       >
         {statusOpcoes.map((status) => (
-          <button
+          <motion.button
             key={status}
             onClick={() => setStatusFiltro(status)}
-            className={`px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200 ${
+            aria-label={`Filtrar por ${status}`}
+            whileHover={{ scale: 1.07 }}
+            whileTap={{ scale: 0.95 }}
+            className={`px-4 py-2 rounded-full text-sm sm:text-base font-medium border transition-all duration-300 ${
               statusFiltro === status
-                ? 'bg-black text-white border-black shadow-md scale-105'
+                ? 'bg-gradient-to-r from-black to-gray-800 text-white border-black shadow-lg'
                 : 'bg-white text-gray-700 border-gray-300 hover:border-black hover:text-black'
             }`}
           >
             {status}
-          </button>
+          </motion.button>
         ))}
       </motion.div>
 
       {/* Lista de pedidos */}
-      <div className="space-y-6">
+      <motion.div
+        className="space-y-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
         {pedidosFiltrados.length === 0 ? (
-          <p className="text-center text-gray-500">Nenhum pedido encontrado para este status.</p>
+          <motion.p
+            className="text-center text-gray-500 text-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            Nenhum pedido encontrado para este status.
+          </motion.p>
         ) : (
           pedidosFiltrados.map((order, index) => (
-            <motion.div
+            <motion.article
               key={index}
-              className="grid grid-cols-1 md:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-4 items-start border border-gray-200 rounded-xl shadow-sm bg-white p-4 sm:p-6 text-xs sm:text-sm text-gray-700"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              viewport={{ once: true }}
+              variants={itemVariants}
+              className="grid grid-cols-1 md:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-4 items-start border border-gray-200 rounded-2xl shadow-md bg-white p-4 sm:p-6 text-xs sm:text-sm text-gray-700 hover:shadow-lg transition"
             >
               {/* Ícone */}
               <div className="flex justify-center items-start">
-                <img className="w-10 sm:w-12" src={assets.parcel_icon} alt="Ícone de pacote" />
+                <img
+                  className="w-10 sm:w-12"
+                  src={assets.parcel_icon}
+                  alt="Ícone ilustrativo de pacote"
+                />
               </div>
 
               {/* Itens e endereço */}
@@ -123,18 +154,18 @@ const Orders = ({ token }) => {
                   {order.items.map((item, idx) => (
                     <p className="text-gray-800" key={idx}>
                       {item.name} x {item.quantity}{' '}
-                      <span className="text-gray-500">{item.size}</span>
+                      <span className="text-gray-500">({item.size})</span>
                     </p>
                   ))}
                 </div>
                 <p className="mt-3 mb-2 font-medium text-gray-900">
                   {order.address.firstName} {order.address.lastName}
                 </p>
-                <div className="text-gray-600">
+                <div className="text-gray-600 leading-snug">
                   <p>{order.address.street},</p>
                   <p>
-                    {order.address.city}, {order.address.state}, {order.address.country},{' '}
-                    {order.address.zipcode}
+                    {order.address.city}, {order.address.state},{' '}
+                    {order.address.country}, {order.address.zipcode}
                   </p>
                   <p className="mt-1">{order.address.phone}</p>
                 </div>
@@ -148,7 +179,7 @@ const Orders = ({ token }) => {
                   Status do Pagamento:{' '}
                   <span
                     className={
-                      order.payment ? 'text-green-600 font-semibold' : 'text-red-500'
+                      order.payment ? 'text-green-600 font-semibold' : 'text-red-500 font-semibold'
                     }
                   >
                     {order.payment ? 'Pago' : 'Pendente'}
@@ -168,7 +199,8 @@ const Orders = ({ token }) => {
                 <select
                   onChange={(event) => atualizarStatusPedido(event, order._id)}
                   value={order.orderStatus}
-                  className="w-full p-2 rounded-md border border-gray-300 bg-white text-sm sm:text-base font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer transition"
+                  aria-label={`Alterar status do pedido ${order._id}`}
+                  className="w-full p-2 rounded-lg border border-gray-300 bg-white text-sm sm:text-base font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer transition"
                 >
                   <option value="Pedido Realizado">Pedido Realizado</option>
                   <option value="Embalando">Embalando</option>
@@ -178,10 +210,10 @@ const Orders = ({ token }) => {
                   <option value="Finalizado">Finalizado</option>
                 </select>
               </div>
-            </motion.div>
+            </motion.article>
           ))
         )}
-      </div>
+      </motion.div>
     </section>
   );
 };

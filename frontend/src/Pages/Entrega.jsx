@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 
@@ -23,6 +24,75 @@ export default function Entrega() {
     visible: { opacity: 1, y: 0 },
   };
 
+  const sections = [
+    {
+      id: "introducao",
+      title: "1. Introdução",
+      content:
+        "Esta Política de Entrega estabelece as condições aplicáveis às entregas realizadas pela Marima Moda Fitness em território nacional. Ao efetuar uma compra, o cliente declara estar ciente e de acordo com os prazos, condições e responsabilidades aqui descritos.",
+    },
+    {
+      id: "prazos",
+      title: "2. Prazos de Entrega",
+      content:
+        "O prazo para entrega é de até 30 (trinta) dias úteis, contados a partir da confirmação do pagamento. Os prazos podem variar conforme a localidade, disponibilidade do produto e modalidade de envio selecionada.",
+    },
+    {
+      id: "modalidades",
+      title: "3. Modalidades de Envio",
+      content:
+        "As entregas são realizadas por transportadoras parceiras e Correios. O cliente poderá escolher a modalidade de envio no momento da compra, considerando prazos e valores disponíveis para seu endereço.",
+    },
+    {
+      id: "rastreamento",
+      title: "4. Rastreamento",
+      content:
+        "Após a postagem do pedido, será enviado ao cliente um código de rastreamento para acompanhamento da entrega em tempo real pelo site da transportadora ou dos Correios.",
+    },
+    {
+      id: "atrasos",
+      title: "5. Atrasos",
+      content:
+        "Eventuais atrasos decorrentes de greves, fenômenos naturais, acidentes, períodos de alta demanda ou situações alheias ao nosso controle não caracterizam descumprimento contratual. Nestes casos, o cliente será comunicado e acompanhado pela nossa equipe de suporte.",
+    },
+    {
+      id: "responsabilidade",
+      title: "6. Responsabilidade da Entrega",
+      content:
+        "É responsabilidade do cliente informar corretamente o endereço de entrega. Caso haja erro ou impossibilidade de entrega por endereço incorreto, será necessário o pagamento de um novo frete. A transportadora é responsável pela integridade do pacote durante o trajeto.",
+    },
+    {
+      id: "tentativas",
+      title: "7. Tentativas de Entrega",
+      content:
+        "Serão realizadas até 3 (três) tentativas de entrega. Caso não haja sucesso, o pedido retornará ao centro de distribuição e o cliente será contatado para reagendamento mediante novo pagamento de frete.",
+    },
+    {
+      id: "trocas-devolucoes",
+      title: "8. Trocas e Devoluções",
+      content:
+        "O cliente poderá solicitar a devolução ou troca do produto em até 7 (sete) dias corridos após o recebimento, conforme previsto no Código de Defesa do Consumidor. As condições e prazos para trocas seguem a Política de Troca e Devolução disponível em nosso site.",
+    },
+    {
+      id: "custos",
+      title: "9. Custos de Frete",
+      content:
+        "Os custos de frete são de responsabilidade do cliente, salvo em campanhas promocionais ou em casos de defeito de fabricação. Os valores serão exibidos antes da finalização da compra.",
+    },
+    {
+      id: "alteracoes",
+      title: "10. Alterações desta Política",
+      content:
+        "A Marima reserva-se o direito de alterar esta Política de Entrega a qualquer momento, mediante publicação em nosso site. Alterações relevantes serão comunicadas aos clientes.",
+    },
+    {
+      id: "contato",
+      title: "11. Contato",
+      content:
+        "Em caso de dúvidas sobre a entrega, entre em contato com nossa equipe de suporte: suporte.marima.loja@gmail.com",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white text-black">
       <header className="max-w-6xl mx-auto p-6 md:p-10">
@@ -38,8 +108,9 @@ export default function Entrega() {
                 Política de Entrega
               </h1>
               <p className="mt-2 text-sm md:text-base text-gray-700 max-w-lg">
-                Esta política explica quais dados coletamos, por que coletamos e como você pode
-                gerenciar, acessar e excluir esses dados.
+                Esta política define as regras e prazos para entregas realizadas
+                pela Marima Moda Fitness, garantindo transparência e segurança
+                nas compras efetuadas em nosso ecommerce.
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -57,6 +128,7 @@ export default function Entrega() {
       </header>
 
       <main className="max-w-6xl mx-auto p-6 md:p-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Índice lateral */}
         <aside className="order-2 md:order-1 md:col-span-1">
           <motion.div
             initial={{ opacity: 0 }}
@@ -66,67 +138,25 @@ export default function Entrega() {
           >
             <h2 className="text-sm font-semibold mb-3">Índice</h2>
             <nav aria-label="Tabela de conteúdo" className="space-y-2 text-sm">
-              <a href="#introducao" className="block hover:underline">Introdução</a>
-              <a href="#dados-coletados" className="block hover:underline">Dados coletados</a>
-              <a href="#uso-dados" className="block hover:underline">Uso dos dados</a>
-              <a href="#cookies" className="block hover:underline">Cookies e rastreamento</a>
-              <a href="#terceiros" className="block hover:underline">Compartilhamento com terceiros</a>
-              <a href="#seguranca" className="block hover:underline">Segurança</a>
-              <a href="#direitos" className="block hover:underline">Seus direitos</a>
-              <a href="#retencao" className="block hover:underline">Período de retenção</a>
-              <a href="#menores" className="block hover:underline">Menores de idade</a>
-              <a href="#alteracoes" className="block hover:underline">Alterações nesta política</a>
-              <a href="#contato" className="block hover:underline">Contato</a>
+              {sections.map((sec) => (
+                <a
+                  key={sec.id}
+                  href={`#${sec.id}`}
+                  className="block hover:underline"
+                >
+                  {sec.title}
+                </a>
+              ))}
             </nav>
           </motion.div>
         </aside>
 
-        <article id="conteudo" className="order-1 md:order-2 md:col-span-3">
-          {[{
-            id: "introducao",
-            title: "1. Introdução",
-            content: "Bem-vindo! Esta Política de Privacidade descreve como coletamos, usamos, armazenamos e protegemos suas informações quando você usa nosso site e serviços. Ao acessar ou utilizar os serviços, você concorda com a coleta e uso de informações conforme esta política."
-          }, {
-            id: "dados-coletados",
-            title: "2. Dados que coletamos",
-            content: "Dados de contato, uso, técnicos e de pagamento, conforme aplicável."
-          }, {
-            id: "uso-dados",
-            title: "3. Como usamos seus dados",
-            content: "Fornecer e melhorar serviços, comunicar, prevenir fraudes e cumprir obrigações legais."
-          }, {
-            id: "cookies",
-            title: "4. Cookies e tecnologias de rastreamento",
-            content: "Utilizamos cookies para lembrar preferências e personalizar a experiência."
-          }, {
-            id: "terceiros",
-            title: "5. Compartilhamento com terceiros",
-            content: "Podemos compartilhar dados com prestadores de serviços, autoridades e compradores."
-          }, {
-            id: "seguranca",
-            title: "6. Segurança",
-            content: "Adotamos medidas técnicas e administrativas para proteger seus dados."
-          }, {
-            id: "direitos",
-            title: "7. Seus direitos",
-            content: "Acessar, corrigir, excluir, portar dados e opor-se a certos tratamentos."
-          }, {
-            id: "retencao",
-            title: "8. Período de retenção",
-            content: "Reter dados apenas pelo tempo necessário ou exigido por lei."
-          }, {
-            id: "menores",
-            title: "9. Menores de idade",
-            content: "Serviços não destinados a menores; excluímos dados coletados inadvertidamente."
-          }, {
-            id: "alteracoes",
-            title: "10. Alterações nesta política",
-            content: "Podemos atualizar a política; mudanças relevantes serão comunicadas."
-          }, {
-            id: "contato",
-            title: "11. Contato",
-            content: "E-mail: contato@seudominio.com | Endereço: Rua Exemplo, 123 — Cidade, Estado"
-          }].map((sec, i) => (
+        {/* Conteúdo */}
+        <article
+          id="conteudo"
+          className="order-1 md:order-2 md:col-span-3"
+        >
+          {sections.map((sec, i) => (
             <motion.section
               key={sec.id}
               id={sec.id}
@@ -138,30 +168,17 @@ export default function Entrega() {
               transition={{ duration: 0.45, delay: i * 0.05 }}
             >
               <h3 className="text-xl font-bold">{sec.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-700">{sec.content}</p>
-              {sec.id === "contato" && (
-                <div className="mt-6 flex gap-3">
-                  <a
-                    href="#dados-coletados"
-                    className="inline-block px-4 py-2 rounded-lg bg-black text-white font-medium shadow-sm hover:scale-[1.01] transition-transform"
-                  >
-                    Ver dados coletados
-                  </a>
-                  <a
-                    href="#direitos"
-                    className="inline-block px-4 py-2 rounded-lg border border-black text-sm font-medium hover:bg-gray-200 transition"
-                  >
-                    Como exercer direitos
-                  </a>
-                </div>
-              )}
+              <p className="mt-3 text-sm leading-relaxed text-gray-700">
+                {sec.content}
+              </p>
             </motion.section>
           ))}
         </article>
 
+        {/* Rodapé */}
         <div className="md:col-span-4 order-3">
           <div className="max-w-6xl mx-auto p-4 text-center text-xs text-gray-500">
-            <p>Última atualização: 09 de Agosto de 2025</p>
+            <p>Última atualização: 29 de Agosto de 2025</p>
           </div>
         </div>
       </main>

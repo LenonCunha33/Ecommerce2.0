@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
   sizes: { type: Array, required: true },
   bestseller: { type: Boolean },
   date: { type: Number, required: true },
-  visible: { type: Boolean, default: true } // Novo campo de visibilidade
+  visible: { type: Boolean, default: true }, //campo de visibilidade
 });
 
 const ProductModel =

@@ -4,6 +4,7 @@ import {
   getUserOrders,
   placeOrderCOD,
   placeOrderStripe,
+  placeOrderBoleto,   // 🚀 adicionando boleto
   updateOrderStatus,
   verifyStrpePayment,
 } from '../controllers/orderController.js';
@@ -20,7 +21,7 @@ orderRouter.use('/status', adminAuth, updateOrderStatus);
 // Payments
 orderRouter.use('/place', userAuth, placeOrderCOD);
 orderRouter.use('/stripe', userAuth, placeOrderStripe);
-
+orderRouter.use('/boleto', userAuth, placeOrderBoleto); // 🚀 nova rota
 
 // User
 orderRouter.use('/userorders', userAuth, getUserOrders);

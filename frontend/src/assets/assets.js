@@ -16,12 +16,15 @@ import contact_img from './contact_img.jpeg';
 import razorpay_logo from './razorpay_logo.png';
 import stripe_logo from './stripe_logo.png';
 import cross_icon from './cross_icon.png';
-import hero_video from './1.mp4';
+import hero_video from './Fitness.png';
 import suporte from './Suporte.jpeg'
-import macacao from './02.jpg'
-import top from './04.jpg'
-import calca from './03.jpg'
-import short from './01.jpg'
+import macacao from './02.png'
+import top from './IMG_8992.png'
+import calca from './3.png'
+import short from './01.png'
+import Mobile1 from './01.png'
+import Mobile2 from './01.png'
+import topr from './FourthSection.png'
 
 
 export const assets = {
@@ -48,5 +51,8 @@ export const assets = {
   macacao,
   top,
   calca,
-  short
+  short,
+  Mobile1,
+  Mobile2,
+  topr
 };

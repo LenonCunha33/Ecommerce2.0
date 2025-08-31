@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-  const location = useLocation(); // Para verificar a rota atual
+  const location = useLocation();
 
   const {
     getCartCount,
@@ -35,7 +35,7 @@ const Navbar = () => {
         <img src={assets.logo} alt="logo Marima" className="w-28 sm:w-36" />
       </Link>
 
-      {/* LINKS */}
+      {/* LINKS DESKTOP */}
       <ul className="hidden sm:flex gap-8 text-gray-700 text-sm font-medium">
         {['/', '/outlet', '/sobre', '/contato'].map((path, idx) => (
           <NavLink
@@ -61,7 +61,7 @@ const Navbar = () => {
 
       {/* ICONES AÇÃO */}
       <div className="flex items-center gap-6 relative">
-        {/* ÍCONE DE BUSCA + BARRA */}
+        {/* ÍCONE DE BUSCA */}
         <div className="flex items-center gap-2">
           {isOutletPage ? (
             <>
@@ -152,41 +152,67 @@ const Navbar = () => {
         />
       </div>
 
-      {/* MENU MOBILE LATERAL */}
-      <AnimatePresence>
-        {menuOpen && (
+      {/* MENU MOBILE */}
+<AnimatePresence>
+  {menuOpen && (
+    <motion.div
+      initial={{ x: '100%' }}
+      animate={{ x: 0 }}
+      exit={{ x: '100%' }}
+      transition={{ type: 'tween', duration: 0.3 }}
+      className="fixed top-0 right-0 bottom-0 w-full max-w-xs bg-white z-50 flex flex-col"
+    >
+      {/* FECHAR */}
+      <div className="flex justify-end p-4">
+        <motion.img
+          src={assets.dropdown_icon}
+          alt="Fechar"
+          className="w-6 h-6 cursor-pointer rotate-180"
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setMenuOpen(false)}
+        />
+      </div>
+
+      {/* LINKS ANIMADOS */}
+      <motion.nav
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0, y: 20 },
+          show: {
+            opacity: 1,
+            y: 0,
+            transition: {
+              staggerChildren: 0.15,
+            },
+          },
+        }}
+        className="flex flex-col items-center justify-center flex-1 gap-8 text-lg font-medium"
+      >
+        {['/', '/outlet', '/sobre', '/contato'].map((path, idx) => (
           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed top-0 right-0 bottom-0 w-full max-w-xs bg-white shadow-lg z-50"
+            key={idx}
+            variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }}
           >
-            <div className="flex items-center justify-between p-4 border-b">
-              <p className="text-lg font-semibold">Menu</p>
-              <motion.img
-                src={assets.dropdown_icon}
-                alt="Fechar"
-                className="w-5 h-5 cursor-pointer rotate-180"
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setMenuOpen(false)}
-              />
-            </div>
-            <nav className="flex flex-col text-gray-600 text-base">
-              {['/', '/outlet', '/sobre', '/contato'].map((path, idx) => (
-                <NavLink
-                  key={idx}
-                  to={path}
-                  onClick={() => setMenuOpen(false)}
-                  className="py-4 px-6 border-b hover:bg-gray-100"
-                >
-                  {path === '/' ? 'Início' : path === '/outlet' ? 'Outlet' : path.slice(1)}
-                </NavLink>
-              ))}
-            </nav>
+            <NavLink
+              to={path}
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) =>
+                `capitalize transition-all duration-300 ${
+                  isActive
+                    ? 'text-gray-900 drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)]'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`
+              }
+            >
+              {path === '/' ? 'Início' : path === '/outlet' ? 'Outlet' : path.slice(1)}
+            </NavLink>
           </motion.div>
-        )}
-      </AnimatePresence>
+        ))}
+      </motion.nav>
+    </motion.div>
+  )}
+</AnimatePresence>
     </nav>
   );
 };

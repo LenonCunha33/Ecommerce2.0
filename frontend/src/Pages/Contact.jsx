@@ -1,16 +1,41 @@
+"use client";
 import { assets } from "../assets/assets";
 import NewsLetterBox from "../Components/NewsLetterBox";
 import Title from "../Components/Title";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 const Contact = () => {
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   };
+
+  // Perguntas Frequentes
+  const faqs = [
+    {
+      question: "Qual o prazo de entrega?",
+      answer:
+        "O prazo varia de acordo com a região. Normalmente, entregamos entre 5 a 10 dias úteis após a confirmação do pagamento.",
+    },
+    {
+      question: "Posso devolver um produto?",
+      answer:
+        "Sim! Você tem até 7 dias corridos após o recebimento para solicitar devolução ou troca, conforme o Código de Defesa do Consumidor.",
+    },
+    {
+      question: "Quais formas de pagamento aceitam?",
+      answer:
+        "Aceitamos Pix, Cartões de Crédito (até 12x), Boleto Bancário e Carteiras Digitais.",
+    },
+    {
+      question: "Como falo com o suporte?",
+      answer:
+        "Nosso suporte está disponível por E-mail e WhatsApp. Respondemos em até 24h úteis E-mail e Instantaneamente WhatsApp.",
+    },
+  ];
+
+  const [openIndex, setOpenIndex] = useState(null);
 
   return (
     <motion.div
@@ -20,7 +45,7 @@ const Contact = () => {
       className="px-5 sm:px-10 lg:px-20 pt-12 pb-28 border-t max-w-screen-xl mx-auto"
     >
       {/* Título */}
-      <div className="text-2xl mb-2">
+      <div className="text-2xl mb-6">
         <Title text1="CONTATO" text2="CONOSCO" />
       </div>
 
@@ -35,29 +60,49 @@ const Contact = () => {
         >
           <h3 className="font-semibold text-lg text-gray-800">Nossa Loja</h3>
           <p className="text-gray-500 leading-relaxed">
-            Localizada Totalmente Digital <br />
+            Totalmente Digital <br />
             Fundada em Volta Redonda - Rio de Janeiro
           </p>
-
           <p>
-            Tel: <span className="text-gray-500">+55 24 99845-7985</span>
+            Tel:{" "}
+            <a
+              href="tel:+5524998457985"
+              className="text-gray-500 hover:text-black"
+            >
+              +55 24 99845-7985
+            </a>
           </p>
           <p>
             Email:{" "}
-            <span className="text-gray-500">suporte.marima.loja@gmail.com</span>
+            <a
+              href="mailto:suporte.marima.loja@gmail.com"
+              className="text-gray-500 hover:text-black"
+            >
+              suporte.marima.loja@gmail.com
+            </a>
           </p>
 
-          <div className="mt-4">
-            <h4 className="font-medium text-gray-800">Suporte Marima</h4>
-            <p className="text-gray-500 mt-1">
-              Saiba Mais Sobre Nosso Canal de Suporte ao Cliente!
-            </p>
+          {/* Canais rápidos */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 text-sm">
+            <a
+              href="https://wa.me/5524998457985"
+              target="_blank"
+              className="border rounded-lg p-3 text-center hover:bg-green-100 transition"
+            >
+              WhatsApp
+            </a>
+            <a
+              href="mailto:suporte.marima.loja@gmail.com"
+              className="border rounded-lg p-3 text-center hover:bg-blue-100 transition"
+            >
+              E-mail
+            </a>
           </div>
 
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={scrollToTop}
-            className="mt-4 border border-black w-50 px-10 py-3 text-sm text-black hover:bg-black hover:text-white transition-all duration-300 rounded-md cursor-pointer"
+            className="mt-6 border border-black px-10 py-3 text-sm text-black hover:bg-black hover:text-white transition-all duration-300 rounded-md cursor-pointer"
           >
             Saiba Mais
           </motion.button>
@@ -74,8 +119,50 @@ const Contact = () => {
         />
       </div>
 
+      {/* FAQ */}
+      <div id="faq" className="mt-20">
+        <h3 className="text-xl font-semibold mb-6 text-gray-800">
+          Perguntas Frequentes
+        </h3>
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              className="border rounded-lg p-4 shadow-sm bg-white"
+            >
+              <button
+                className="flex justify-between items-center w-full text-left font-medium text-gray-700"
+                onClick={() =>
+                  setOpenIndex(openIndex === index ? null : index)
+                }
+              >
+                {faq.question}
+                <ChevronDown
+                  className={`h-5 w-5 transition-transform ${
+                    openIndex === index ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-2 text-gray-500 text-sm leading-relaxed"
+                  >
+                    {faq.answer}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Newsletter */}
-      <div className="mt-16">
+      <div className="mt-20">
         <NewsLetterBox />
       </div>
     </motion.div>

@@ -10,12 +10,12 @@ const titles = [
   'Top Fitness',
   'Calça Legging',
   'Short Fitness',
-  'Top Fitness Estilo Nadador',
+  'Top Nadador',
 ];
 
 const images = [
   assets.macacao,
-  assets.top,
+  assets.topr,
   assets.calca,
   assets.short,
   assets.top,
