@@ -75,14 +75,6 @@ const Product = () => {
             {productsData.name}
           </h1>
 
-          <div className="flex items-center gap-1">
-            {[...Array(4)].map((_, i) => (
-              <img key={i} src={assets.star_icon} alt="" className="w-5" />
-            ))}
-            <img src={assets.star_dull_icon} alt="" className="w-5" />
-            <p className="text-base text-gray-500 pl-2">(122)</p>
-          </div>
-
           <p className="text-4xl font-bold text-gray-900">
             {currency}
             {productsData.price}
@@ -132,9 +124,6 @@ const Product = () => {
       <div className="mt-16">
         <div className="flex border-b text-lg font-medium">
           <button className="px-6 py-4 border-b-2 border-black">Descrição</button>
-          <button className="px-6 py-4 text-gray-500 hover:text-black">
-            Avaliações (122)
-          </button>
         </div>
 
         <div className="px-6 py-6 text-gray-600 space-y-5 text-base leading-relaxed border rounded-b-lg">
