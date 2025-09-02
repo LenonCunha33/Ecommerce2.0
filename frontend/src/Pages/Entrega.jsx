@@ -178,7 +178,7 @@ export default function Entrega() {
         {/* Rodapé */}
         <div className="md:col-span-4 order-3">
           <div className="max-w-6xl mx-auto p-4 text-center text-xs text-gray-500">
-            <p>Última atualização: 29 de Agosto de 2025</p>
+            <p>Última atualização: 2 de Setembro de 2025</p>
           </div>
         </div>
       </main>

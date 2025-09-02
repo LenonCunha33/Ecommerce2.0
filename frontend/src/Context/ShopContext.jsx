@@ -7,7 +7,7 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = ({ children }) => {
   const currency = 'R$';
-  const delivery_fee = 10;
+  const delivery_fee = 15;
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [search, setSearch] = useState('');
@@ -182,6 +182,25 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
+  // dentro do ShopContextProvider
+const [discount, setDiscount] = useState(0);
+
+const applyCoupon = async (code) => {
+  try {
+    const res = await axios.post(`${backendUrl}/api/coupon/validate`, { code });
+    if (res.data.success) {
+      setDiscount(res.data.discount);
+      toast.success(res.data.message);
+    } else {
+      toast.error(res.data.message);
+      setDiscount(0);
+    }
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Erro ao validar cupom");
+    setDiscount(0);
+  }
+};
+
   useEffect(() => {
     getProductsData();
   }, []);
@@ -213,6 +232,9 @@ const ShopContextProvider = ({ children }) => {
     backendUrl,
     token,
     setToken,
+    discount,
+  setDiscount,
+  applyCoupon,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

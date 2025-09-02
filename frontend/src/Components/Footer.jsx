@@ -59,7 +59,7 @@ const Footer = () => {
         <div>
           <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">Suporte</h3>
           <ul className="space-y-2 text-sm sm:text-base text-gray-600">
-            <li className="hover:text-black transition-colors">(24) 99849-6984</li>
+
             <li className="hover:text-black transition-colors">suporte.marima.loja@gmail.com</li>
           </ul>
         </div>

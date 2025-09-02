@@ -1,9 +1,8 @@
 // imports
 import { useContext, useState } from "react";
-import { assets } from "../assets/assets";
+import { ShopContext } from "../Context/ShopContext";
 import CartTotal from "../Components/CartTotal";
 import Title from "../Components/Title";
-import { ShopContext } from "../Context/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
@@ -18,9 +17,9 @@ const PlaceOrder = () => {
     getCartAmount,
     delivery_fee,
     products,
+    discount,
   } = useContext(ShopContext);
 
-  const [paymentMethod, setPaymentMethod] = useState("cod");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -40,7 +39,6 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    console.log("Método de pagamento selecionado:", paymentMethod);
 
     try {
       // Monta lista de itens do pedido
@@ -63,28 +61,21 @@ const PlaceOrder = () => {
       const orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee,
+        amount: getCartAmount() + delivery_fee - discount,
+        discount,
       };
 
-      if (paymentMethod === "stripe") {
-        console.log("Enviando pedido para Stripe...");
-        const res = await axios.post(`${backendUrl}/api/order/stripe`, orderData, {
+      console.log("Enviando pedido para Stripe...");
+      const res = await axios.post(
+        `${backendUrl}/api/order/stripe`,
+        orderData,
+        {
           headers: { token },
-        });
-        console.log("Resposta Stripe:", res.data);
-        if (res.data.success) {
-          window.location.replace(res.data.session_url);
         }
-      } else {
-        console.log("Finalizando pedido como pagamento na entrega (COD)...");
-        const res = await axios.post(`${backendUrl}/api/order/place`, orderData, {
-          headers: { token },
-        });
-        console.log("Resposta COD:", res.data);
-        if (res.data.success) {
-          setCartItems({});
-          navigate("/pedidos");
-        }
+      );
+
+      if (res.data.success) {
+        window.location.replace(res.data.session_url);
       }
     } catch (error) {
       console.error("Erro ao finalizar pedido:", error);
@@ -205,48 +196,14 @@ const PlaceOrder = () => {
           <CartTotal />
         </div>
 
-        <div className="mt-10 space-y-4">
-          <Title text1={"MÉTODO DE"} text2={"PAGAMENTO"} />
-
-          <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            {/* Stripe */}
-            <div
-              onClick={() => setPaymentMethod("stripe")}
-              className="flex items-center gap-3 border p-3 rounded-lg shadow-sm cursor-pointer hover:shadow transition"
-            >
-              <div
-                className={`w-4 h-4 rounded-full border ${
-                  paymentMethod === "stripe" ? "bg-green-400" : ""
-                }`}
-              ></div>
-              <img src={assets.stripe_logo} alt="Stripe" className="h-6" />
-            </div>
-
-            {/* COD */}
-            <div
-              onClick={() => setPaymentMethod("cod")}
-              className="flex items-center gap-3 border p-3 rounded-lg shadow-sm cursor-pointer hover:shadow transition"
-            >
-              <div
-                className={`w-4 h-4 rounded-full border ${
-                  paymentMethod === "cod" ? "bg-green-400" : ""
-                }`}
-              ></div>
-              <span className="text-sm text-gray-600 font-medium">
-                Dinheiro na Entrega
-              </span>
-            </div>
-          </div>
-
-          <div className="text-end pt-6">
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              type="submit"
-              className="bg-black hover:bg-gray-800 text-white py-3 px-12 rounded-lg text-base font-medium transition"
-            >
-              FINALIZAR PEDIDO
-            </motion.button>
-          </div>
+        <div className="text-end pt-6">
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            type="submit"
+            className="bg-black hover:bg-gray-800 text-white py-3 px-12 rounded-lg text-base font-medium transition"
+          >
+            FINALIZAR PEDIDO
+          </motion.button>
         </div>
       </div>
     </motion.form>

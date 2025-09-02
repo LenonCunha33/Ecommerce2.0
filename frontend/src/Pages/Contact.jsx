@@ -31,7 +31,7 @@ const Contact = () => {
     {
       question: "Como falo com o suporte?",
       answer:
-        "Nosso suporte está disponível por E-mail e WhatsApp. Respondemos em até 24h úteis E-mail e Instantaneamente WhatsApp.",
+        "Nosso suporte está disponível por E-mail. Respondemos em até 24h úteis E-mail",
     },
   ];
 
@@ -63,15 +63,7 @@ const Contact = () => {
             Totalmente Digital <br />
             Fundada em Volta Redonda - Rio de Janeiro
           </p>
-          <p>
-            Tel:{" "}
-            <a
-              href="tel:+5524998457985"
-              className="text-gray-500 hover:text-black"
-            >
-              +55 24 99845-7985
-            </a>
-          </p>
+
           <p>
             Email:{" "}
             <a
@@ -85,27 +77,12 @@ const Contact = () => {
           {/* Canais rápidos */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 text-sm">
             <a
-              href="https://wa.me/5524998457985"
-              target="_blank"
-              className="border rounded-lg p-3 text-center hover:bg-green-100 transition"
-            >
-              WhatsApp
-            </a>
-            <a
               href="mailto:suporte.marima.loja@gmail.com"
               className="border rounded-lg p-3 text-center hover:bg-blue-100 transition"
             >
               E-mail
             </a>
           </div>
-
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={scrollToTop}
-            className="mt-6 border border-black px-10 py-3 text-sm text-black hover:bg-black hover:text-white transition-all duration-300 rounded-md cursor-pointer"
-          >
-            Saiba Mais
-          </motion.button>
         </motion.div>
 
         {/* Lado Direito: Imagem */}

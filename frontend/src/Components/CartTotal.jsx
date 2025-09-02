@@ -1,13 +1,19 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { ShopContext } from '../Context/ShopContext';
 import Title from './Title';
 import { motion } from 'framer-motion';
 
 const CartTotal = () => {
-  const { currency, delivery_fee, getCartAmount } = useContext(ShopContext);
+  const { currency, delivery_fee, getCartAmount, discount, applyCoupon } = useContext(ShopContext);
+  const [coupon, setCoupon] = useState('');
 
   const subtotal = getCartAmount();
-  const total = subtotal === 0 ? 0 : subtotal + delivery_fee;
+  const total = subtotal === 0 ? 0 : subtotal + delivery_fee - discount;
+
+  const handleApplyCoupon = () => {
+    if (!coupon) return;
+    applyCoupon(coupon);
+  };
 
   return (
     <motion.section
@@ -16,57 +22,52 @@ const CartTotal = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-      {/* Título */}
       <div className="mb-6">
         <Title text2="TOTAL" />
       </div>
 
-      {/* Resumo do carrinho */}
-      <motion.div
-        className="flex flex-col gap-4 text-sm sm:text-base text-gray-700"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.15 },
-          },
-        }}
-      >
-        {/* Subtotal */}
-        <motion.div
-          className="flex justify-between items-center border-b pb-2"
-          variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}
-        >
+      {/* Resumo */}
+      <div className="flex flex-col gap-4 text-sm sm:text-base text-gray-700">
+        <div className="flex justify-between border-b pb-2">
           <span>Subtotal</span>
-          <span className="font-medium">
-            {currency} {subtotal}.00
-          </span>
-        </motion.div>
+          <span>{currency} {subtotal}.00</span>
+        </div>
 
-        {/* Taxa de Entrega */}
-        <motion.div
-          className="flex justify-between items-center border-b pb-2"
-          variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}
-        >
+        <div className="flex justify-between border-b pb-2">
           <span>Taxa de Entrega</span>
-          <span className="font-medium">
-            {currency} {delivery_fee}.00
-          </span>
-        </motion.div>
+          <span>{currency} {delivery_fee}.00</span>
+        </div>
 
-        {/* Total */}
-        <motion.div
-          className="flex justify-between items-center text-lg font-semibold text-black mt-2"
-          variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}
-        >
+        {discount > 0 && (
+          <div className="flex justify-between border-b pb-2 text-green-600">
+            <span>Desconto</span>
+            <span>- {currency} {discount}.00</span>
+          </div>
+        )}
+
+        <div className="flex justify-between text-lg font-semibold text-black mt-2">
           <span>Total</span>
-          <span>
-            {currency} {total}.00
-          </span>
-        </motion.div>
-      </motion.div>
+          <span>{currency} {total}.00</span>
+        </div>
+      </div>
+
+      {/* Cupom */}
+      <div className="mt-4 flex gap-2">
+        <input
+          type="text"
+          value={coupon}
+          onChange={(e) => setCoupon(e.target.value)}
+          placeholder="Insira o cupom"
+          className="flex-1 border rounded-lg px-3 py-2"
+        />
+        <button
+        type="button"
+          onClick={handleApplyCoupon}
+          className="bg-black text-white px-4 py-2 rounded-lg"
+        >
+          Aplicar
+        </button>
+      </div>
     </motion.section>
   );
 };

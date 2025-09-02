@@ -41,7 +41,7 @@ const NewsLetterBox = () => {
       viewport={{ once: true }}
       className="text-center px-4 sm:px-8 py-16 bg-white"
     >
-      <Title text2="Se Inscreva e Ganhe 20% de Desconto na Sua Primeira Compra!" />
+      <Title text2="Se Inscreva e Ganhe Desconto na Sua Primeira Compra!" />
       <p className="text-sm sm:text-base text-gray-500 mt-3 max-w-xl mx-auto">
         Fique por dentro das novidades e receba promoções exclusivas em primeira mão!
       </p>
