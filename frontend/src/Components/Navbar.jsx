@@ -36,7 +36,7 @@ const Navbar = () => {
       </Link>
 
       {/* LINKS DESKTOP */}
-      <ul className="hidden sm:flex gap-8 text-gray-700 text-sm font-medium">
+      <ul className="hidden mr-10 sm:flex gap-8 text-gray-700 text-sm font-medium">
         {['/', '/outlet', '/sobre', '/contato'].map((path, idx) => (
           <NavLink
             key={idx}
