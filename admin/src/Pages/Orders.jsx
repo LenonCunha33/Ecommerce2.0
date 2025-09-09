@@ -38,16 +38,38 @@ const Orders = ({ token }) => {
     }
   };
 
-  const atualizarStatusPedido = async (event, orderId) => {
+  // pede dados de rastreio quando status === "Enviado"
+  const solicitarRastreio = async () => {
+    const trackingCode = window.prompt('Código de rastreio (ex: LX123456789BR):') || '';
+    const carrier = window.prompt('Transportadora (ex: Correios, Jadlog, etc):') || '';
+    // se o user cancelar ambos prompts, volta vazio (ok)
+    return { trackingCode: trackingCode.trim(), carrier: carrier.trim() };
+  };
+
+  const atualizarStatusPedido = async (event, order) => {
+    const novoStatus = event.target.value;
+
     try {
+      let payload = { orderId: order._id, orderStatus: novoStatus };
+
+      // se for "Enviado", coletar opcionalmente tracking e transportadora
+      if (novoStatus === 'Enviado') {
+        const { trackingCode, carrier } = await solicitarRastreio();
+        if (trackingCode) payload.trackingCode = trackingCode;
+        if (carrier) payload.carrier = carrier;
+      }
+
       const response = await axios.post(
         backendUrl + '/api/order/status',
-        { orderId, orderStatus: event.target.value },
+        payload,
         { headers: { token } }
       );
+
       if (response.data.success) {
         await buscarPedidos();
         toast.success('Status atualizado com sucesso!');
+      } else {
+        toast.error(response.data.message || 'Não foi possível atualizar o status.');
       }
     } catch (error) {
       console.error(error);
@@ -57,6 +79,7 @@ const Orders = ({ token }) => {
 
   useEffect(() => {
     buscarPedidos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const pedidosFiltrados =
@@ -159,16 +182,23 @@ const Orders = ({ token }) => {
                   ))}
                 </div>
                 <p className="mt-3 mb-2 font-medium text-gray-900">
-                  {order.address.firstName} {order.address.lastName}
-                </p>
-                <div className="text-gray-600 leading-snug">
-                  <p>{order.address.street},</p>
-                  <p>
-                    {order.address.city}, {order.address.state},{' '}
-                    {order.address.country}, {order.address.zipcode}
-                  </p>
-                  <p className="mt-1">{order.address.phone}</p>
-                </div>
+  {order.address.firstName} {order.address.lastName}
+</p>
+<div className="text-gray-600 leading-snug space-y-1">
+  {order.address.email && <p>Email: {order.address.email}</p>}
+  {order.address.phone && <p>Telefone: {order.address.phone}</p>}
+  {order.address.street && (
+    <p>
+      {order.address.street}
+      {order.address.number ? `, Nº ${order.address.number}` : ""}
+      {order.address.complement ? `, ${order.address.complement}` : ""}
+    </p>
+  )}
+  {order.address.neighborhood && <p>Bairro: {order.address.neighborhood}</p>}
+  <p>
+    {order.address.city}, {order.address.state}, {order.address.country} - {order.address.zipcode}
+  </p>
+</div>
               </div>
 
               {/* Informações de pagamento */}
@@ -197,7 +227,7 @@ const Orders = ({ token }) => {
               {/* Status do pedido */}
               <div>
                 <select
-                  onChange={(event) => atualizarStatusPedido(event, order._id)}
+                  onChange={(event) => atualizarStatusPedido(event, order)}
                   value={order.orderStatus}
                   aria-label={`Alterar status do pedido ${order._id}`}
                   className="w-full p-2 rounded-lg border border-gray-300 bg-white text-sm sm:text-base font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer transition"
@@ -209,6 +239,22 @@ const Orders = ({ token }) => {
                   <option value="Entregue">Entregue</option>
                   <option value="Finalizado">Finalizado</option>
                 </select>
+
+                {/* Mostra infos de rastreio se existirem */}
+                {(order.trackingCode || order.carrier) && (
+                  <div className="mt-2 text-[11px] sm:text-xs text-gray-600">
+                    {order.trackingCode && (
+                      <p>
+                        <span className="font-medium">Rastreio:</span> {order.trackingCode}
+                      </p>
+                    )}
+                    {order.carrier && (
+                      <p>
+                        <span className="font-medium">Transportadora:</span> {order.carrier}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             </motion.article>
           ))

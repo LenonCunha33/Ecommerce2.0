@@ -14,14 +14,12 @@ const fadeUp = {
 
 const Banner = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkDevice = () => {
       const width = window.innerWidth;
-      setIsMobile(width < 768);
-      setIsTablet(width >= 768 && width < 1024);
+      setIsMobile(width < 1024); // mobile e tablet
     };
 
     checkDevice();
@@ -70,74 +68,55 @@ const Banner = () => {
           </motion.div>
         )}
 
-        {/* Texto Central - Moda Fitness */}
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 0.4, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          whileHover={{ scale: 1.05, opacity: 0.5 }}
-          className="absolute z-10 text-[60px] md:text-[120px] lg:text-[220px] font-extrabold text-white/40 leading-none select-none text-center"
-        >
-          Moda Fitness
-        </motion.h1>
-
-        {/* Título Performance + Conforto */}
+        {/* Texto centralizado */}
         <motion.div
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className={`absolute z-20 ${
-            isMobile || isTablet
-              ? "top-1/4 left-1/2 -translate-x-1/2 text-center"
-              : "top-10 left-155 -translate-x-1/2 text-center"
-          }`}
+          className="relative z-20 flex flex-col items-center justify-center text-center max-w-2xl px-4"
         >
+          {/* Texto de fundo */}
+          <motion.h1
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 0.4, scale: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            whileHover={{ scale: 1.05, opacity: 0.5 }}
+            className="absolute text-[60px] md:text-[120px] lg:text-[220px] font-extrabold text-white/40 leading-none select-none"
+          >
+            Moda Fitness
+          </motion.h1>
+
+          {/* Títulos */}
           <motion.h2
             custom={0}
             variants={fadeUp}
-            className="text-2xl font-light md:text-4xl font-light lg:text-5xl  text-white drop-shadow-lg"
+            className="text-3xl md:text-5xl lg:text-6xl font-bold text-white drop-shadow-lg"
           >
-            Performance &
+            Performance & Equilíbrio
           </motion.h2>
-          <motion.h2
+
+          {/* Texto descritivo */}
+          <motion.p
             custom={1}
             variants={fadeUp}
-            className="text-2xl font-light md:text-4xl font-light lg:text-5xl  text-white drop-shadow-lg"
+            className="mt-4 text-sm md:text-lg text-white/90 drop-shadow-lg"
           >
-            Equilíbrio
-          </motion.h2>
+            Um equilíbrio perfeito entre conforto, qualidade e versatilidade,
+            acompanhando você do treino às atividades do dia a dia com sofisticação.
+          </motion.p>
+
+          {/* Botão CTA */}
+          <motion.button
+            onClick={() => navigate("/outlet")}
+            custom={2}
+            variants={fadeUp}
+            whileHover={{ scale: 1.1, backgroundColor: "#f3f3f3" }}
+            whileTap={{ scale: 0.95 }}
+            className="cursor-pointer z-1 mt-6 bg-white text-black font-medium px-6 py-2 rounded-full shadow-lg transition-all duration-300 cursor-pointer"
+          >
+            Explorar
+          </motion.button>
         </motion.div>
-
-        {/* Texto descritivo */}
-        <motion.p
-          custom={2}
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className={`absolute text-sm md:text-lg max-w-xs text-white/90 drop-shadow-lg z-20 ${
-            isMobile || isTablet
-              ? "bottom-24 left-1/2 -translate-x-1/2 text-center"
-              : "bottom-12 right-112 text-right"
-          }`}
-        >
-          Um equilíbrio perfeito entre conforto, qualidade e versatilidade,
-          acompanhando você do treino às atividades do dia a dia com sofisticação.
-        </motion.p>
-
-        {/* Botão CTA */}
-        <motion.button
-          onClick={() => navigate("/outlet")}
-          whileHover={{ scale: 1.1, backgroundColor: "#f3f3f3" }}
-          whileTap={{ scale: 0.95 }}
-          className={`absolute bg-white text-black font-medium px-6 py-2 rounded-full shadow-lg transition-all duration-300 cursor-pointer z-20 ${
-            isMobile || isTablet
-              ? "bottom-10 left-1/2 -translate-x-1/2"
-              : "bottom-10 right-10"
-          }`}
-        >
-          Explorar
-        </motion.button>
       </div>
     </section>
   );

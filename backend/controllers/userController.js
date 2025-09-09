@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import sendEmail from '../utils/sendEmail.js';
+import { sendWelcomeEmail } from '../utils/sendEmail.js'; // 🆕 import do e-mail de boas-vindas
 
 const createToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET);
@@ -82,6 +83,19 @@ export const registerUser = async (req, res) => {
 
     const savedUser = await newUser.save();
     let token = createToken(savedUser._id);
+
+    // 🆕 Dispara e-mail de boas-vindas com cupom (não bloqueante)
+    try {
+      await sendWelcomeEmail({
+        userEmail: savedUser.email,
+        userName: savedUser.name,
+        couponCode: process.env.COUPON10 || 'USERTEM10',
+        appUrl: process.env.FRONTEND_URL || process.env.APP_URL || '#'
+      });
+    } catch (err) {
+      // não derruba o cadastro se o e-mail falhar
+      console.error('Falha ao enviar e-mail de boas-vindas:', err?.message || err);
+    }
 
     res.status(201).json({
       success: true,

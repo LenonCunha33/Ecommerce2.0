@@ -25,6 +25,14 @@ import short from './01.png'
 import Mobile1 from './01.png'
 import Mobile2 from './01.png'
 import topr from './FourthSection.png'
+import shorts from './04.png'
+import angell from './CoresFria.png'
+import macaco from './macaco.jpg'
+import lado from './66.png'
+import macacao2 from './27.png'
+import post1 from './11.png'
+import post2 from './22.png'
+
 
 
 export const assets = {
@@ -54,5 +62,12 @@ export const assets = {
   short,
   Mobile1,
   Mobile2,
-  topr
+  topr,
+  shorts,
+  angell,
+  macaco,
+  lado,
+  macacao2,
+  post1,
+  post2
 };

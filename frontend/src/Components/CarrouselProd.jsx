@@ -109,7 +109,7 @@ export default function ProductCarousel() {
                   <motion.img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-[420px] object-cover transition duration-500 group-hover:scale-105 group-hover:blur-sm"
+                    className="w-full h-[520px] object-cover transition duration-500 group-hover:scale-105 group-hover:blur-sm"
                   />
 
                   {/* Fundo escuro no hover */}

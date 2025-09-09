@@ -1,3 +1,4 @@
+// src/Components/Navbar.jsx
 import React, { useContext, useState } from 'react';
 import { assets } from '../assets/assets';
 import { Link, NavLink, useLocation } from 'react-router-dom';
@@ -26,7 +27,8 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  const isOutletPage = location.pathname === '/outlet';
+  // ⬇️ Busca habilitada em /outlet e /fitness
+  const isSearchPage = ['/outlet', '/fitness'].includes(location.pathname);
 
   return (
     <nav className="flex items-center justify-between py-5 px-4 sm:px-8 lg:px-20 bg-white shadow-sm sticky top-0 z-50">
@@ -37,7 +39,7 @@ const Navbar = () => {
 
       {/* LINKS DESKTOP */}
       <ul className="hidden mr-10 sm:flex gap-8 text-gray-700 text-sm font-medium">
-        {['/', '/outlet', '/sobre', '/contato'].map((path, idx) => (
+        {['/', '/outlet', '/fitness', '/sobre', '/contato'].map((path, idx) => (
           <NavLink
             key={idx}
             to={path}
@@ -48,7 +50,13 @@ const Navbar = () => {
             }
           >
             <span className="capitalize">
-              {path === '/' ? 'Início' : path === '/outlet' ? 'Outlet' : path.slice(1)}
+              {path === '/'
+                ? 'Início'
+                : path === '/outlet'
+                ? 'Outlet'
+                : path === '/fitness'
+                ? 'Fitness'
+                : path.slice(1)}
             </span>
             <motion.div
               className="absolute bottom-0 left-0 right-0 h-[2px] bg-black scale-x-0 origin-left"
@@ -63,7 +71,7 @@ const Navbar = () => {
       <div className="flex items-center gap-6 relative">
         {/* ÍCONE DE BUSCA */}
         <div className="flex items-center gap-2">
-          {isOutletPage ? (
+          {isSearchPage ? (
             <>
               <motion.img
                 src={assets.search_icon}
@@ -153,66 +161,70 @@ const Navbar = () => {
       </div>
 
       {/* MENU MOBILE */}
-<AnimatePresence>
-  {menuOpen && (
-    <motion.div
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ type: 'tween', duration: 0.3 }}
-      className="fixed top-0 right-0 bottom-0 w-full max-w-xs bg-white z-50 flex flex-col"
-    >
-      {/* FECHAR */}
-      <div className="flex justify-end p-4">
-        <motion.img
-          src={assets.dropdown_icon}
-          alt="Fechar"
-          className="w-6 h-6 cursor-pointer rotate-180"
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setMenuOpen(false)}
-        />
-      </div>
-
-      {/* LINKS ANIMADOS */}
-      <motion.nav
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: { opacity: 0, y: 20 },
-          show: {
-            opacity: 1,
-            y: 0,
-            transition: {
-              staggerChildren: 0.15,
-            },
-          },
-        }}
-        className="flex flex-col items-center justify-center flex-1 gap-8 text-lg font-medium"
-      >
-        {['/', '/outlet', '/sobre', '/contato'].map((path, idx) => (
+      <AnimatePresence>
+        {menuOpen && (
           <motion.div
-            key={idx}
-            variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }}
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.3 }}
+            className="fixed top-0 right-0 bottom-0 w-full max-w-xs bg-white z-50 flex flex-col"
           >
-            <NavLink
-              to={path}
-              onClick={() => setMenuOpen(false)}
-              className={({ isActive }) =>
-                `capitalize transition-all duration-300 ${
-                  isActive
-                    ? 'text-gray-900 drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)]'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`
-              }
+            {/* FECHAR */}
+            <div className="flex justify-end p-4">
+              <motion.img
+                src={assets.dropdown_icon}
+                alt="Fechar"
+                className="w-6 h-6 cursor-pointer rotate-180"
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setMenuOpen(false)}
+              />
+            </div>
+
+            {/* LINKS ANIMADOS */}
+            <motion.nav
+              initial="hidden"
+              animate="show"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { staggerChildren: 0.15 },
+                },
+              }}
+              className="flex flex-col items-center justify-center flex-1 gap-8 text-lg font-medium"
             >
-              {path === '/' ? 'Início' : path === '/outlet' ? 'Outlet' : path.slice(1)}
-            </NavLink>
+              {['/', '/outlet', '/fitness', '/sobre', '/contato'].map((path, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }}
+                >
+                  <NavLink
+                    to={path}
+                    onClick={() => setMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `capitalize transition-all duration-300 ${
+                        isActive
+                          ? 'text-gray-900 drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)]'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`
+                    }
+                  >
+                    {path === '/'
+                      ? 'Início'
+                      : path === '/outlet'
+                      ? 'Outlet'
+                      : path === '/fitness'
+                      ? 'Fitness'
+                      : path.slice(1)}
+                  </NavLink>
+                </motion.div>
+              ))}
+            </motion.nav>
           </motion.div>
-        ))}
-      </motion.nav>
-    </motion.div>
-  )}
-</AnimatePresence>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

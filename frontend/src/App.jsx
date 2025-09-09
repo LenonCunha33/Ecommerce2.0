@@ -21,6 +21,9 @@ import Verify from './Pages/Verify';
 import ResetPassword from './Pages/ResetPassword';
 import { AnimatePresence, motion } from 'framer-motion';
 import Dashboard from './Pages/Dashboard';
+import CookieBanner from './Components/CookieBanner';
+import Fitness from './Pages/Fitness';
+import ChatWidget from './Components/Chatbot/ChatWidget';
 
 // 🔒 Protected Route
 function ProtectedRoute({ children }) {
@@ -156,7 +159,17 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/fitness"
+                element={
+                  <ProtectedRoute>
+                    <Fitness />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
+            <ChatWidget />
+            <CookieBanner />
 
             <Footer />
           </div>

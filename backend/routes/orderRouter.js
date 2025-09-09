@@ -1,12 +1,12 @@
+// backend/routes/orderRouter.js
 import express from 'express';
 import {
   getAllOrders,
   getUserOrders,
-  
   placeOrderStripe,
-  placeOrderBoleto,   // 🚀 adicionando boleto
+  placeOrderBoleto,
   updateOrderStatus,
-  verifyStrpePayment,
+  verifyStrpePayment
 } from '../controllers/orderController.js';
 
 import adminAuth from '../middlewares/adminAuth.js';
@@ -19,14 +19,13 @@ orderRouter.use('/list', adminAuth, getAllOrders);
 orderRouter.use('/status', adminAuth, updateOrderStatus);
 
 // Payments
-
 orderRouter.use('/stripe', userAuth, placeOrderStripe);
-orderRouter.use('/boleto', userAuth, placeOrderBoleto); // 🚀 nova rota
+orderRouter.use('/boleto', userAuth, placeOrderBoleto);
 
 // User
 orderRouter.use('/userorders', userAuth, getUserOrders);
 
-// Verify
+// Verify (legado)
 orderRouter.use('/verifyStripe', userAuth, verifyStrpePayment);
 
 export default orderRouter;

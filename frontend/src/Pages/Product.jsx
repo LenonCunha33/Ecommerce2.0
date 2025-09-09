@@ -114,7 +114,7 @@ const Product = () => {
 
           <ul className="text-base text-gray-600 mt-5 space-y-1">
             <li>✓ Produto 100% original</li>
-            <li>✓ Entrega gratuita para pedidos acima de R$ 49</li>
+            
             <li>✓ Política de troca e devolução em até 7 dias</li>
           </ul>
         </div>

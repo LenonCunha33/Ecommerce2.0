@@ -150,7 +150,7 @@ const Collection = () => {
           </div>
         </div>*/}
 
-        {/* Subcategoria 
+        {/* Subcategoria */}  
         <div
           className={`border border-gray-300 px-4 py-4 rounded-md mb-6 ${
             showFilter ? 'block' : 'hidden'
@@ -171,7 +171,7 @@ const Collection = () => {
               </label>
             ))}
           </div>
-        </div> */}
+        </div>
 
         {/* Tipo */}
         <div
