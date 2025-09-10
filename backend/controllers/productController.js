@@ -3,20 +3,6 @@ import { v2 as cloudinary } from 'cloudinary';
 import ProductModel from '../models/productModel.js';
 
 /* ============================
- *  UPLOAD: BUFFER → CLOUDINARY
- * ============================ */
-function uploadFromBufferToCloudinary(file, opts = {}) {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { resource_type: 'image', folder: 'products', ...opts },
-      (err, result) => (err ? reject(err) : resolve(result))
-    );
-    // file.buffer vem do multer.memoryStorage()
-    stream.end(file.buffer);
-  });
-}
-
-/* ============================
  *        UTIL INTERNO
  * ============================ */
 function normalizeVariantInput(v) {
@@ -46,27 +32,22 @@ export const addProduct = async (req, res) => {
       variants    // string JSON opcional: [{ size, sku?, stock?, isActive? }, ...]
     } = req.body;
 
-    // arquivos vindos do upload.fields([...]) (com memoryStorage: têm .buffer)
-    const image1 = req.files?.image1?.[0];
-    const image2 = req.files?.image2?.[0];
-    const image3 = req.files?.image3?.[0];
-    const image4 = req.files?.image4?.[0];
-    const files = [image1, image2, image3, image4].filter(Boolean);
+    const image1 = req.files.image1 && req.files.image1[0];
+    const image2 = req.files.image2 && req.files.image2[0];
+    const image3 = req.files.image3 && req.files.image3[0];
+    const image4 = req.files.image4 && req.files.image4[0];
 
-    if (files.length === 0) {
+    const images = [image1, image2, image3, image4].filter(Boolean);
+    if (images.length === 0) {
       throw new Error('Por favor, carregue pelo menos uma imagem');
     }
 
-    // (opcional) validar tipo
-    for (const f of files) {
-      if (!/^image\//.test(f.mimetype || '')) {
-        throw new Error('Arquivos inválidos: envie apenas imagens.');
-      }
-    }
-
-    // Envia direto do buffer para a Cloudinary
-    const uploads = await Promise.all(files.map((f) => uploadFromBufferToCloudinary(f)));
-    const imageUrl = uploads.map((u) => u.secure_url);
+    const imageUrl = await Promise.all(
+      images.map(async (image) => {
+        const result = await cloudinary.uploader.upload(image.path, { resource_type: 'image' });
+        return result.secure_url;
+      })
+    );
 
     // Parse de sizes (compat)
     let parsedSizes = [];
@@ -96,7 +77,7 @@ export const addProduct = async (req, res) => {
       price: Number(price),
       category,
       subCategory,
-      sizes: parsedSizes,       // será recalculado no save a partir das variants ativas com stock > 0
+      sizes: parsedSizes,      // será recalculado no save a partir das variants ativas com stock > 0
       variants: parsedVariants, // se vazio, criaremos abaixo a partir de sizes
       bestseller: bestseller === 'true' || bestseller === true,
       image: imageUrl,
@@ -124,12 +105,11 @@ export const addProduct = async (req, res) => {
       product,
     });
   } catch (error) {
-    console.error('[addProduct] erro:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-export const getListProducts = async (_req, res) => {
+export const getListProducts = async (req, res) => {
   try {
     const products = await ProductModel.find();
     res.status(200).json({ success: true, products });
@@ -243,7 +223,7 @@ export const toggleVariantActive = async (req, res) => {
 
 /**
  * PATCH /api/product/:id/variant/stock
- * body: { size, qty }
+ * body: { size, qty, reason? }
  *  - qty é o delta (positivo/negativo)
  */
 export const adjustVariantStock = async (req, res) => {
