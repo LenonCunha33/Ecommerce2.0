@@ -3,7 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import ProductModel from '../models/productModel.js';
 
 /* ============================
- *        UTIL INTERNO
+ *        UTILS
  * ============================ */
 function normalizeVariantInput(v) {
   const size = (v?.size || '').trim();
@@ -15,10 +15,20 @@ function normalizeVariantInput(v) {
   return { size, sku, stock, isActive };
 }
 
+// Envia BUFFER para o Cloudinary (compatível com Vercel)
+function uploadFromBuffer(file, folder = 'products') {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { resource_type: 'image', folder },
+      (err, result) => (err ? reject(err) : resolve(result))
+    );
+    stream.end(file.buffer);
+  });
+}
+
 /* ============================
  *       CRUD DE PRODUTO
  * ============================ */
-
 export const addProduct = async (req, res) => {
   try {
     const {
@@ -29,25 +39,21 @@ export const addProduct = async (req, res) => {
       subCategory,
       sizes,      // string JSON (compat)
       bestseller,
-      variants    // string JSON opcional: [{ size, sku?, stock?, isActive? }, ...]
+      variants    // string JSON opcional
     } = req.body;
 
-    const image1 = req.files.image1 && req.files.image1[0];
-    const image2 = req.files.image2 && req.files.image2[0];
-    const image3 = req.files.image3 && req.files.image3[0];
-    const image4 = req.files.image4 && req.files.image4[0];
+    // vindo de upload.fields([...]) com memoryStorage
+    const image1 = req.files?.image1?.[0];
+    const image2 = req.files?.image2?.[0];
+    const image3 = req.files?.image3?.[0];
+    const image4 = req.files?.image4?.[0];
 
     const images = [image1, image2, image3, image4].filter(Boolean);
-    if (images.length === 0) {
-      throw new Error('Por favor, carregue pelo menos uma imagem');
-    }
+    if (images.length === 0) throw new Error('Por favor, carregue pelo menos uma imagem');
 
-    const imageUrl = await Promise.all(
-      images.map(async (image) => {
-        const result = await cloudinary.uploader.upload(image.path, { resource_type: 'image' });
-        return result.secure_url;
-      })
-    );
+    // sobe buffers para o Cloudinary
+    const uploaded = await Promise.all(images.map(f => uploadFromBuffer(f, 'products')));
+    const imageUrl = uploaded.map(u => u.secure_url);
 
     // Parse de sizes (compat)
     let parsedSizes = [];
@@ -56,9 +62,7 @@ export const addProduct = async (req, res) => {
         const s = typeof sizes === 'string' ? JSON.parse(sizes) : sizes;
         if (Array.isArray(s)) parsedSizes = s.filter(Boolean).map(String);
       }
-    } catch {
-      parsedSizes = [];
-    }
+    } catch { parsedSizes = []; }
 
     // Parse opcional de variants
     let parsedVariants = [];
@@ -67,9 +71,7 @@ export const addProduct = async (req, res) => {
         const v = typeof variants === 'string' ? JSON.parse(variants) : variants;
         if (Array.isArray(v)) parsedVariants = v.map(normalizeVariantInput).filter(Boolean);
       }
-    } catch {
-      parsedVariants = [];
-    }
+    } catch { parsedVariants = []; }
 
     const product = new ProductModel({
       name,
@@ -77,15 +79,14 @@ export const addProduct = async (req, res) => {
       price: Number(price),
       category,
       subCategory,
-      sizes: parsedSizes,      // será recalculado no save a partir das variants ativas com stock > 0
-      variants: parsedVariants, // se vazio, criaremos abaixo a partir de sizes
+      sizes: parsedSizes,      // será recalculado a partir das variants ativas com stock > 0
+      variants: parsedVariants,
       bestseller: bestseller === 'true' || bestseller === true,
       image: imageUrl,
       date: Date.now(),
       visible: true
     });
 
-    // Se não veio variants, criar a partir de sizes com stock=0 e isActive=false
     if (!product.variants?.length && parsedSizes.length) {
       product.variants = parsedSizes.map((sz) => ({
         size: sz.trim(),
@@ -94,22 +95,18 @@ export const addProduct = async (req, res) => {
       }));
     }
 
-    // Normaliza, recalcula sizes e salva
     product.normalizeVariantActivation?.();
     product.recalcSizesFromVariants?.();
     await product.save();
 
-    res.status(201).json({
-      success: true,
-      message: 'Produto Adicionado!',
-      product,
-    });
+    res.status(201).json({ success: true, message: 'Produto Adicionado!', product });
   } catch (error) {
+    console.error('[addProduct] erro:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-export const getListProducts = async (req, res) => {
+export const getListProducts = async (_req, res) => {
   try {
     const products = await ProductModel.find();
     res.status(200).json({ success: true, products });
@@ -122,9 +119,7 @@ export const removeProduct = async (req, res) => {
   try {
     const id = req.body.id;
     const product = await ProductModel.findByIdAndDelete(id);
-    if (!product) {
-      return res.status(404).json({ success: false, message: 'Produto Não Encontrado!' });
-    }
+    if (!product) return res.status(404).json({ success: false, message: 'Produto Não Encontrado!' });
     res.status(200).json({ success: true, message: 'Produto Removido Com Sucesso' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -135,51 +130,39 @@ export const getSingleProduct = async (req, res) => {
   try {
     const { productId } = req.body;
     const product = await ProductModel.findById(productId);
-    if (!product) {
-      return res.status(404).json({ success: false, message: 'Produto Não Encontrado!' });
-    }
+    if (!product) return res.status(404).json({ success: false, message: 'Produto Não Encontrado!' });
     res.status(200).json({ success: true, product });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Atualizar informações básicas do produto
 export const updateProduct = async (req, res) => {
   try {
     const { id, name, category, price } = req.body;
-    if (!id) {
-      return res.status(400).json({ success: false, message: 'ID do produto é obrigatório' });
-    }
+    if (!id) return res.status(400).json({ success: false, message: 'ID do produto é obrigatório' });
+
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       id,
       { name, category, price },
       { new: true }
     );
-    if (!updatedProduct) {
-      return res.status(404).json({ success: false, message: 'Produto não encontrado' });
-    }
+    if (!updatedProduct) return res.status(404).json({ success: false, message: 'Produto não encontrado' });
+
     res.json({ success: true, message: 'Produto atualizado com sucesso', product: updatedProduct });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Alterar visibilidade do produto
 export const toggleVisibility = async (req, res) => {
   try {
     const { id, visible } = req.body;
-    if (!id) {
-      return res.status(400).json({ success: false, message: 'ID do produto é obrigatório' });
-    }
-    const updatedProduct = await ProductModel.findByIdAndUpdate(
-      id,
-      { visible },
-      { new: true }
-    );
-    if (!updatedProduct) {
-      return res.status(404).json({ success: false, message: 'Produto não encontrado' });
-    }
+    if (!id) return res.status(400).json({ success: false, message: 'ID do produto é obrigatório' });
+
+    const updatedProduct = await ProductModel.findByIdAndUpdate(id, { visible }, { new: true });
+    if (!updatedProduct) return res.status(404).json({ success: false, message: 'Produto não encontrado' });
+
     res.json({ success: true, message: 'Visibilidade atualizada', product: updatedProduct });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -189,11 +172,6 @@ export const toggleVisibility = async (req, res) => {
 /* =========================================
  *     VARIANTES / ESTOQUE (NOVAS ROTAS)
  * ========================================= */
-
-/**
- * PATCH /api/product/:id/variant/toggle
- * body: { size, isActive }
- */
 export const toggleVariantActive = async (req, res) => {
   try {
     const { id } = req.params;
@@ -210,22 +188,16 @@ export const toggleVariantActive = async (req, res) => {
     if (!v) return res.status(404).json({ success: false, message: 'Tamanho não encontrado.' });
 
     v.isActive = !!isActive;
-
     product.normalizeVariantActivation?.();
     product.recalcSizesFromVariants?.();
     await product.save();
 
     res.json({ success: true, product });
-  } catch (e) {
+  } catch {
     res.status(500).json({ success: false, message: 'Erro ao alterar disponibilidade do tamanho.' });
   }
 };
 
-/**
- * PATCH /api/product/:id/variant/stock
- * body: { size, qty, reason? }
- *  - qty é o delta (positivo/negativo)
- */
 export const adjustVariantStock = async (req, res) => {
   try {
     const { id } = req.params;
@@ -244,7 +216,6 @@ export const adjustVariantStock = async (req, res) => {
     if (!v) return res.status(404).json({ success: false, message: 'Tamanho não encontrado.' });
 
     v.stock = Math.max(0, (Number(v.stock) || 0) + delta);
-    // Ativação automática simples
     if (v.stock <= 0) v.isActive = false;
     if (v.stock > 0 && v.isActive === false) v.isActive = true;
 
@@ -253,16 +224,11 @@ export const adjustVariantStock = async (req, res) => {
     await product.save();
 
     res.json({ success: true, product });
-  } catch (e) {
+  } catch {
     res.status(500).json({ success: false, message: 'Erro ao ajustar estoque do tamanho.' });
   }
 };
 
-/**
- * PUT /api/product/:id/variant/upsert
- * body (atualizar): { originalSize, size, sku?, stock?, isActive? }
- * body (criar):     { size, sku?, stock?, isActive? }
- */
 export const upsertVariant = async (req, res) => {
   try {
     const { id } = req.params;
@@ -273,11 +239,9 @@ export const upsertVariant = async (req, res) => {
 
     const product = await ProductModel.findById(id);
     if (!product) return res.status(404).json({ success: false, message: 'Produto não encontrado.' });
-
     if (!Array.isArray(product.variants)) product.variants = [];
 
     if (originalSize) {
-      // atualizar existente / renomear
       const v = product.variants.find(v => v.size === originalSize);
       if (!v) return res.status(404).json({ success: false, message: 'Tamanho original não encontrado.' });
 
@@ -293,9 +257,7 @@ export const upsertVariant = async (req, res) => {
         v.stock = n;
       }
       if (typeof isActive === 'boolean') v.isActive = isActive;
-
     } else {
-      // criar nova
       if (product.variants.some(x => x.size === size)) {
         return res.status(409).json({ success: false, message: 'Já existe uma variante com esse tamanho.' });
       }
@@ -315,15 +277,11 @@ export const upsertVariant = async (req, res) => {
     await product.save();
 
     res.json({ success: true, product });
-  } catch (e) {
+  } catch {
     res.status(500).json({ success: false, message: 'Erro ao salvar variante.' });
   }
 };
 
-/**
- * DELETE /api/product/:id/variant
- * body: { size }
- */
 export const deleteVariant = async (req, res) => {
   try {
     const { id } = req.params;
@@ -345,7 +303,7 @@ export const deleteVariant = async (req, res) => {
     await product.save();
 
     res.json({ success: true, product });
-  } catch (e) {
+  } catch {
     res.status(500).json({ success: false, message: 'Erro ao remover variante.' });
   }
 };
