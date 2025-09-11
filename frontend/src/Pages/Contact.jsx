@@ -127,7 +127,7 @@ const Contact = () => {
               </div>
               <div className="rounded-lg border border-neutral-900/10 bg-white p-4">
                 <div className="flex items-center gap-2"><Clock className="h-4 w-4" /><span className="text-sm font-medium">Horário do Atendimeno</span></div>
-                <p className="mt-1 text-sm text-neutral-700">{COMPANY.hours}<br />WhatsApp: {COMPANY.sla.whatsapp}<br />E-mail: {COMPANY.sla.email}</p>
+                <p className="mt-1 text-sm text-neutral-700">{COMPANY.hours}<br />E-mail: {COMPANY.sla.email}</p>
               </div>
             </div>
 
