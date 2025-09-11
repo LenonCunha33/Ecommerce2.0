@@ -69,7 +69,7 @@ const About = () => {
     email: "contato.marima.suporte@gmail.com",
     whatsapp: "https://wa.me/5524999999999",
     founded: "2025",
-    clients: "500+ clientes atendidos",
+    clients: "100+ clientes atendidos",
     shippingTime: "Região Sul Fluminense toda em 2-7 dias úteis",
   };
 
