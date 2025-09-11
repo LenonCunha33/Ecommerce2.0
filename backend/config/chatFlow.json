@@ -74,7 +74,7 @@
     "checkout_ajuda": {
       "message": "Se o pagamento falhar, limpe o cache/atualize a página, confira os dados do cartão ou tente outro método. Persistindo, fale com a gente:",
       "options": [
-        { "label": "WhatsApp", "action": { "type": "open_url", "url": "https://wa.me/55SEUNUMERO" }, "next": "fim" },
+        
         { "label": "Contato",  "action": { "type": "navigate", "to": "/contato" }, "next": "fim" },
         { "label": "Voltar", "next": "pagamento_cupons" }
       ]
