@@ -127,7 +127,7 @@ const About = () => {
   const timeline = [
     { year: "Ago/2025", text: "Lançamento do e-commerce com linha essencial." },
     { year: "Set/2025", text: "Nova plataforma com UX otimizada e entregas mais rápidas." },
-    { year: "Set/2025", text: "Novo Lançamento Drop Casual Linha Premium." },
+    { year: "Set/2025", text: "Em Breve... Novo Lançamento Drop Casual Linha Premium." },
     
   ];
 
