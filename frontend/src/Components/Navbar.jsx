@@ -1,5 +1,5 @@
 // src/Components/Navbar.jsx
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { assets } from '../assets/assets';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ShopContext } from '../Context/ShopContext';
@@ -8,7 +8,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
+  const profileRef = useRef(null);
 
   const {
     getCartCount,
@@ -24,10 +26,38 @@ const Navbar = () => {
     localStorage.removeItem('token');
     setToken('');
     setCartItems({});
+    setProfileOpen(false);
     navigate('/login');
   };
 
-  // ⬇️ Busca habilitada em /outlet e /fitness
+  // Fecha menus ao trocar de rota
+  useEffect(() => {
+    setMenuOpen(false);
+    setProfileOpen(false);
+  }, [location.pathname]);
+
+  // Fecha dropdown do perfil ao clicar fora ou ESC
+  useEffect(() => {
+    function onDocClick(e) {
+      if (!profileRef.current) return;
+      if (!profileRef.current.contains(e.target)) setProfileOpen(false);
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') setProfileOpen(false);
+    }
+    if (profileOpen) {
+      document.addEventListener('mousedown', onDocClick);
+      document.addEventListener('touchstart', onDocClick, { passive: true });
+      document.addEventListener('keydown', onKey);
+    }
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('touchstart', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [profileOpen]);
+
+  // Busca habilitada em /outlet e /fitness
   const isSearchPage = ['/outlet', '/fitness'].includes(location.pathname);
 
   return (
@@ -78,7 +108,7 @@ const Navbar = () => {
                 alt="Buscar"
                 className="w-5 cursor-pointer"
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setShowSearch(!showSearch)}
+                onClick={() => setShowSearch((v) => !v)}
               />
               <AnimatePresence>
                 {showSearch && (
@@ -110,31 +140,65 @@ const Navbar = () => {
         </div>
 
         {/* ÍCONE PERFIL */}
-        <div className="relative group">
+        <div className="relative" ref={profileRef}>
           <motion.img
             src={assets.profile_icon}
             alt="Perfil"
             className="w-5 cursor-pointer"
             whileTap={{ scale: 0.9 }}
-            onClick={() => (token ? null : navigate('/login'))}
+            onClick={() => {
+              if (!token) return navigate('/login');
+              setProfileOpen((v) => !v);
+            }}
+            aria-expanded={profileOpen}
+            aria-controls="profile-menu"
           />
-          {token && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              whileHover={{ opacity: 1, y: 0 }}
-              className="absolute right-0 mt-2 bg-white shadow-lg rounded-md text-gray-600 py-2 w-36 space-y-1 hidden group-hover:block"
-            >
-              {['Meu Perfil', 'Pedidos', 'Sair'].map((label, i) => (
-                <p
-                  key={i}
-                  onClick={i === 2 ? logout : () => navigate(i === 1 ? '/pedidos' : '/perfil')}
-                  className="px-4 py-2 hover:text-gray-900 cursor-pointer text-sm"
+
+          {/* Overlay para capturar toque fora (só mobile) */}
+          <AnimatePresence>
+            {profileOpen && (
+              <motion.div
+                className="fixed inset-0 sm:hidden z-40"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setProfileOpen(false)}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Dropdown do perfil (abre por clique no mobile e desktop) */}
+          <AnimatePresence>
+            {token && profileOpen && (
+              <motion.div
+                id="profile-menu"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.18 }}
+                className="absolute right-0 mt-2 bg-white shadow-lg rounded-md text-gray-600 py-2 w-40 space-y-1 z-50"
+              >
+                <button
+                  onClick={() => navigate('/perfil')}
+                  className="w-full text-left px-4 py-2 hover:text-gray-900 text-sm"
                 >
-                  {label}
-                </p>
-              ))}
-            </motion.div>
-          )}
+                  Meu Perfil
+                </button>
+                <button
+                  onClick={() => navigate('/pedidos')}
+                  className="w-full text-left px-4 py-2 hover:text-gray-900 text-sm"
+                >
+                  Pedidos
+                </button>
+                <button
+                  onClick={logout}
+                  className="w-full text-left px-4 py-2 hover:text-gray-900 text-sm"
+                >
+                  Sair
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* ÍCONE CARRINHO */}
@@ -156,7 +220,9 @@ const Navbar = () => {
           alt="Menu"
           className="w-5 cursor-pointer sm:hidden"
           whileTap={{ scale: 0.9 }}
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-drawer"
         />
       </div>
 
@@ -164,6 +230,7 @@ const Navbar = () => {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            id="mobile-drawer"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
