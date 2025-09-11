@@ -121,26 +121,6 @@ const Product = () => {
       </div>
 
       {/* Tabs Descrição / Avaliação */}
-      <div className="mt-16">
-        <div className="flex border-b text-lg font-medium">
-          <button className="px-6 py-4 border-b-2 border-black">Descrição</button>
-        </div>
-
-        <div className="px-6 py-6 text-gray-600 space-y-5 text-base leading-relaxed border rounded-b-lg">
-          <p>
-            Um site de e-commerce é uma plataforma online que facilita a compra
-            e venda de produtos ou serviços pela internet. Ele funciona como um
-            mercado virtual onde empresas e indivíduos podem exibir seus
-            produtos, interagir com clientes e realizar transações sem a
-            necessidade de uma presença física.
-          </p>
-          <p>
-            Sites de e-commerce normalmente exibem produtos ou serviços com
-            descrições detalhadas, imagens, preços e variações disponíveis (por
-            exemplo, tamanhos, cores).
-          </p>
-        </div>
-      </div>
 
       {/* Produtos Relacionados */}
       <div className="mt-20">
