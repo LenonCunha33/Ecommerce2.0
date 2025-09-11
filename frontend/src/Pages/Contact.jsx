@@ -36,7 +36,7 @@ const Contact = () => {
   const faqs = [
     { question: "Qual o prazo de entrega?", answer: "O prazo varia conforme a região e modalidade. Em média, de 5 a 10 dias úteis após a confirmação do pagamento." },
     { question: "Posso devolver um produto?", answer: "Claro! Você tem até 7 dias corridos após o recebimento para solicitar devolução ou troca, conforme o CDC." },
-    { question: "Quais formas de pagamento aceitam?", answer: "Cartões de Crédito (até 12x), Boleto Bancário e Carteiras Digitais." },
+    { question: "Quais formas de pagamento aceitam?", answer: "Cartões de Crédito, Boleto Bancário e Carteiras Digitais." },
     { question: "Como falo com o suporte?", answer: `Atendemos por E-mail e Chat. Prazo médio de resposta: E-mail ${COMPANY.sla.email}, Chat ${COMPANY.sla.chat}.` },
   ];
 
