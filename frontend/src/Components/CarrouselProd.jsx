@@ -21,7 +21,7 @@ const images = [
   assets.top,
 ];
 
-const prices = ['R$169,90', 'R$64,50', 'R$124,50', 'R$155,60'];
+const prices = ['R$258,00', 'R$90,00', 'R$158,00', 'R$90,00'];
 
 const slugify = (str) =>
   str
