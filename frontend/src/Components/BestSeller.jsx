@@ -9,10 +9,8 @@ const BestSeller = () => {
   const [bestSeller, setBestSeller] = useState([]);
 
   useEffect(() => {
-    if (products) {
-      const bestProduct = products.filter((product) => product.bestseller);
-      setBestSeller(bestProduct.slice(0, 5));
-    }
+    const best = (products || []).filter((p) => p.bestseller);
+    setBestSeller(best.slice(0, 5));
   }, [products]);
 
   return (
@@ -45,13 +43,11 @@ const BestSeller = () => {
           hidden: { opacity: 0 },
           visible: {
             opacity: 1,
-            transition: {
-              staggerChildren: 0.1,
-            },
+            transition: { staggerChildren: 0.1 },
           },
         }}
       >
-        {bestSeller.map((product, idx) => (
+        {bestSeller.map((product) => (
           <motion.div
             key={product._id}
             variants={{
@@ -65,6 +61,7 @@ const BestSeller = () => {
               image={product.image}
               name={product.name}
               price={product.price}
+              yampiLink={product.yampiLink}
             />
           </motion.div>
         ))}

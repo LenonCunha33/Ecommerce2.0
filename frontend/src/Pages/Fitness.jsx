@@ -10,14 +10,14 @@ const Fitness = () => {
   const { products, search } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
-  const [category, setCategory] = useState([]);     // se quiser reativar categoria depois
+  const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]); // Topwear/Bottomwear
-  const [typeFilter, setTypeFilter] = useState([]); // Top, Macacão, Short, Calça...
+  const [typeFilter, setTypeFilter] = useState([]);   // Top, Macacão, Short, Calça...
   const [sortType, setSortType] = useState("relevent");
 
   const [searchParams] = useSearchParams();
 
-  // ▶️ pré-seleciona "type" vindo da URL (ex.: ?type=Top)
+  // Pré-seleciona "type" vindo da URL (ex.: ?type=Top)
   useEffect(() => {
     const typeFromURL = searchParams.get("type");
     if (typeFromURL) setTypeFilter([typeFromURL]);
@@ -25,30 +25,24 @@ const Fitness = () => {
 
   const toggleCategory = (e) => {
     const v = e.target.value;
-    setCategory((prev) =>
-      prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]
-    );
+    setCategory((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
   };
 
   const toggleSubCategory = (e) => {
     const v = e.target.value;
-    setSubCategory((prev) =>
-      prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]
-    );
+    setSubCategory((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
   };
 
   const toggleTypeFilter = (e) => {
     const v = e.target.value;
-    setTypeFilter((prev) =>
-      prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]
-    );
+    setTypeFilter((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
   };
 
-  // 🔎 aplica filtros + PARTIÇÃO FITNESS
+  // Filtro + Partição "Fitness"
   const applyFilter = () => {
     if (!products || products.length === 0) return;
 
-    // 1) começa apenas com produtos visíveis E cujo nome contém "fitness"
+    // 1) apenas produtos visíveis cujo nome contém "fitness"
     let productsCopy = products.filter(
       (p) =>
         p?.visible !== false &&
@@ -56,34 +50,26 @@ const Fitness = () => {
         p.name.toLowerCase().includes("fitness")
     );
 
-    // 2) busca livre (aplica dentro do conjunto fitness)
+    // 2) busca livre
     if (search && search.trim() !== "") {
       const q = search.toLowerCase().trim();
-      productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(q)
-      );
+      productsCopy = productsCopy.filter((item) => item.name.toLowerCase().includes(q));
     }
 
-    // 3) categoria (se usar no futuro)
+    // 3) categoria
     if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        category.includes(item.category)
-      );
+      productsCopy = productsCopy.filter((item) => category.includes(item.category));
     }
 
     // 4) subcategoria
     if (subCategory.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        subCategory.includes(item.subCategory)
-      );
+      productsCopy = productsCopy.filter((item) => subCategory.includes(item.subCategory));
     }
 
-    // 5) tipo (checa pelo nome da peça)
+    // 5) tipo (checa no nome)
     if (typeFilter.length > 0) {
       productsCopy = productsCopy.filter((item) =>
-        typeFilter.some((tipo) =>
-          String(item.name).toLowerCase().includes(tipo.toLowerCase())
-        )
+        typeFilter.some((tipo) => String(item.name).toLowerCase().includes(tipo.toLowerCase()))
       );
     }
 
@@ -100,7 +86,7 @@ const Fitness = () => {
         sorted.sort((a, b) => b.price - a.price);
         break;
       default:
-        applyFilter(); // relevância = mantém ordem original (ou a da API)
+        applyFilter(); // relevância = ordem original/API
         return;
     }
     setFilterProducts(sorted);
@@ -133,9 +119,7 @@ const Fitness = () => {
           <img
             src={assets.dropdown_icon}
             alt="dropdown"
-            className={`h-3 sm:hidden transition-transform ${
-              showFilter ? "rotate-90" : ""
-            }`}
+            className={`h-3 sm:hidden transition-transform ${showFilter ? "rotate-90" : ""}`}
           />
         </p>
 
@@ -145,9 +129,7 @@ const Fitness = () => {
             showFilter ? "block" : "hidden"
           } sm:block`}
         >
-          <p className="mb-3 font-semibold text-sm text-gray-700">
-            Categoria de Uso
-          </p>
+          <p className="mb-3 font-semibold text-sm text-gray-700">Categoria de Uso</p>
           <div className="flex flex-col gap-2 text-sm text-gray-600">
             {["Topwear", "Bottomwear"].map((sub) => (
               <label key={sub} className="flex gap-2 items-center">
@@ -224,6 +206,7 @@ const Fitness = () => {
                     image={product.image}
                     name={product.name}
                     price={product.price}
+                    yampiLink={product.yampiLink}
                   />
                 </motion.div>
               ))}

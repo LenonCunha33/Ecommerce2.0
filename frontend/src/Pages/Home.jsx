@@ -82,36 +82,52 @@ const Home = () => {
         items={[
           { icon: "Truck", title: "Entrega rápida", desc: "2-7 dias úteis" },
           { icon: "RefreshCcw", title: "Troca garantida", desc: "Até 7 dias (CDC)" },
-          { icon: "Shield", title: "Compra segura", desc: "Site com SSL" },
-          { icon: "CreditCard", title: "Pagamentos", desc: "GPay, Cartão, Boleto" },
+          { icon: "Shield", title: "Compra segura", desc: "Site com SSL de Segurança Na hora do Seu Pagamento" },
+          { icon: "CreditCard", title: "Pagamentos", desc: "Pix, Cartão Parcelamento Disponível, Boleto" },
         ]}
       />
 
       {/* Destaques de Categoria (atalhos) */}
       <CategoryHighlights
-        items={[
-          {
-            title: "Leggings Fitness",
-            href: "/fitness?type=Calça",
-            image: assets.top, // <- substituído
-          },
-          {
-            title: "Tops Fitness",
-            href: "/fitness?type=Top",
-            image: assets.topr, // <- substituído
-          },
-          {
-            title: "Macacões Fitness",
-            href: "/fitness?type=Macacão",
-            image: assets.macacao, // <- substituído
-          },
-          {
-            title: "Shorts Fitness",
-            href: "/fitness?type=Short",
-            image: assets.shorts, // <- substituído
-          },
-        ]}
-      />
+  items={[
+    {
+      title: "Regata Casual",
+      href: "/casual?type=Regata",
+      image: "https://res.cloudinary.com/diwvlsgsw/image/upload/v1759104133/products/qtz88ket6enwfbz8rrkq.png",
+    },
+    {
+      title: "Croped Casual",
+      href: "/casual?type=Croped",
+      image: "https://res.cloudinary.com/diwvlsgsw/image/upload/v1759103976/products/jzro34dkwrl8uzasltay.png",
+    },
+    {
+      title: "Short Casual",
+      href: "/casual?type=Short",
+      image: "https://res.cloudinary.com/diwvlsgsw/image/upload/v1759103640/products/i2vybtcif7wv5lidc3io.png",
+    },
+    {
+      title: "Leggings Fitness",
+      href: "/fitness?type=Calça",
+      image: "https://res.cloudinary.com/diwvlsgsw/image/upload/v1758996380/products/ingwa51estpgozpxu0di.png",
+    },
+    {
+      title: "Tops Fitness",
+      href: "/fitness?type=Top",
+      image: "https://res.cloudinary.com/diwvlsgsw/image/upload/v1758984102/products/bb0f2gf5ijwvf8xfpghr.png",
+    },
+    {
+      title: "Macacões Fitness",
+      href: "/fitness?type=Macacão",
+      image: "https://res.cloudinary.com/diwvlsgsw/image/upload/v1758996574/products/fejyhuv2tbopz42k37ed.png",
+    },
+    {
+      title: "Shorts Fitness",
+      href: "/fitness?type=Short",
+      image: "https://res.cloudinary.com/diwvlsgsw/image/upload/v1758994116/products/ma7hf2kw3wxumaev1yrm.png",
+    },
+    
+  ]}
+/>
 
       {/* Carrossel de produtos */}
       <ProductCarousel />
@@ -128,9 +144,10 @@ const Home = () => {
       {/* Depoimentos / Prova social */}
       <Reviews
         items={[
-          { name: "Mariana A.", text: "Amando esse macacão, Disponível nas cores , Vinho e Preto.", },
-          { name: "Angell C.", text: "Coloquei meu conjunto pra treinar da @use.marima.ofc e pra quem corre esse conjunto é Perfeito pq tem bolsos na lateral e nas costas.", },
-          { name: "Gisele S.", text: "Macacão perfeito, caimento impecável.", },
+          { name: "Mariana O.", text: "Amei o cropped, super básico e estiloso, combina com tudo no dia a dia." },
+{ name: "Angell C.", text: "Esse short moletinho é muito confortável, uso tanto em casa quanto pra sair." },
+{ name: "Gisele S.", text: "As peças casuais estão incríveis, tecido leve e caimento perfeito." },
+
         ]}
       />
 

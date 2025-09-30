@@ -1,8 +1,8 @@
+// src/Components/ProductCarousel.jsx
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { assets } from '../assets/assets';
 import Title from './Title';
 
 const titles = [
@@ -11,17 +11,23 @@ const titles = [
   'Calça Legging',
   'Short Fitness',
   'Top Nadador',
+  'Regata Casual',
+  'Croped Casual',
+  'Short Casual',
 ];
 
 const images = [
-  assets.macacao,
-  assets.topr,
-  assets.calca,
-  assets.short,
-  assets.top,
+  'https://res.cloudinary.com/diwvlsgsw/image/upload/v1758997231/products/b1n65psbkjtwcd0olyan.png',
+  'https://res.cloudinary.com/diwvlsgsw/image/upload/v1758992784/products/j1f5lqpcq5wetgppnhln.png',
+  'https://res.cloudinary.com/diwvlsgsw/image/upload/v1758993368/products/cxhfcgf51fqadns3szs3.png',
+  'https://res.cloudinary.com/diwvlsgsw/image/upload/v1758993057/products/zaf2phwmnqxie65cixgn.png',
+  'https://res.cloudinary.com/diwvlsgsw/image/upload/v1758993368/products/cxhfcgf51fqadns3szs3.png',
+  'https://res.cloudinary.com/diwvlsgsw/image/upload/v1759103472/products/uakjofj0kgzs4wsbqcpb.png',
+  'https://res.cloudinary.com/diwvlsgsw/image/upload/v1759103821/products/t3qnorxtkrmgfhfgh8pg.png',
+  'https://res.cloudinary.com/diwvlsgsw/image/upload/v1759103643/products/axlqiifwheya8kijbtbx.png',
 ];
 
-const prices = ['R$258,00', 'R$90,00', 'R$158,00', 'R$115,00', 'R$90,00'];
+const prices = ['R$258,00', 'R$90,00', 'R$160,00', 'R$115,00', 'R$90,00' , 'R$80,00', 'R$70,00', 'R$90,00'];
 
 const slugify = (str) =>
   str
@@ -93,7 +99,6 @@ export default function ProductCarousel() {
           transition={{ ease: 'easeInOut', duration: 0.5 }}
         >
           {items.map((item) => {
-            // Vamos passar o tipo na query string para o /outlet
             const query = `?type=${encodeURIComponent(item.title)}`;
             const targetLink = `/outlet${query}`;
 
@@ -104,15 +109,12 @@ export default function ProductCarousel() {
                 className="flex-shrink-0 basis-full sm:basis-[calc((100%-64px)/5)]"
               >
                 <div className="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
-                  
-                  {/* Imagem */}
                   <motion.img
                     src={item.image}
                     alt={item.title}
                     className="w-full h-[520px] object-cover transition duration-500 group-hover:scale-105 group-hover:blur-sm"
                   />
 
-                  {/* Fundo escuro no hover */}
                   <motion.div
                     className="absolute inset-0 bg-black/30"
                     initial={{ opacity: 0 }}
@@ -120,7 +122,6 @@ export default function ProductCarousel() {
                     transition={{ duration: 0.3 }}
                   />
 
-                  {/* Conteúdo hover */}
                   <motion.div
                     className="absolute inset-0 flex flex-col items-center justify-center text-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-4 z-10"
                   >

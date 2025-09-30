@@ -6,7 +6,7 @@ import ProductItem from '../Components/ProductItem';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 
-const Collection = () => {
+const Casual = () => {
   const { products, search } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
@@ -49,12 +49,16 @@ const Collection = () => {
   const applyFilter = () => {
     if (!products || products.length === 0) return;
 
-    let productsCopy = products.filter((product) => product.visible !== false);
+    // 🔹 BASE: somente produtos cujo NOME contenha "casual"
+    let productsCopy = products
+      .filter((p) => p?.visible !== false)
+      .filter((p) => String(p?.name || '').toLowerCase().includes('casual'));
 
-    // 🔍 Busca
+    // 🔍 Busca global (search do contexto)
     if (search && search.trim() !== '') {
+      const q = search.toLowerCase().trim();
       productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase().trim())
+        String(item.name).toLowerCase().includes(q)
       );
     }
 
@@ -72,11 +76,11 @@ const Collection = () => {
       );
     }
 
-    // 🎯 Tipo (Top, Macacão, Short, etc.)
+    // 🎯 Tipo (Top, Macacão, Short, Calça) — busca no NOME, igual Collection
     if (typeFilter.length > 0) {
       productsCopy = productsCopy.filter((item) =>
         typeFilter.some((tipo) =>
-          item.name.toLowerCase().includes(tipo.toLowerCase())
+          String(item.name).toLowerCase().includes(String(tipo).toLowerCase())
         )
       );
     }
@@ -129,28 +133,7 @@ const Collection = () => {
           />
         </p>
 
-        {/* Categoria 
-        <div
-          className={`border border-gray-300 px-4 py-4 rounded-md mb-6 ${
-            showFilter ? 'block' : 'hidden'
-          } sm:block`}
-        >
-          <p className="mb-3 font-semibold text-sm text-gray-700">Categoria</p>
-          <div className="flex flex-col gap-2 text-sm text-gray-600">
-            <label className="flex gap-2 items-center">
-              <input
-                type="checkbox"
-                value="Women"
-                onChange={toggleCategory}
-                checked={category.includes('Women')}
-                className="accent-black"
-              />
-              Feminino
-            </label>
-          </div>
-        </div>*/}
-
-        {/* Subcategoria */}  
+        {/* Subcategoria */}
         <div
           className={`border border-gray-300 px-4 py-4 rounded-md mb-6 ${
             showFilter ? 'block' : 'hidden'
@@ -181,7 +164,7 @@ const Collection = () => {
         >
           <p className="mb-3 font-semibold text-sm text-gray-700">Segmento</p>
           <div className="flex flex-col gap-2 text-sm text-gray-600">
-            {['Top', 'Croped', 'Regata', 'Macacão', 'Short', 'Calça'].map((tipo) => (
+            {['Regata', 'Croped', 'Short'].map((tipo) => (
               <label key={tipo} className="flex gap-2 items-center">
                 <input
                   type="checkbox"
@@ -246,4 +229,4 @@ const Collection = () => {
   );
 };
 
-export default Collection;
+export default Casual;

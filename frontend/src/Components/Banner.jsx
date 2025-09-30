@@ -43,7 +43,7 @@ const Banner = () => {
             className="absolute inset-0 hidden md:block"
           >
             <img
-              src={assets.banner}
+              src="https://res.cloudinary.com/diwvlsgsw/image/upload/v1759147330/casual_l2y1db.png"
               alt="Banner Desktop"
               className="w-full h-full object-cover"
             />
@@ -83,7 +83,7 @@ const Banner = () => {
             whileHover={{ scale: 1.05, opacity: 0.5 }}
             className="absolute text-[60px] md:text-[120px] lg:text-[220px] font-extrabold text-white/40 leading-none select-none"
           >
-            Moda Fitness
+            Casual Co.
           </motion.h1>
 
           {/* Títulos */}
@@ -92,7 +92,7 @@ const Banner = () => {
             variants={fadeUp}
             className="text-3xl md:text-5xl lg:text-6xl font-bold text-white drop-shadow-lg"
           >
-            Performance & Equilíbrio
+            Athleisure
           </motion.h2>
 
           {/* Texto descritivo */}
@@ -107,7 +107,7 @@ const Banner = () => {
 
           {/* Botão CTA */}
           <motion.button
-            onClick={() => navigate("/outlet")}
+            onClick={() => navigate("/casual")}
             custom={2}
             variants={fadeUp}
             whileHover={{ scale: 1.1, backgroundColor: "#f3f3f3" }}

@@ -1,19 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import {
-  User,
-  Package,
-  ShoppingCart,
-  RefreshCcw,
-  LogOut,
-  Menu,
-  X,
-} from "lucide-react"; // ícones leves para SEO e acessibilidade
+import { User, RefreshCcw, LogOut, Menu, X, Heart, MapPin } from "lucide-react";
 
 export default function Sidebar({ activeTab, setActiveTab }) {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(true); // sidebar colapsável em telas menores
+  const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
   // Responsividade → detecta tela menor que 768px
@@ -24,10 +16,15 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Fecha por padrão no mobile; aberto no desktop
+  useEffect(() => {
+    setIsOpen(!isMobile);
+  }, [isMobile]);
+
   const menuItems = [
     { id: "dados", label: "Dados Pessoais", icon: <User size={18} /> },
-    { id: "pedidos", label: "Pedidos", icon: <Package size={18} /> },
-    { id: "carrinho", label: "Carrinho", icon: <ShoppingCart size={18} /> },
+    { id: "favoritos", label: "Favoritos", icon: <Heart size={18} /> },
+    { id: "endereco", label: "Endereço", icon: <MapPin size={18} /> },
     { id: "devolucoes", label: "Devoluções", icon: <RefreshCcw size={18} /> },
   ];
 
@@ -36,7 +33,6 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     navigate("/login");
   }
 
-  // Variantes de animação fluida
   const sidebarVariants = {
     hidden: { x: -280, opacity: 0 },
     visible: { x: 0, opacity: 1, transition: { duration: 0.35, ease: "easeOut" } },
@@ -48,9 +44,9 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       {/* Botão de toggle no mobile */}
       {isMobile && (
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsOpen((v) => !v)}
           aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
-          className="fixed top-4 mt-15 left-4 z-50 p-2 rounded-lg bg-black text-white shadow-md hover:scale-105 transition-transform"
+          className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-black text-white shadow-md hover:scale-105 transition-transform"
         >
           {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>

@@ -1,17 +1,15 @@
-import { useState } from "react";
+// src/Components/CategoryHighlights.jsx
+import { useState, useRef, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-/**
- * CategoryHighlights
- * - Mantém todos os textos/copys existentes
- * - UI/UX modernizada com Tailwind + Framer Motion
- * - Cards responsivos com imagens bem recortadas, hover states e acessibilidade
- */
 export default function CategoryHighlights({ items = [] }) {
   const reduce = useReducedMotion();
+  const scrollerRef = useRef(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
 
-  // Container + itens: animações suaves e performáticas
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -34,6 +32,37 @@ export default function CategoryHighlights({ items = [] }) {
     },
   };
 
+  function updateEdges() {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setAtStart(scrollLeft <= 0);
+    setAtEnd(scrollLeft + clientWidth >= scrollWidth - 1);
+  }
+
+  function scrollByCards(dir) {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const firstCard = el.querySelector("article");
+    const gap = parseFloat(getComputedStyle(el).columnGap || "0");
+    const w = firstCard ? firstCard.getBoundingClientRect().width : el.clientWidth * 0.8;
+    el.scrollBy({ left: dir * (w + gap), behavior: "smooth" });
+  }
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    updateEdges();
+    const onScroll = () => updateEdges();
+    const onResize = () => updateEdges();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
   return (
     <section
       className="px-4 sm:px-8 lg:px-20 py-12"
@@ -45,34 +74,66 @@ export default function CategoryHighlights({ items = [] }) {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
-        className="mx-auto max-w-screen-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+        className="mx-auto max-w-screen-xl"
       >
-        {items.map((c, i) => (
-          <motion.article
-            key={i}
-            variants={item}
-            className="
-              group relative overflow-hidden rounded-2xl bg-white
-              ring-1 ring-black/5 shadow-sm transition
-              will-change-transform transform-gpu
-              hover:shadow-lg
-              focus-within:shadow-lg
-            "
+        <div className="relative">
+          <button
+            type="button"
+            aria-label="Anterior"
+            onClick={() => scrollByCards(-1)}
+            disabled={atStart}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 rounded-full border border-neutral-200/60 bg-white/80 backdrop-blur shadow-sm flex items-center justify-center transition ${atStart ? "opacity-40 cursor-not-allowed" : "hover:bg-white"}`}
           >
-            <CategoryCardLink href={c.href} title={c.title} image={c.image} />
-          </motion.article>
-        ))}
+            <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-neutral-800" />
+          </button>
+
+          <div
+            ref={scrollerRef}
+            className="
+              flex flex-nowrap overflow-x-auto overflow-y-hidden
+              gap-6 md:gap-8 scroll-smooth snap-x snap-mandatory
+              [-ms-overflow-style:none] [scrollbar-width:none]
+            "
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
+            <style>{`.snap-x::-webkit-scrollbar{display:none}`}</style>
+
+            {items.map((c, i) => (
+              <motion.article
+                key={i}
+                variants={item}
+                className="
+                  snap-start shrink-0
+                  basis-full
+                  sm:basis-[calc((100%-24px)/2)]
+                  md:basis-[calc((100%-32px)/2)]
+                  lg:basis-[calc((100%-96px)/4)]
+                  group relative overflow-hidden rounded-2xl bg-white
+                  ring-1 ring-black/5 shadow-sm transition
+                  will-change-transform transform-gpu
+                  hover:shadow-lg focus-within:shadow-lg
+                "
+              >
+                <CategoryCardLink href={c.href} title={c.title} image={c.image} />
+              </motion.article>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            aria-label="Próximo"
+            onClick={() => scrollByCards(1)}
+            disabled={atEnd}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 rounded-full border border-neutral-200/60 bg-white/80 backdrop-blur shadow-sm flex items-center justify-center transition ${atEnd ? "opacity-40 cursor-not-allowed" : "hover:bg-white"}`}
+          >
+            <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-neutral-800" />
+          </button>
+        </div>
       </motion.div>
     </section>
   );
 }
 
-/** Link do card com imagem + título
- * - Aspect ratio definido para evitar layout shift
- * - Skeleton shimmer até a imagem carregar
- * - Hover: leve zoom na imagem e sutil translate no conteúdo
- * - Acessível via teclado (focus-visible)
- */
 function CategoryCardLink({ href, title, image }) {
   const [loaded, setLoaded] = useState(false);
 
@@ -86,9 +147,7 @@ function CategoryCardLink({ href, title, image }) {
       "
       aria-label={title}
     >
-      {/* Mídia */}
       <div className="relative overflow-hidden">
-        {/* Skeleton / shimmer */}
         <div
           aria-hidden="true"
           className={[
@@ -124,11 +183,9 @@ function CategoryCardLink({ href, title, image }) {
           />
         </motion.figure>
 
-        {/* Máscara sutil para legibilidade sem alterar a cor de marca */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent" />
       </div>
 
-      {/* Conteúdo */}
       <motion.div
         initial={{ y: 6, opacity: 0.95 }}
         whileHover={{ y: 0, opacity: 1 }}

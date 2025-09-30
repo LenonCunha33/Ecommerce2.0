@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { ShopContext } from "../../Context/ShopContext";
@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 export default function DadosPessoais() {
   const { backendUrl, token } = useContext(ShopContext);
+
   const [form, setForm] = useState({
     nome: "",
     celular: "",
@@ -18,53 +19,79 @@ export default function DadosPessoais() {
     sexo: "masculino",
     promo: false,
   });
+  const [loading, setLoading] = useState(false);
+  const isMounted = useRef(true);
 
   // Carregar dados do usuário
   useEffect(() => {
-    if (token) {
-      axios
-        .get(`${backendUrl}/api/user/profile`, {
+    isMounted.current = true;
+    const controller = new AbortController();
+
+    async function fetchProfile() {
+      if (!token) return;
+      try {
+        const { data } = await axios.get(`${backendUrl}/api/user/profile`, {
           headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          if (res.data.success) {
-            setForm({
-              nome: res.data.user.name || "",
-              celular: res.data.user.celular || "",
-              telefone: res.data.user.telefone || "",
-              whatsapp: res.data.user.whatsapp || "",
-              email: res.data.user.email || "",
-              senha: "",
-              cpf: res.data.user.cpf || "",
-              nascimento: res.data.user.nascimento || "",
-              sexo: res.data.user.sexo || "masculino",
-              promo: res.data.user.promo || false,
-            });
-          }
-        })
-        .catch(() => toast.error("Erro ao carregar dados"));
+          signal: controller.signal,
+        });
+        if (data?.success && isMounted.current) {
+          setForm((prev) => ({
+            ...prev,
+            nome: data.user?.name || "",
+            celular: data.user?.celular || "",
+            telefone: data.user?.telefone || "",
+            whatsapp: data.user?.whatsapp || "",
+            email: data.user?.email || "",
+            senha: "", // nunca preencher senha vinda do backend
+            cpf: data.user?.cpf || "",
+            nascimento: data.user?.nascimento || "",
+            sexo: data.user?.sexo || "masculino",
+            promo: !!data.user?.promo,
+          }));
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          toast.error("Erro ao carregar dados do perfil.");
+        }
+      }
     }
+
+    fetchProfile();
+
+    return () => {
+      isMounted.current = false;
+      controller.abort();
+    };
   }, [token, backendUrl]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
   };
 
   const handleSubmit = async () => {
+    if (!token) return toast.error("Sessão expirada. Faça login novamente.");
+    setLoading(true);
     try {
-      const res = await axios.put(
-        `${backendUrl}/api/user/update-profile`,
-        form,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (res.data.success) {
+      const payload = { ...form };
+      // não enviar senha vazia
+      if (!payload.senha) delete payload.senha;
+
+      const { data } = await axios.put(`${backendUrl}/api/user/update-profile`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (data?.success) {
         toast.success("✅ Dados atualizados com sucesso!");
+        // limpa campo de senha no formulário
+        setForm((f) => ({ ...f, senha: "" }));
       } else {
-        toast.error(res.data.message);
+        toast.error(data?.message || "Não foi possível salvar as alterações.");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Erro ao salvar alterações");
+      toast.error(err?.response?.data?.message || "Erro ao salvar alterações");
+    } finally {
+      if (isMounted.current) setLoading(false);
     }
   };
 
@@ -89,11 +116,7 @@ export default function DadosPessoais() {
       variants={containerVariants}
       className="max-w-3xl mx-auto px-6 py-12"
     >
-      {/* SEO heading */}
-      <motion.h2
-        variants={itemVariants}
-        className="text-3xl font-extrabold text-gray-900 mb-8 text-center"
-      >
+      <motion.h2 variants={itemVariants} className="text-3xl font-extrabold text-gray-900 mb-8 text-center">
         Atualize seus Dados Pessoais
       </motion.h2>
 
@@ -111,17 +134,18 @@ export default function DadosPessoais() {
             { name: "email", placeholder: "E-mail", type: "email" },
             { name: "senha", placeholder: "Nova senha", type: "password" },
             { name: "cpf", placeholder: "CPF ou CNPJ" },
-            { name: "nascimento", type: "date" },
-          ].map((field, idx) => (
+            { name: "nascimento", placeholder: "Data de nascimento", type: "date" },
+          ].map((field) => (
             <motion.input
-              key={idx}
+              key={field.name}
               variants={itemVariants}
               type={field.type || "text"}
               name={field.name}
               value={form[field.name]}
               onChange={handleChange}
               placeholder={field.placeholder}
-              aria-label={field.placeholder}
+              aria-label={field.placeholder || field.name}
+              autoComplete={field.name === "senha" ? "new-password" : "on"}
               className="w-full px-4 py-3 border rounded-lg text-gray-700 focus:ring-2 focus:ring-black focus:border-black outline-none transition"
             />
           ))}
@@ -139,11 +163,8 @@ export default function DadosPessoais() {
             <option value="feminino">Feminino</option>
           </motion.select>
 
-          {/* Checkbox */}
-          <motion.label
-            variants={itemVariants}
-            className="flex items-center gap-3 text-gray-700 cursor-pointer"
-          >
+          {/* Checkbox promo */}
+          <motion.label variants={itemVariants} className="flex items-center gap-3 text-gray-700 cursor-pointer">
             <input
               type="checkbox"
               name="promo"
@@ -155,15 +176,17 @@ export default function DadosPessoais() {
           </motion.label>
         </motion.div>
 
-        {/* Botão */}
         <motion.button
           variants={itemVariants}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+          whileHover={!loading ? { scale: 1.03 } : {}}
+          whileTap={!loading ? { scale: 0.97 } : {}}
           onClick={handleSubmit}
-          className="w-full bg-black text-white font-semibold py-3 rounded-lg shadow-md hover:bg-gray-900 transition"
+          disabled={loading}
+          className={`w-full font-semibold py-3 rounded-lg shadow-md transition text-white ${
+            loading ? "bg-gray-500 cursor-not-allowed" : "bg-black hover:bg-gray-900"
+          }`}
         >
-          Salvar Alterações
+          {loading ? "Salvando..." : "Salvar Alterações"}
         </motion.button>
       </motion.div>
     </motion.section>

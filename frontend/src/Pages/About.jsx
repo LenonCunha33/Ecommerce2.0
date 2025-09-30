@@ -14,6 +14,9 @@ import {
   MapPin,
   FileText,
   Award,
+  QrCode,
+  Banknote,
+  BadgePercent,
 } from "lucide-react";
 
 /* ------------------------- animações reutilizáveis ------------------------ */
@@ -74,79 +77,51 @@ const About = () => {
   };
 
   const values = [
-    {
-      title: "Transparência",
-      desc: "Políticas claras, comunicação direta e acompanhamento do pedido.",
-    },
-    {
-      title: "Qualidade",
-      desc: "Curadoria com foco em tecnologia têxtil, caimento e durabilidade.",
-    },
-    {
-      title: "Atendimento",
-      desc: "Suporte ágil em todos os canais.",
-    },
+    { title: "Transparência", desc: "Políticas claras, comunicação direta e acompanhamento do pedido." },
+    { title: "Qualidade", desc: "Curadoria com foco em tecnologia têxtil, caimento e durabilidade." },
+    { title: "Atendimento", desc: "Suporte ágil em todos os canais." },
   ];
 
   const policies = [
-    {
-      icon: <RefreshCcw className="h-5 w-5" />,
-      title: "Troca & Devolução",
-      desc: "Até 7 dias corridos após o recebimento (CDC).",
-    },
-    {
-      icon: <FileText className="h-5 w-5" />,
-      title: "Privacidade",
-      desc: "Seus dados tratados com sigilo e segurança (LGPD).",
-    },
-    {
-      icon: <Truck className="h-5 w-5" />,
-      title: "Envio Rápido",
-      desc: COMPANY.shippingTime,
-    },
+    { icon: <RefreshCcw className="h-5 w-5" />, title: "Troca & Devolução", desc: "Até 7 dias corridos após o recebimento (CDC)." },
+    { icon: <FileText className="h-5 w-5" />, title: "Privacidade", desc: "Seus dados tratados com sigilo e segurança (LGPD)." },
+    { icon: <Truck className="h-5 w-5" />, title: "Envio Rápido", desc: COMPANY.shippingTime },
   ];
 
+  /* ATUALIZAÇÃO: pagamentos */
   const trust = [
-    {
-      icon: <Lock className="h-5 w-5" />,
-      title: "Site seguro (SSL)",
-      desc: "Criptografia em toda a navegação.",
-    },
+    { icon: <Lock className="h-5 w-5" />, title: "Site seguro (SSL)", desc: "Criptografia em toda a navegação." },
     {
       icon: <CreditCard className="h-5 w-5" />,
       title: "Pagamentos confiáveis",
-      desc: "Cartão, Boleto e Carteiras Digitais.",
+      desc: "PIX, Cartões e Boleto • parcelamento disponível.",
     },
-    {
-      icon: <Shield className="h-5 w-5" />,
-      title: "Compra protegida",
-      desc: "Boas práticas antifraude e estorno.",
-    },
+    { icon: <Shield className="h-5 w-5" />, title: "Compra protegida", desc: "Boas práticas antifraude e estorno." },
+  ];
+
+  /* chips visuais de pagamentos */
+  const paymentChips = [
+    { icon: <QrCode className="h-4 w-4" />, label: "PIX" },
+    { icon: <CreditCard className="h-4 w-4" />, label: "Cartões" },
+    { icon: <Banknote className="h-4 w-4" />, label: "Boleto" },
+    { icon: <BadgePercent className="h-4 w-4" />, label: "Parcelamento" },
   ];
 
   const timeline = [
     { year: "Ago/2025", text: "Lançamento do e-commerce com linha essencial." },
     { year: "Set/2025", text: "Nova plataforma com UX otimizada e entregas mais rápidas." },
-    { year: "Set/2025", text: "Em Breve... Novo Lançamento Drop Casual Linha Premium." },
-    
+    {
+      /* ATUALIZAÇÃO: drop premium na segunda-feira */
+      year: "Segunda-feira (em breve)",
+      text:
+        "Lançamento do Drop Casual • Linha Premium. Garanta o seu: pagamento via PIX, cartões, boleto e opção de parcelamento.",
+    },
   ];
 
   const testimonials = [
-    {
-      name: "Angell Carius",
-      text: "Peças excelentes e entrega super rápida. Atendimento impecável!",
-      when: "Set/2025",
-    },
-    {
-      name: "Gisele Souza",
-      text: "Compra fácil, recebi atualizações do pedido e chegou antes do prazo.",
-      when: "Out/2025",
-    },
-    {
-      name: "Mariana Alonso",
-      text: "Qualidade top e troca sem burocracia. Vou comprar de novo!",
-      when: "Out/2025",
-    },
+    { name: "Angell Carius", text: "Peças excelentes e entrega super rápida. Atendimento impecável!", when: "Set/2025" },
+    { name: "Gisele Souza", text: "Compra fácil, recebi atualizações do pedido e chegou antes do prazo.", when: "Out/2025" },
+    { name: "Mariana Alonso", text: "Qualidade top e troca sem burocracia. Vou comprar de novo!", when: "Out/2025" },
   ];
 
   return (
@@ -166,11 +141,7 @@ const About = () => {
           {/* imagem segura + proporção fixa para evitar “salto” de layout */}
           <motion.div {...fadeIn(0.05)} className="relative w-full">
             <div className="aspect-[2/3] w-full overflow-hidden rounded-2xl border border-neutral-200 shadow-sm">
-              <SafeImage
-                src={assets.about_img}
-                alt="Bastidores e curadoria de produtos"
-                className="h-full w-full object-cover"
-              />
+              <SafeImage src={assets.about_img} alt="Bastidores e curadoria de produtos" className="h-full w-full object-cover" />
             </div>
           </motion.div>
 
@@ -182,11 +153,7 @@ const About = () => {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {trust.map((t, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ y: -2 }}
-                  className="rounded-xl border border-neutral-200 bg-white p-4 transition"
-                >
+                <motion.div key={i} whileHover={{ y: -2 }} className="rounded-xl border border-neutral-200 bg-white p-4 transition">
                   <div className="flex items-center gap-2">
                     <span className="rounded-lg border border-neutral-900 p-1.5">{t.icon}</span>
                     <p className="text-sm font-semibold">{t.title}</p>
@@ -208,24 +175,15 @@ const About = () => {
           {[
             {
               title: "Missão",
-              desc:
-                "Inspirar saúde e confiança por meio de peças funcionais e atendimento próximo, do carrinho à entrega.",
+              desc: "Inspirar saúde e confiança por meio de peças funcionais e atendimento próximo, do carrinho à entrega.",
             },
             {
               title: "Visão",
-              desc:
-                `Ser referência nacional em ${COMPANY.segment} & Casual com inovação, acessibilidade e curadoria consistente.`,
+              desc: `Ser referência nacional em ${COMPANY.segment} & Casual com inovação, acessibilidade e curadoria consistente.`,
             },
-            {
-              title: "Valores",
-              desc: null,
-            },
+            { title: "Valores", desc: null },
           ].map((card, idx) => (
-            <motion.div
-              key={idx}
-              whileHover={{ y: -2 }}
-              className="rounded-2xl border border-neutral-200 bg-white p-6"
-            >
+            <motion.div key={idx} whileHover={{ y: -2 }} className="rounded-2xl border border-neutral-200 bg-white p-6">
               <h4 className="text-lg font-semibold text-neutral-900">{card.title}</h4>
               {card.desc ? (
                 <p className="mt-2 text-sm text-neutral-700">{card.desc}</p>
@@ -250,32 +208,13 @@ const About = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            {
-              icon: <Award className="h-5 w-5" />,
-              title: "Curadoria profissional",
-              desc: "Seleção técnica com foco em caimento e performance.",
-            },
-            {
-              icon: <UserCheck className="h-5 w-5" />,
-              title: "Suporte humano",
-              desc: "Equipe real, respostas claras e resolução ágil.",
-            },
-            {
-              icon: <Truck className="h-5 w-5" />,
-              title: "Rastreio completo",
-              desc: "Acompanhe seu pedido com atualizações a cada etapa.",
-            },
+            { icon: <Award className="h-5 w-5" />, title: "Curadoria profissional", desc: "Seleção técnica com foco em caimento e performance." },
+            { icon: <UserCheck className="h-5 w-5" />, title: "Suporte humano", desc: "Equipe real, respostas claras e resolução ágil." },
+            { icon: <Truck className="h-5 w-5" />, title: "Rastreio completo", desc: "Acompanhe seu pedido com atualizações a cada etapa." },
           ].map((card, i) => (
-            <motion.div
-              key={i}
-              {...fadeUp(0.05 * i)}
-              whileHover={{ y: -3 }}
-              className="rounded-2xl border border-neutral-200 bg-white p-6"
-            >
+            <motion.div key={i} {...fadeUp(0.05 * i)} whileHover={{ y: -3 }} className="rounded-2xl border border-neutral-200 bg-white p-6">
               <div className="flex items-center gap-2">
-                <span className="rounded-lg border border-neutral-900 p-1.5">
-                  {card.icon}
-                </span>
+                <span className="rounded-lg border border-neutral-900 p-1.5">{card.icon}</span>
                 <h4 className="font-semibold">{card.title}</h4>
               </div>
               <p className="mt-2 text-sm text-neutral-700">{card.desc}</p>
@@ -290,10 +229,7 @@ const About = () => {
           <Title text1="TRANSPARÊNCIA" text2="E CONFIANÇA" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div
-            whileHover={{ y: -2 }}
-            className="rounded-2xl border border-neutral-200 bg-white p-6 space-y-4"
-          >
+          <motion.div whileHover={{ y: -2 }} className="rounded-2xl border border-neutral-200 bg-white p-6 space-y-4">
             <h4 className="text-lg font-semibold text-neutral-900">Dados do Negócio</h4>
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4" />
@@ -309,25 +245,31 @@ const About = () => {
               <Shield className="h-4 w-4" />
               <span>Certificado SSL • Meios de pagamento verificados</span>
             </div>
+
+            {/* ATUALIZAÇÃO: formas de pagamento visuais */}
+            <h5 className="pt-1 text-sm font-semibold">Formas de pagamento</h5>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {paymentChips.map((p, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-neutral-50 px-3 py-1 text-xs"
+                >
+                  {p.icon}
+                  {p.label}
+                </span>
+              ))}
+            </div>
+
             <div className="flex gap-2 pt-2">
-              <a
-                href="/privacidade"
-                className="text-sm underline underline-offset-4 hover:opacity-80"
-              >
+              <a href="/privacidade" className="text-sm underline underline-offset-4 hover:opacity-80">
                 Privacidade
               </a>
               <span className="text-neutral-400">•</span>
-              <a
-                href="/entrega"
-                className="text-sm underline underline-offset-4 hover:opacity-80"
-              >
+              <a href="/entrega" className="text-sm underline underline-offset-4 hover:opacity-80">
                 Entrega
               </a>
               <span className="text-neutral-400">•</span>
-              <a
-                href="/trocas"
-                className="text-sm underline underline-offset-4 hover:opacity-80"
-              >
+              <a href="/trocas" className="text-sm underline underline-offset-4 hover:opacity-80">
                 Trocas/Devoluções
               </a>
             </div>
@@ -335,15 +277,9 @@ const About = () => {
 
           <div className="rounded-2xl border border-neutral-200 bg-white p-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             {policies.map((p, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -2 }}
-                className="rounded-xl border border-neutral-200 p-4"
-              >
+              <motion.div key={i} whileHover={{ y: -2 }} className="rounded-xl border border-neutral-200 p-4">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-lg border border-neutral-900 p-1.5">
-                    {p.icon}
-                  </span>
+                  <span className="rounded-lg border border-neutral-900 p-1.5">{p.icon}</span>
                   <p className="text-sm font-semibold">{p.title}</p>
                 </div>
                 <p className="mt-1 text-xs text-neutral-600">{p.desc}</p>
@@ -359,20 +295,12 @@ const About = () => {
           <Title text1="NOSSA" text2="JORNADA" />
         </div>
 
-        {/* 
-          Correção do “0●25”: aumentamos o padding da coluna (pl-10), 
-          reposicionamos o marcador (left-0) e deslocamos o texto (ml-3),
-          evitando que o ponto sobreponha o primeiro dígito do ano.
-        */}
         <div className="relative max-w-3xl mx-auto">
           <div className="absolute left-3 top-0 bottom-0 w-px bg-neutral-200" aria-hidden />
           <ul className="space-y-10 pl-10">
             {timeline.map((t, i) => (
               <li key={i} className="relative">
-                <span
-                  className="absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border border-neutral-900 bg-white"
-                  aria-hidden
-                />
+                <span className="absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border border-neutral-900 bg-white" aria-hidden />
                 <div className="ml-10">
                   <h5 className="text-sm font-semibold tracking-wide">{t.year}</h5>
                   <p className="text-sm text-neutral-700">{t.text}</p>
@@ -383,8 +311,6 @@ const About = () => {
         </div>
       </motion.section>
 
-      
-
       {/* --------------------------- DEPOIMENTOS ----------------------------- */}
       <motion.section {...fadeUp(0)}>
         <div className="text-center mb-6">
@@ -392,11 +318,7 @@ const About = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((t, i) => (
-            <motion.div
-              key={i}
-              whileHover={{ y: -3 }}
-              className="rounded-2xl border border-neutral-200 bg-white p-5"
-            >
+            <motion.div key={i} whileHover={{ y: -3 }} className="rounded-2xl border border-neutral-200 bg-white p-5">
               <p className="text-sm text-neutral-700">“{t.text}”</p>
               <div className="mt-3 text-xs text-neutral-500">
                 {t.name} • {t.when}

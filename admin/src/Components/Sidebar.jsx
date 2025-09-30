@@ -18,12 +18,6 @@ const navItems = [
     seoLabel: "Visualizar e gerenciar todos os itens cadastrados",
   },
   {
-    to: "/orders",
-    icon: assets.order_icon,
-    label: "Pedidos",
-    seoLabel: "Gerenciar pedidos realizados na loja",
-  },
-  {
     to: "/user",
     icon: assets.user_icon || assets.order_icon,
     label: "Usuários",

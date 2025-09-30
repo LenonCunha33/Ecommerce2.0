@@ -1,119 +1,76 @@
-import React, { useEffect, useState } from "react";
+// src/Components/Hero.jsx
+import React from "react";
 import { motion } from "framer-motion";
-import { assets } from "../assets/assets";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  show: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: "easeOut", delay: i * 0.2 },
-  }),
+const LEFT_URL =
+  "https://res.cloudinary.com/diwvlsgsw/image/upload/v1759149617/GAB08709_ddffsr.png";
+const RIGHT_URL =
+  "https://res.cloudinary.com/diwvlsgsw/image/upload/v1759149509/GAB08714_ly1kry.png";
+const MOBILE_URL =
+  "https://res.cloudinary.com/diwvlsgsw/image/upload/v1759149429/GAB08727_j35x2w.png";
+
+const zoomIn = {
+  initial: { scale: 1.08, opacity: 0 },
+  animate: { scale: 1, opacity: 1, transition: { duration: 1.1, ease: "easeOut" } },
 };
 
-function Hero() {
-  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
-
-  useEffect(() => {
-    const checkDevice = () => {
-      const width = window.innerWidth;
-      setIsMobileOrTablet(width < 1024); // até 1023px (tablet e mobile)
-    };
-
-    checkDevice();
-    window.addEventListener("resize", checkDevice);
-    return () => window.removeEventListener("resize", checkDevice);
-  }, []);
+export default function Hero() {
+  const mobileSrc = MOBILE_URL || LEFT_URL;
 
   return (
-    <section
-      className="w-full flex flex-col overflow-hidden bg-[#FAFAFA]"
-      aria-label="Seção de Promoção Estilos Diários"
-    >
-      {/* Hero Banner */}
-      <div className="relative w-full h-[600px] flex items-center justify-center">
-        
-        {/* Imagem Desktop */}
-        {!isMobileOrTablet && (
-          <motion.div
-            initial={{ scale: 1.2 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            className="absolute inset-0 hidden lg:block"
-          >
-            <img
-              src={assets.hero_video}
-              alt="Estilos Diários Desktop"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
-          </motion.div>
-        )}
-
-        {/* Imagem Mobile/Tablet */}
-        {isMobileOrTablet && (
-          <motion.div
-            initial={{ scale: 1.2 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            className="absolute inset-0 block lg:hidden"
-          >
-            <img
-              src={assets.Mobile1}
-              alt="Estilos Diários Mobile/Tablet"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
-          </motion.div>
-        )}
-
-        {/* Texto Central */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className={`relative z-10 flex flex-col ${
-            isMobileOrTablet
-              ? "items-center justify-center text-center px-4"
-              : "items-center justify-center text-center"
-          }`}
+    <section aria-label="Hero principal" className="relative w-full bg-white">
+      <div className="relative grid w-full overflow-hidden grid-cols-1 md:grid-cols-2 gap-x-0 md:gap-x-[13px] h-[560px] sm:h-[680px] lg:h-[900px] xl:h-[850px]">
+        <motion.figure
+          variants={zoomIn}
+          initial="initial"
+          animate="animate"
+          className="relative h-full"
         >
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 0.4, scale: 1 }}
-            transition={{ duration: 1 }}
-            className="text-[70px] md:text-[150px] lg:text-[250px] font-extrabold text-white/40 leading-none select-none"
-          >
-          Fitness
-          </motion.h1>
+          <picture>
+            <source media="(max-width: 767px)" srcSet={mobileSrc} />
+            <img
+              src={LEFT_URL}
+              alt="Coleção — imagem esquerda"
+              className="absolute inset-0 w-full h-full object-cover"
+              loading="eager"
+            />
+          </picture>
+          <div className="absolute inset-0 bg-white/6" />
+        </motion.figure>
 
-          <motion.h2
-            variants={fadeUp}
-            className="text-3xl font-light md:text-5xl font-light lg:text-6xl font-bold text-white -mt-12 md:-mt-24 drop-shadow-lg"
-          >
-            Perfomance &
-          </motion.h2>
+        <motion.figure
+          variants={zoomIn}
+          initial="initial"
+          animate="animate"
+          className="relative h-full hidden md:block"
+        >
+          <img
+            src={RIGHT_URL}
+            alt="Coleção — imagem direita"
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-white/6" />
+        </motion.figure>
 
-          <motion.h2
-            variants={fadeUp}
-            className="text-3xl font-light md:text-5xl font-light lg:text-6xl font-extrabold text-white drop-shadow-lg"
-          >
-            Conforto
-          </motion.h2>
-
-          <motion.p
-            custom={1}
-            variants={fadeUp}
-            className="text-white/90 mt-3 text-sm md:text-lg max-w-lg px-2 md:px-0"
-          >
-            Um equilíbrio perfeito entre conforto, qualidade e versatilidade,
-            acompanhando você do treino às atividades do dia a dia com sofisticação.
-          </motion.p>
-        </motion.div>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="text-center px-4">
+            <h2 className="text-[26px] sm:text-[28px] leading-tight tracking-[0.18em] font-semibold text-neutral-900 uppercase [text-wrap:balance]">
+              <span className="block">MODA.</span>
+              <span className="block mt-1">Casual.</span>
+              <span className="block mt-1">Athleisure.</span>
+            </h2>
+            <div className="mt-5 flex items-center justify-center">
+              <a
+                href="/casual"
+                className="pointer-events-auto text-[12px] md:text-[13px] tracking-[0.26em] uppercase text-neutral-900 relative after:content-[''] after:block after:h-[1.5px] after:w-full after:mt-2 after:bg-neutral-900/90 hover:opacity-70 transition-opacity"
+              >
+                Descubra Mais Sobre esse Novo Drop
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
-
-export default Hero;

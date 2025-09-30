@@ -1,15 +1,46 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { motion } from "framer-motion";
 import Title from "./Title";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ShopContext } from "../Context/ShopContext"; // ajuste o caminho se necessário
+import { ShopContext } from "../Context/ShopContext";
 
+/**
+ * Newsletter exibida apenas para usuários NÃO logados.
+ * Detecta autenticação por:
+ * - ShopContext: token | user
+ * - localStorage: token | authToken
+ * - cookies: "token="
+ */
 const NewsLetterBox = () => {
-  const { token } = useContext(ShopContext); // token indica se o usuário está logado
+  const shop = useContext(ShopContext);
+
+  const isLoggedIn = useMemo(() => {
+    const ctxToken = shop?.token || shop?.authToken;
+    const ctxUser = shop?.user || shop?.currentUser;
+
+    // localStorage (projetos Vite/SPA geralmente têm)
+    let lsToken = null;
+    try {
+      lsToken =
+        typeof window !== "undefined"
+          ? localStorage.getItem("token") || localStorage.getItem("authToken")
+          : null;
+    } catch {
+      /* ignore */
+    }
+
+    // cookies (fallback leve)
+    const hasCookieToken =
+      typeof document !== "undefined" &&
+      /(^|;\s*)token=/.test(document.cookie || "");
+
+    return Boolean(ctxToken || ctxUser || lsToken || hasCookieToken);
+  }, [shop]);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
+    // aqui você pode integrar com sua API de newsletter se quiser
     toast.success("Inscrição realizada com sucesso!", {
       position: "top-center",
       autoClose: 3000,
@@ -30,8 +61,8 @@ const NewsLetterBox = () => {
     });
   };
 
-  // Se o usuário estiver logado, não renderiza nada
-  if (token) return null;
+  // Se o usuário estiver logado, não renderiza a seção
+  if (isLoggedIn) return null;
 
   return (
     <motion.div
@@ -49,12 +80,15 @@ const NewsLetterBox = () => {
       <form
         onSubmit={onSubmitHandler}
         className="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row items-center gap-4"
+        aria-label="Formulário de inscrição na newsletter"
       >
         <input
           type="email"
+          name="email"
           placeholder="Digite seu e-mail"
           required
           className="flex-1 w-full px-4 py-3 rounded-full border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none transition-all duration-200 text-sm sm:text-base"
+          aria-label="E-mail"
         />
         <motion.button
           type="submit"
@@ -66,6 +100,7 @@ const NewsLetterBox = () => {
         </motion.button>
       </form>
 
+      {/* Caso você já tenha um ToastContainer global, pode remover este */}
       <ToastContainer />
     </motion.div>
   );
