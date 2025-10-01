@@ -1,5 +1,5 @@
 // src/Context/ShopContext.jsx
-import { createContext, useEffect, useState, useCallback, useMemo } from "react";
+import { createContext, useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -13,36 +13,103 @@ const readCookieToken = () => {
   } catch { return null; }
 };
 
+const readPersistedAuth = () => {
+  try {
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("authToken") ||
+      readCookieToken() || null;
+    const expiresAt = Number(localStorage.getItem("token_expires_at") || 0);
+    return { token, expiresAt };
+  } catch {
+    return { token: null, expiresAt: 0 };
+  }
+};
+
+const now = () => Date.now();
+
 const ShopContextProvider = ({ children }) => {
   const currency = "R$";
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 
   // ------------------ auth ------------------
+  const persisted = readPersistedAuth();
   const [token, _setToken] = useState(() => {
-    try {
-      return localStorage.getItem("token") ||
-             localStorage.getItem("authToken") ||
-             readCookieToken() || null;
-    } catch { return null; }
+    // invalida se já expirou
+    if (persisted.token && persisted.expiresAt && persisted.expiresAt > now()) {
+      return persisted.token;
+    }
+    return null;
+  });
+  const [expiresAt, setExpiresAt] = useState(() => {
+    return token ? persisted.expiresAt : 0;
   });
   const [user, setUser] = useState(null);
-  const isLoggedIn = !!(token || user);
+  const isLoggedIn = !!(token && expiresAt && expiresAt > now());
+  const logoutTimerRef = useRef(null);
 
-  const setToken = useCallback((t) => {
-    _setToken(t || null);
+  const clearLogoutTimer = () => {
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = null;
+    }
+  };
+
+  const scheduleAutoLogout = useCallback((expiryMs) => {
+    clearLogoutTimer();
+    const msLeft = Math.max(0, expiryMs - now());
+    if (msLeft === 0) return;
+    logoutTimerRef.current = setTimeout(() => {
+      toast.info("Sua sessão expirou. Faça login novamente.");
+      setToken(null); // dispara limpeza total
+      // redireciono aqui só se a página for protegida via ProtectedRoute
+      // a navegação pro /login acontecerá pelo ProtectedRoute ou por quem chamar
+      window.location.href = "/login";
+    }, msLeft);
+  }, []);
+
+  const persistAuth = (t, exp) => {
     try {
-      if (t) {
+      if (t && exp) {
         localStorage.setItem("token", t);
+        localStorage.setItem("token_expires_at", String(exp));
         document.cookie = `token=${encodeURIComponent(t)}; path=/; SameSite=Lax`;
       } else {
         localStorage.removeItem("token");
         localStorage.removeItem("authToken");
+        localStorage.removeItem("token_expires_at");
         document.cookie = "token=; Max-Age=0; path=/";
       }
     } catch {}
-  }, []);
+  };
 
-  const logout = useCallback(() => { setToken(null); setUser(null); }, [setToken]);
+  const setToken = useCallback((t, options = {}) => {
+    // Por padrão, TTL 1h = 3600000ms (pode vir do backend também)
+    const ttlMs = options.ttlMs ?? 3600000; // 1 hora
+    const exp = t ? now() + ttlMs : 0;
+
+    _setToken(t || null);
+    setExpiresAt(exp);
+    persistAuth(t, exp);
+
+    if (t) scheduleAutoLogout(exp);
+    else clearLogoutTimer();
+  }, [scheduleAutoLogout]);
+
+  const logout = useCallback(() => {
+    setToken(null);
+    setUser(null);
+  }, [setToken]);
+
+  // Invalida sessão se já vier expirada ao montar
+  useEffect(() => {
+    if (persisted.token && (!persisted.expiresAt || persisted.expiresAt <= now())) {
+      logout();
+    } else if (persisted.token) {
+      scheduleAutoLogout(persisted.expiresAt);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ------------------ catálogo / ui ------------------
   const [search, setSearch] = useState("");
@@ -56,17 +123,50 @@ const ShopContextProvider = ({ children }) => {
   // Axios com headers compatíveis com o backend
   const api = useMemo(() => {
     const instance = axios.create({ baseURL: backendUrl, timeout: 20000 });
+
+    // request: injeta token
     instance.interceptors.request.use((config) => {
-      if (token) {
+      if (token && expiresAt && expiresAt > now()) {
         config.headers = config.headers || {};
-        // compatibilidade total com o middleware
         config.headers.token = token;
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
     });
+
+    // response: QUEREMOS que QUALQUER ERRO peça login novamente
+    instance.interceptors.response.use(
+      (res) => res,
+      (error) => {
+        const status = error?.response?.status;
+        const serverMsg = error?.response?.data?.message || "";
+
+        // considera expirado ou inválido
+        const tokenExpiredLike =
+          status === 401 ||
+          status === 419 ||
+          status === 498 ||
+          /expired|invalid|jwt|token/i.test(serverMsg);
+
+        // ou qualquer outro erro => pedir login novamente (conforme seu pedido)
+        const anyError = true;
+
+        if (anyError) {
+          // se já expirou ou qualquer falha, força logout/redirect
+          logout();
+          toast.error("Sua sessão não é válida. Faça login novamente.");
+          // redireciona imediatamente
+          if (typeof window !== "undefined") {
+            window.location.href = "/login";
+          }
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
     return instance;
-  }, [backendUrl, token]);
+  }, [backendUrl, token, expiresAt, logout]);
 
   const handleAxiosError = useCallback((error, fallbackMsg = "Ocorreu um erro.") => {
     console.error("[API ERRO]", error?.response?.status, error?.response?.data || error?.message);
@@ -87,14 +187,12 @@ const ShopContextProvider = ({ children }) => {
 
   // ===== FAVORITOS =====
   const loadFavorites = useCallback(async () => {
-    if (!token) return setFavorites([]);
+    if (!isLoggedIn) return setFavorites([]);
     try {
       const { data } = await api.get("/api/user/favorites");
       if (data?.success) setFavorites(data.items || []);
-    } catch (e) {
-      // silencioso para não poluir a UI
-    }
-  }, [api, token]);
+    } catch (e) {/* silencioso */}
+  }, [api, isLoggedIn]);
 
   const isFavorite = useCallback(
     (productId) => favorites.some((p) => (p?._id || p) === productId),
@@ -103,7 +201,7 @@ const ShopContextProvider = ({ children }) => {
 
   const toggleFavorite = useCallback(
     async (productOrId) => {
-      if (!token) {
+      if (!isLoggedIn) {
         toast.info("Faça login para salvar favoritos.");
         return (window.location.href = "/login");
       }
@@ -117,17 +215,17 @@ const ShopContextProvider = ({ children }) => {
         handleAxiosError(e, "Erro ao atualizar favorito.");
       }
     },
-    [api, token, handleAxiosError]
+    [api, isLoggedIn, handleAxiosError]
   );
 
   // ===== ENDEREÇO =====
   const loadAddress = useCallback(async () => {
-    if (!token) return setAddress(null);
+    if (!isLoggedIn) return setAddress(null);
     try {
       const { data } = await api.get("/api/user/address");
       if (data?.success) setAddress(data.address || null);
     } catch { /* ignore */ }
-  }, [api, token]);
+  }, [api, isLoggedIn]);
 
   const saveAddress = useCallback(async (form) => {
     try {
@@ -143,27 +241,13 @@ const ShopContextProvider = ({ children }) => {
     }
   }, [api, handleAxiosError]);
 
-  useEffect(() => { loadFavorites(); loadAddress(); }, [token, loadFavorites, loadAddress]);
-
-  // compra rápida
-  const buyNow = (productId) => {
-    const p = products.find((x) => x._id === productId);
-    if (!p) return toast.error("Produto não encontrado.");
-    if (p.yampiLinks && typeof p.yampiLinks === "object") {
-      const entries = Object.entries(p.yampiLinks).filter(([_, url]) => typeof url === "string" && url.trim());
-      if (entries.length === 1) return (window.location.href = entries[0][1]);
-      return toast.info("Escolha o tamanho na página do produto.");
-    }
-    if (p.yampiLink) return (window.location.href = p.yampiLink);
-    toast.error("Link de compra indisponível.");
-  };
+  useEffect(() => { loadFavorites(); loadAddress(); }, [isLoggedIn, loadFavorites, loadAddress]);
 
   const value = {
     products, setProducts, refreshProducts,
     currency, backendUrl,
     search, setSearch, showSearch, setShowSearch,
-    buyNow,
-    token, setToken, user, setUser, isLoggedIn, logout, api,
+    token, setToken, user, setUser, isLoggedIn, logout, api, expiresAt,
     favorites, isFavorite, toggleFavorite, loadFavorites,
     address, saveAddress, loadAddress,
   };

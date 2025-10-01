@@ -78,7 +78,7 @@ function App() {
               <Route path="/reset-password/:token" element={<ResetPassword />} />
 
               {/* Produto deve ser público (não force login p/ ver) */}
-              <Route path="/product/:productId" element={<Product />} />
+              <Route path="/product/:productId" element={<ProtectedRoute><Product /></ProtectedRoute>} />
 
               {/* Pós-pagamento protegidos */}
               <Route

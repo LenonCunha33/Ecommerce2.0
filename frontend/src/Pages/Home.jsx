@@ -174,12 +174,13 @@ const Home = () => {
 
       {/* Bloco de Conteúdo SEO */}
       <SeoRichText
-        title="Moda Fitness com tecnologia e caimento"
-        paragraphs={[
-          "Na Marima você encontra peças de moda fitness com foco em desempenho e conforto. Nossa curadoria combina tecnologia têxtil, compressão na medida e toque macio para acompanhar o seu ritmo.",
-          "Explore a linha de leggings fitness, tops esportivos, macacões e shorts — com numerações pensadas para diferentes corpos. Entrega rápida e troca facilitada.",
-        ]}
+        title="Moda Fitness e Athleisure"
+paragraphs={[
+  "Na Marima você encontra peças de moda fitness e athleisure que unem desempenho, conforto e estilo. Nossa curadoria combina tecnologia têxtil, compressão na medida e toque macio para acompanhar o seu ritmo dentro e fora da academia.",
+  "Explore a linha de leggings, tops esportivos, macacões e shorts — com modelagens versáteis que valorizam diferentes corpos. Entrega rápida e troca facilitada."
+]}
         links={[
+          { label: "Linha Casual", href: "/casual" },
           { label: "Linha Fitness", href: "/fitness" },
           { label: "Outlet", href: "/outlet" },
           { label: "Política de Privacidade", href: "/privacidade" },

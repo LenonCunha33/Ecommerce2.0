@@ -1,33 +1,39 @@
+// src/Pages/Login.jsx (ou onde ficar o seu componente)
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ useNavigate do react-router
 import { ShopContext } from "../Context/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 
 const Login = () => {
-  const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
+  const navigate = useNavigate(); // ✅ função de navegação
+  const { token, setToken, backendUrl } = useContext(ShopContext); // ❌ não pegar navigate do contexto
   const [currentState, setCurrentState] = useState("Entrar");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Controle para recuperação de senha
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Preenche automaticamente o e-mail vindo da newsletter
   useEffect(() => {
     const savedEmail = localStorage.getItem("newsletterEmail");
     if (savedEmail) {
       setEmail(savedEmail);
-      localStorage.removeItem("newsletterEmail"); // limpa para não ficar persistente
+      localStorage.removeItem("newsletterEmail");
     }
   }, []);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     try {
+      setIsSubmitting(true);
+
       let endpoint = "";
       let payload = {};
 
@@ -42,29 +48,41 @@ const Login = () => {
         payload = { email, password };
       }
 
-      const response = await axios.post(backendUrl + endpoint, payload);
+      const { data } = await axios.post(backendUrl + endpoint, payload);
 
-      if (response.data.success) {
+      if (data?.success) {
         if (isForgotPassword) {
           toast.success("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
           setIsForgotPassword(false);
           setCurrentState("Entrar");
-        } else {
-          const token = response.data.data.token;
-          setToken(token);
-          localStorage.setItem("token", token);
-          toast.success(
-            currentState === "Cadastrar"
-              ? "Cadastro realizado com sucesso!"
-              : "Login realizado com sucesso!"
-          );
+          return;
         }
+
+        const newToken = data?.data?.token || data?.token || data?.accessToken || "";
+        if (!newToken) {
+          toast.error("Token não retornado pelo servidor.");
+          return;
+        }
+
+        setToken(newToken);
+        localStorage.setItem("token", newToken);
+
+        toast.success(
+          currentState === "Cadastrar"
+            ? "Cadastro realizado com sucesso!"
+            : "Login realizado com sucesso!"
+        );
+
+        // ✅ Redireciona imediatamente para a dashboard
+        navigate("/dashboard", { replace: true });
       } else {
-        toast.error(response.data.message);
+        toast.error(data?.message || "Não foi possível concluir a solicitação.");
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message || "Erro ao processar solicitação");
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Erro ao processar solicitação");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -73,11 +91,12 @@ const Login = () => {
     setName(value);
   };
 
+  // ✅ Se já houver token (ex.: usuário logado acessa /login), envia para dashboard
   useEffect(() => {
     if (token && !isForgotPassword) {
-      navigate("/");
+      navigate("/dashboard", { replace: true });
     }
-  }, [token]);
+  }, [token, isForgotPassword, navigate]);
 
   return (
     <motion.form
@@ -182,9 +201,14 @@ const Login = () => {
       <motion.button
         whileTap={{ scale: 0.97 }}
         type="submit"
-        className="bg-black hover:bg-gray-900 text-white font-medium py-2.5 rounded-lg w-full transition"
+        disabled={isSubmitting}
+        className={`bg-black hover:bg-gray-900 text-white font-medium py-2.5 rounded-lg w-full transition ${
+          isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+        }`}
       >
-        {isForgotPassword
+        {isSubmitting
+          ? "Enviando..."
+          : isForgotPassword
           ? "Enviar E-mail de Recuperação"
           : currentState === "Entrar"
           ? "Entrar"

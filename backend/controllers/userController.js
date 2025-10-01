@@ -11,7 +11,40 @@ import Product from '../models/productModel.js';
 import sendEmail, { sendWelcomeEmail } from '../utils/sendEmail.js';
 
 /* ============== helpers ============== */
-const createToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
+const ONE_HOUR_S = 60 * 60;
+const ONE_HOUR_MS = ONE_HOUR_S * 1000;
+
+const createToken = (userId) =>
+  jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+const setAuthCookie = (res, token) => {
+  try {
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: isProd ? 'lax' : 'lax',
+      secure: isProd, // em dev, false
+      path: '/',
+      maxAge: ONE_HOUR_MS,
+    });
+  } catch {
+    /* ignore cookie errors */
+  }
+};
+
+const clearAuthCookie = (res) => {
+  try {
+    res.cookie('token', '', {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 0,
+    });
+  } catch {
+    /* ignore */
+  }
+};
 
 const getAuthUserId = (req) =>
   req.userId || req.body?.userId || req.user?.id || null;
@@ -35,7 +68,7 @@ export const getFavorites = async (req, res) => {
 
     const user = await UserModel.findById(userId).populate({
       path: 'favorites',
-      model: Product, // garante o model correto independentemente do ref
+      model: Product,
       select: FAVORITE_FIELDS,
     });
 
@@ -83,13 +116,11 @@ export const toggleFavorite = async (req, res) => {
         .json({ success: false, message: 'Produto não encontrado.' });
     }
 
-    // checa se já está favoritado
     const exists = await UserModel.exists({
       _id: userId,
       favorites: productId,
     });
 
-    // update atômico
     const update = exists
       ? { $pull: { favorites: productId } }
       : { $addToSet: { favorites: productId } };
@@ -189,10 +220,12 @@ export const loginUser = async (req, res) => {
         .json({ success: false, message: 'Email ou senha incorretos!' });
 
     const token = createToken(user._id);
+    setAuthCookie(res, token);
+
     return res.status(200).json({
       success: true,
       message: 'Usuário conectado com sucesso',
-      data: { token, user },
+      data: { token, user, expiresIn: ONE_HOUR_S },
     });
   } catch (error) {
     devLog('[loginUser]', error);
@@ -229,7 +262,9 @@ export const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
     }).save();
+
     const token = createToken(savedUser._id);
+    setAuthCookie(res, token);
 
     // e-mail de boas-vindas (não bloqueante)
     (async () => {
@@ -248,7 +283,7 @@ export const registerUser = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: 'Usuário criado com sucesso',
-      data: { user: savedUser, token },
+      data: { user: savedUser, token, expiresIn: ONE_HOUR_S },
     });
   } catch (error) {
     devLog('[registerUser]', error);
@@ -265,11 +300,17 @@ export const adminLogin = async (req, res) => {
       email === process.env.ADMIN_EMAIL &&
       password === process.env.ADMIN_PASSWORD
     ) {
-      const token = jwt.sign(email + password, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { admin: true, email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+      setAuthCookie(res, token);
+
       return res.status(200).json({
         success: true,
         message: 'Administrador conectado com sucesso',
-        data: { token },
+        data: { token, expiresIn: ONE_HOUR_S },
       });
     }
     return res
@@ -280,6 +321,15 @@ export const adminLogin = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: 'Erro no login de admin.' });
+  }
+};
+
+export const logoutUser = async (_req, res) => {
+  try {
+    clearAuthCookie(res);
+    return res.json({ success: true, message: 'Logout efetuado.' });
+  } catch {
+    return res.json({ success: true });
   }
 };
 
@@ -406,7 +456,7 @@ export const forgotPassword = async (req, res) => {
       .createHash('sha256')
       .update(resetToken)
       .digest('hex');
-    user.resetPasswordExpires = Date.now() + 3600000; // 1h
+    user.resetPasswordExpires = Date.now() + ONE_HOUR_MS; // 1h
     await user.save();
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
@@ -464,6 +514,8 @@ export const resetPassword = async (req, res) => {
     user.resetPasswordExpires = undefined;
     if (user.sessionTokens) user.sessionTokens = [];
     await user.save();
+
+    clearAuthCookie(res);
 
     return res.json({
       success: true,
