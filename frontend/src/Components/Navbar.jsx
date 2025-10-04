@@ -339,7 +339,6 @@ const Navbar = () => {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "tween", duration: 0.28 }}
-              // 🛠 mobile scroll fix: min-h-0 no container flex
               className="fixed inset-0 z-[70] md:hidden flex flex-col bg-white relative overflow-hidden min-h-0"
               role="dialog"
               aria-modal="true"
@@ -348,11 +347,11 @@ const Navbar = () => {
               {/* FADE branco */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/90" />
 
-              {/* Header (fixo) */}
-              <div className="relative flex items-center justify-between px-4 py-4 border-b border-gray-100 shrink-0">
+              {/* Header (fixo) — LOGO CENTRALIZADO */}
+              <div className="relative flex items-center justify-center px-4 py-4 border-b border-gray-100 shrink-0">
                 <img src={assets.logo} alt="Marima" className="h-7 w-auto" />
                 <button
-                  className="inline-grid place-items-center w-9 h-9 rounded-full hover:bg-gray-50"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 inline-grid place-items-center w-9 h-9 rounded-full hover:bg-gray-50"
                   onClick={() => setMenuOpen(false)}
                   aria-label="Fechar menu"
                 >
@@ -360,162 +359,162 @@ const Navbar = () => {
                 </button>
               </div>
 
-              {/* CONTEÚDO COM SCROLL */}
-              {/* 🛠 mobile scroll fix: flex-1 + min-h-0 + overflow-y-auto + touch/overscroll */}
+              {/* CONTEÚDO COM SCROLL (CENTRALIZADO) */}
               <div
                 id="mm-scroll"
-                className="relative flex-1 min-h-0 overflow-y-auto no-scrollbar scroll-smooth touch-pan-y overscroll-contain px-4 py-5 space-y-6 pb-28"
+                className="relative flex-1 min-h-0 overflow-y-auto no-scrollbar scroll-smooth touch-pan-y overscroll-contain px-4 py-5 pb-28"
               >
-                {/* Busca */}
-                <div>
-                  <div className="text-xs font-semibold text-gray-500 mb-2">
-                    Buscar
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Pesquisar produtos…"
-                      className="flex-1 text-sm bg-white border border-gray-200 rounded-full outline-none px-4 py-2 text-gray-700 placeholder:text-gray-400 shadow-sm"
-                    />
-                    <button
-                      onClick={() => {
-                        if (search?.trim()) {
-                          navigate(
-                            `${location.pathname}?q=${encodeURIComponent(
-                              search.trim()
-                            )}`
-                          );
-                          setMenuOpen(false);
-                        }
-                      }}
-                      className="inline-grid place-items-center px-3 rounded-full border border-gray-200 hover:bg-gray-50"
-                      aria-label="Buscar"
-                    >
-                      <SearchIcon className="opacity-80" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Navegação */}
-                <nav>
-                  <div className="text-xs font-semibold text-gray-500 mb-2">
-                    Menu
-                  </div>
-                  <ul className="grid gap-2 text-base">
-                    {[
-                      "/",
-                      "/outlet",
-                      "/casual",
-                      "/fitness",
-                      "/sobre",
-                      "/contato",
-                    ].map((path, idx) => (
-                      <li key={idx}>
-                        <NavLink
-                          to={path}
-                          onClick={() => setMenuOpen(false)}
-                          className={({ isActive }) =>
-                            `block px-3 py-3 rounded-lg ${
-                              isActive
-                                ? "bg-gray-900 text-white"
-                                : "text-gray-800 hover:bg-gray-50"
-                            }`
-                          }
-                        >
-                          {path === "/"
-                            ? "Início"
-                            : path === "/outlet"
-                            ? "Outlet"
-                            : path === "/casual"
-                            ? "Casual"
-                            : path === "/fitness"
-                            ? "Fitness"
-                            : path.slice(1)}
-                        </NavLink>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-
-                {/* Ações */}
-                <div className="space-y-3">
-                  <div className="text-xs font-semibold text-gray-500">
-                    Ações
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      navigate(
-                        isLoggedIn ? "/dashboard?tab=favoritos" : "/login"
-                      );
-                      setMenuOpen(false);
-                    }}
-                    className="w-full flex items-center justify-between px-3 py-3 rounded-lg border border-gray-200 hover:bg-gray-50"
-                  >
-                    <span className="inline-flex items-center gap-3 text-gray-800">
-                      <HeartIcon />
-                      Favoritos
-                    </span>
-                    {favorites?.length > 0 && (
-                      <span className="ml-2 inline-flex items-center justify-center min-w-[22px] h-[22px] px-1 text-[11px] rounded-full bg-red-600 text-white">
-                        {favorites.length > 99 ? "99+" : favorites.length}
-                      </span>
-                    )}
-                  </button>
-
-                  {token ? (
-                    <>
+                {/* Wrapper centralizado para o conteúdo */}
+                <div className="mx-auto w-full max-w-[560px] space-y-6">
+                  {/* Busca */}
+                  <div>
+                    <div className="text-xs font-semibold text-gray-500 mb-2">
+                      Buscar
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Pesquisar produtos…"
+                        className="flex-1 text-sm bg-white border border-gray-200 rounded-full outline-none px-4 py-2 text-gray-700 placeholder:text-gray-400 shadow-sm"
+                      />
                       <button
                         onClick={() => {
-                          navigate("/dashboard");
+                          if (search?.trim()) {
+                            navigate(
+                              `${location.pathname}?q=${encodeURIComponent(
+                                search.trim()
+                              )}`
+                            );
+                            setMenuOpen(false);
+                          }
+                        }}
+                        className="inline-grid place-items-center px-3 rounded-full border border-gray-200 hover:bg-gray-50"
+                        aria-label="Buscar"
+                      >
+                        <SearchIcon className="opacity-80" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Navegação */}
+                  <nav>
+                    <div className="text-xs font-semibold text-gray-500 mb-2">
+                      Menu
+                    </div>
+                    <ul className="grid gap-2 text-base">
+                      {[
+                        "/",
+                        "/outlet",
+                        "/casual",
+                        "/fitness",
+                        "/sobre",
+                        "/contato",
+                      ].map((path, idx) => (
+                        <li key={idx}>
+                          <NavLink
+                            to={path}
+                            onClick={() => setMenuOpen(false)}
+                            className={({ isActive }) =>
+                              `block px-3 py-3 rounded-lg ${
+                                isActive
+                                  ? "bg-gray-900 text-white"
+                                  : "text-gray-800 hover:bg-gray-50"
+                              }`
+                            }
+                          >
+                            {path === "/"
+                              ? "Início"
+                              : path === "/outlet"
+                              ? "Outlet"
+                              : path === "/casual"
+                              ? "Casual"
+                              : path === "/fitness"
+                              ? "Fitness"
+                              : path.slice(1)}
+                          </NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+
+                  {/* Ações */}
+                  <div className="space-y-3">
+                    <div className="text-xs font-semibold text-gray-500">
+                      Ações
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        navigate(isLoggedIn ? "/dashboard?tab=favoritos" : "/login");
+                        setMenuOpen(false);
+                      }}
+                      className="w-full flex items-center justify-between px-3 py-3 rounded-lg border border-gray-200 hover:bg-gray-50"
+                    >
+                      <span className="inline-flex items-center gap-3 text-gray-800">
+                        <HeartIcon />
+                        Favoritos
+                      </span>
+                      {favorites?.length > 0 && (
+                        <span className="ml-2 inline-flex items-center justify-center min-w-[22px] h-[22px] px-1 text-[11px] rounded-full bg-red-600 text-white">
+                          {favorites.length > 99 ? "99+" : favorites.length}
+                        </span>
+                      )}
+                    </button>
+
+                    {token ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            navigate("/dashboard");
+                            setMenuOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-800"
+                        >
+                          <UserIcon />
+                          Meu Perfil
+                        </button>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setMenuOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-800"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            className={ICON_SVG}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                          </svg>
+                          Sair
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          navigate("/login");
                           setMenuOpen(false);
                         }}
                         className="w-full flex items-center gap-3 px-3 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-800"
                       >
                         <UserIcon />
-                        Meu Perfil
+                        Entrar
                       </button>
-                      <button
-                        onClick={() => {
-                          logout();
-                          setMenuOpen(false);
-                        }}
-                        className="w-full flex items-center gap-3 px-3 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-800"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          className={ICON_SVG}
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                          <polyline points="16 17 21 12 16 7" />
-                          <line x1="21" y1="12" x2="9" y2="12" />
-                        </svg>
-                        Sair
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        navigate("/login");
-                        setMenuOpen(false);
-                      }}
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-800"
-                    >
-                      <UserIcon />
-                      Entrar
-                    </button>
-                  )}
-                </div>
+                    )}
+                  </div>
 
-                {/* espaço para safe-area iOS */}
-                <div className="h-4 pb-[env(safe-area-inset-bottom)]" />
+                  {/* espaço para safe-area iOS */}
+                  <div className="h-4 pb-[env(safe-area-inset-bottom)]" />
+                </div>
               </div>
             </motion.div>
           </>
