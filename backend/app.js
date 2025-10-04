@@ -21,7 +21,7 @@ connectToCloudinary();
 // ---- CORS (somente domínios permitidos) ----
 const RAW_ALLOWED_ORIGINS = [
   'https://www.usemarima.com',
-  'http://localhost:3333/',
+  'http://localhost:3333',
 ];
 const ALLOWED_ORIGINS = new Set(
   RAW_ALLOWED_ORIGINS.map(o => String(o).replace(/\/$/, ''))
