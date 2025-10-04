@@ -22,7 +22,6 @@ connectToCloudinary();
 const RAW_ALLOWED_ORIGINS = [
   'https://www.usemarima.com',
   'http://localhost:3333/',
-  'http://localhost:5173/',
 ];
 const ALLOWED_ORIGINS = new Set(
   RAW_ALLOWED_ORIGINS.map(o => String(o).replace(/\/$/, ''))
