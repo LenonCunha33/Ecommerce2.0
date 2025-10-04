@@ -11,14 +11,13 @@ import OurPolicies from "../Components/OurPolicies";
 import NewsLetterBox from "../Components/NewsLetterBox";
 
 // NOVOS (crie os arquivos depois)
-import SeoHead from "../Components/seo/SeoHead";                      // <meta> + JSON-LD
-import UspBar from "../Components/home/UspBar";                       // ícones de confiança
-import CategoryHighlights from "../Components/home/CategoryHighlights";// cards de categorias
-import Reviews from "../Components/home/Reviews";                     // depoimentos
-import BlogTeasers from "../Components/home/BlogTeasers";             // artigos/guia
-import SocialGrid from "../Components/home/SocialGrid";               // Instagram/TikTok
-import SeoRichText from "../Components/seo/SeoRichText";              // bloco de texto SEO
-import CtaStrip from "../Components/home/CtaStrip";                   // call to action final
+import SeoHead from "../Components/seo/SeoHead";
+import UspBar from "../Components/home/UspBar";
+import CategoryHighlights from "../Components/home/CategoryHighlights";
+import BlogTeasers from "../Components/home/BlogTeasers";
+import SocialGrid from "../Components/home/SocialGrid";
+import SeoRichText from "../Components/seo/SeoRichText";
+import CtaStrip from "../Components/home/CtaStrip";
 import { assets } from "../assets/assets";
 
 const Home = () => {
@@ -141,15 +140,7 @@ const Home = () => {
       {/* Mais vendidos */}
       <BestSeller />
 
-      {/* Depoimentos / Prova social */}
-      <Reviews
-        items={[
-          { name: "Mariana O.", text: "Amei o cropped, super básico e estiloso, combina com tudo no dia a dia." },
-{ name: "Angell C.", text: "Esse short moletinho é muito confortável, uso tanto em casa quanto pra sair." },
-{ name: "Gisele S.", text: "As peças casuais estão incríveis, tecido leve e caimento perfeito." },
 
-        ]}
-      />
 
       {/* Teasers de Conteúdo (Blog/Guias) 
       <BlogTeasers

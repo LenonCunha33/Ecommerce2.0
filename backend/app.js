@@ -9,6 +9,8 @@ import productRouter from './routes/productRouter.js';
 import contactRouter from './routes/contactRouter.js';
 import abandonedRoutes from './routes/abandonedRoutes.js';
 import chatRouter from './routes/chatRouter.js';
+import commentRouter from "./routes/commentRouter.js";
+import notificationRouter from "./routes/notificationRouter.js";
 
 // App Config
 const app = express();
@@ -50,6 +52,8 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
 // API Endpoints
+app.use("/api/notification", notificationRouter);
+app.use("/api/comment", commentRouter);
 app.use('/api/abandoned', abandonedRoutes);
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);

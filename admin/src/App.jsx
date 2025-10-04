@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import Login from './Components/Login';
 import { ToastContainer } from 'react-toastify';
 import User from './Pages/User';
+import Feedback from './Pages/Feedback';
+import Notifications from './Pages/Notifications';
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = ' R$  ';
@@ -39,6 +41,8 @@ function App() {
                 <Route path='/list' element={<List token={token} />} />
                 
                 <Route path='/user' element={<User token={token} />} />
+                <Route path='/feedback' element={<Feedback token={token} />} />
+                <Route path="/notifications" element={<Notifications token={token} />} />
               </Routes>
             </div>
           </div>

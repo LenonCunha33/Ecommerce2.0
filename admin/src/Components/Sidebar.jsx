@@ -5,31 +5,17 @@ import { assets } from "../assets/assets";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
-  {
-    to: "/add",
-    icon: assets.add_icon,
-    label: "Adicionar Produtos",
-    seoLabel: "Adicionar novos itens ao catálogo",
-  },
-  {
-    to: "/list",
-    icon: assets.order_icon,
-    label: "Listar Itens",
-    seoLabel: "Visualizar e gerenciar todos os itens cadastrados",
-  },
-  {
-    to: "/user",
-    icon: assets.user_icon || assets.order_icon,
-    label: "Usuários",
-    seoLabel: "Controle e gerenciamento de usuários",
-  },
+  { to: "/add", icon: assets.add_icon, label: "Adicionar Produtos", seoLabel: "Adicionar novos itens ao catálogo" },
+  { to: "/list", icon: assets.order_icon, label: "Listar Itens", seoLabel: "Visualizar e gerenciar todos os itens cadastrados" },
+  { to: "/user", icon: assets.user_icon || assets.order_icon, label: "Usuários", seoLabel: "Controle e gerenciamento de usuários" },
+  { to: "/feedback", icon: assets.review_icon || assets.order_icon, label: "Avaliações", seoLabel: "Avaliações e comentários" },
+  { to: "/notifications", icon: assets.bell_icon || assets.order_icon, label: "Notificações", seoLabel: "Envio e gestão de notificações" },
 ];
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // Detectar largura da tela
   useEffect(() => {
     const checkWidth = () => setIsDesktop(window.innerWidth >= 768);
     checkWidth();
@@ -39,7 +25,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Botão Mobile */}
       {!isDesktop && (
         <motion.button
           aria-label="Abrir menu lateral"
@@ -48,17 +33,12 @@ const Sidebar = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
         >
-          <motion.div
-            initial={false}
-            animate={{ rotate: isOpen ? 90 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div initial={false} animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.3 }}>
             ☰
           </motion.div>
         </motion.button>
       )}
 
-      {/* Sidebar */}
       <AnimatePresence>
         {(isOpen || isDesktop) && (
           <motion.aside
@@ -77,26 +57,14 @@ const Sidebar = () => {
                   to={item.to}
                   aria-label={item.seoLabel}
                   className={({ isActive }) =>
-                    `group flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 
-                    ${
-                      isActive
-                        ? "bg-gray-900 text-white shadow-md"
-                        : "bg-white text-gray-700 hover:bg-gray-100"
+                    `group flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 ${
+                      isActive ? "bg-gray-900 text-white shadow-md" : "bg-white text-gray-700 hover:bg-gray-100"
                     }`
                   }
                   onClick={() => !isDesktop && setIsOpen(false)}
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    whileTap={{ scale: 0.92 }}
-                    className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-md group-hover:bg-gray-300 transition-all"
-                  >
-                    <img
-                      src={item.icon}
-                      alt={`Ícone: ${item.label}`}
-                      className="w-5 h-5"
-                      loading="lazy"
-                    />
+                  <motion.div whileHover={{ scale: 1.1, rotate: 5 }} whileTap={{ scale: 0.92 }} className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-md group-hover:bg-gray-300 transition-all">
+                    <img src={item.icon} alt={`Ícone: ${item.label}`} className="w-5 h-5" loading="lazy" />
                   </motion.div>
                   <p className="font-medium truncate">{item.label}</p>
                 </NavLink>
