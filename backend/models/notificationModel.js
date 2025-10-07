@@ -11,6 +11,12 @@ const NotificationSchema = new mongoose.Schema(
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", default: null },
     link: { type: String, default: "" },
     readAt: { type: Date, default: null, index: true },
+    // backend/models/notificationModel.js (apenas acrescente os campos)
+openCount: { type: Number, default: 0 },
+clickCount: { type: Number, default: 0 },
+campaignId: { type: mongoose.Schema.Types.ObjectId, index: true }, // para agrupar a campanha
+audience: { type: String, enum: ["global", "list", "single"], default: "list", index: true },
+
   },
   { timestamps: true }
 );

@@ -1,3 +1,4 @@
+// src/pages/Notifications.jsx
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,7 +16,7 @@ function Modal({ open, onClose, title, children }) {
         >
           <div className="absolute inset-0 bg-black/60" onClick={onClose} />
           <motion.div
-            className="relative w-full max-w-4xl rounded-2xl bg-white p-6 shadow-2xl"
+            className="relative w-full max-w-5xl rounded-2xl bg-white p-6 shadow-2xl"
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 24, opacity: 0 }}
@@ -34,32 +35,122 @@ function Modal({ open, onClose, title, children }) {
   );
 }
 
-/* ---------- Templates ---------- */
-const seedTemplates = [
-  {
-    title: "Dica de Treino: Conjunto RespTech",
-    body: "Para treinos intensos, experimente tecidos respiráveis com compressão suave. Veja as opções selecionadas para você.",
-    type: "tip",
-    icon: "lightbulb",
-    link: "",
-    productId: "",
-  },
-  {
-    title: "Oferta Exclusiva de Hoje",
-    body: "Peças selecionadas com preços especiais por tempo limitado. Acesse agora e aproveite.",
-    type: "promo",
-    icon: "sale",
-    link: "",
-    productId: "",
-  },
-];
-
 /* ---------- Helpers ---------- */
 const getAuthHeaders = () => {
   const token =
     typeof window !== "undefined" ? (localStorage.getItem("token") || localStorage.getItem("authToken")) : null;
   return token ? { Authorization: `Bearer ${token}`, token } : {};
 };
+const fmt = (n) => (typeof n === "number" ? n.toLocaleString("pt-BR") : n || 0);
+
+/* ---------- CTA sugerido (mesma lógica do backend) ---------- */
+const smartCTA = (title = "", fallback = "Ver agora") => {
+  const t = String(title).toLowerCase();
+  if (t.includes("cupom") || t.includes("%") || t.includes("off")) return "Usar cupom agora";
+  if (t.includes("outlet") || t.includes("últimas") || t.includes("ultimas")) return "Garantir no Outlet";
+  if (t.includes("legging")) return "Ver leggings";
+  if (t.includes("top")) return "Ver tops";
+  if (t.includes("moletinho")) return "Ver moletinhos";
+  if (t.includes("short")) return "Ver shorts";
+  if (t.includes("frete")) return "Comprar com frete grátis";
+  if (t.includes("carrinho")) return "Finalizar compra";
+  if (t.includes("novidades") || t.includes("pré-venda") || t.includes("pre-venda")) return "Conferir novidades";
+  return fallback;
+};
+
+/* ---------- Templates (10 focados em conversão, prontos p/ produção) ---------- */
+const seedTemplates = [
+  {
+    title: "⚡ Cupom relâmpago: 10% OFF até 23:59",
+    body:
+      "Olá {first_name}, ganhe 10% OFF em qualquer peça usando o cupom AGORA10 no carrinho. Só hoje até 23:59. Corre!",
+    type: "promo",
+    icon: "sale",
+    link: "https://www.usemarima.com",
+    productId: "",
+  },
+  {
+    title: "🔥 Últimas unidades no Outlet",
+    body:
+      "Estoque baixíssimo com preços abaixo do normal. Se você viu e gostou, garanta antes que acabe, {first_name}.",
+    type: "promo",
+    icon: "gift",
+    link: "https://www.usemarima.com/outlet",
+    productId: "",
+  },
+  {
+    title: "✅ Combo Top + Legging com desconto imediato",
+    body:
+      "Monte seu combo (Top + Legging) e o desconto aplica automático no checkout. Performance e caimento impecáveis.",
+    type: "promo",
+    icon: "sale",
+    link: "https://www.usemarima.com/combos",
+    productId: "",
+  },
+  {
+    title: "🚚 Frete grátis acima de R$199",
+    body:
+      "Aproveite frete grátis na sua região em compras a partir de R$199. Válido por tempo limitado.",
+    type: "promo",
+    icon: "gift",
+    link: "https://www.usemarima.com",
+    productId: "",
+  },
+  {
+    title: "💨 Reposição limitada: Leggings de compressão",
+    body:
+      "Entraram novas unidades dos best-sellers: cintura alta, compressão e conforto. Garanta a sua, {first_name}.",
+    type: "promo",
+    icon: "sale",
+    link: "https://www.usemarima.com/leggings",
+    productId: "",
+  },
+  {
+    title: "⏱️ Lembrete: seu carrinho está guardado",
+    body:
+      "Você deixou itens no carrinho e os preços podem mudar. Finalize agora para garantir tamanho e valor.",
+    type: "system",
+    icon: "lightbulb",
+    link: "https://www.usemarima.com/cart",
+    productId: "",
+  },
+  {
+    title: "🎯 Oferta personalizada para você",
+    body:
+      "Selecionamos peças do seu estilo e tamanho. Clique e veja as sugestões que combinam com você, {first_name}.",
+    type: "promo",
+    icon: "gift",
+    link: "https://www.usemarima.com/recomendados",
+    productId: "",
+  },
+  {
+    title: "🏷️ Leve 2 e pague menos: 2ª peça com 50% OFF",
+    body:
+      "Na compra de 2 peças participantes, a segunda sai com 50% OFF — desconto aplicado no checkout.",
+    type: "promo",
+    icon: "sale",
+    link: "https://www.usemarima.com",
+    productId: "",
+  },
+  {
+    title: "🌡️ Treino intenso pede RespTech",
+    body:
+      "Tecidos respiráveis com compressão equilibrada para render sem abrir mão do conforto. Veja a linha RespTech.",
+    type: "tip",
+    icon: "lightbulb",
+    link: "https://www.usemarima.com/resptech",
+    productId: "",
+  },
+  {
+    title: "📣 Novidades da semana e pré-venda",
+    body:
+      "Chegaram novas cores e abrimos pré-venda de modelos disputados. Garanta o seu antes de esgotar, {first_name}.",
+    type: "promo",
+    icon: "gift",
+    link: "https://www.usemarima.com/novidades",
+    productId: "",
+  },
+];
 
 export default function Notifications() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -73,6 +164,11 @@ export default function Notifications() {
   // notifications admin list
   const [list, setList] = useState([]);
   const [listLoading, setListLoading] = useState(false);
+
+  // stats
+  const [stats, setStats] = useState({ totals: { sent: 0, opens: 0, clicks: 0 }, byDay: [], rangeDays: 30 });
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [statsDays, setStatsDays] = useState(30);
 
   // form
   const [targetAll, setTargetAll] = useState(true);
@@ -93,16 +189,17 @@ export default function Notifications() {
     _mark: "unread",
   });
 
+  const headers = getAuthHeaders();
+
   /* ------ Loaders ------ */
   const loadUsers = async () => {
     try {
       setUsersLoading(true);
       setUsersError("");
-      const headers = getAuthHeaders();
       const { data } = await axios.get(`${backendUrl}/api/user/users`, { headers });
       if (data?.success) setUsers(data.users || []);
       else setUsersError("Não foi possível carregar a lista de usuários.");
-    } catch (e) {
+    } catch {
       setUsersError("Erro de conexão ao carregar usuários.");
     } finally {
       setUsersLoading(false);
@@ -112,7 +209,6 @@ export default function Notifications() {
   const loadAdminList = async () => {
     try {
       setListLoading(true);
-      const headers = getAuthHeaders();
       const { data } = await axios.get(`${backendUrl}/api/notification/admin/list`, { headers });
       if (data?.success) setList(data.items || []);
     } catch {
@@ -122,12 +218,23 @@ export default function Notifications() {
     }
   };
 
-  useEffect(() => {
-    // carrega envios recentes sempre
-    loadAdminList();
-  }, [backendUrl]);
+  const loadStats = async (days = 30) => {
+    try {
+      setStatsLoading(true);
+      const { data } = await axios.get(`${backendUrl}/api/notification/admin/stats?days=${days}`, { headers });
+      if (data?.success) setStats(data);
+    } catch {
+      /* ignore */
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
-  // quando alternar para “Selecionar usuários”, carrega se ainda não tiver
+  useEffect(() => {
+    loadAdminList();
+    loadStats(statsDays);
+  }, [backendUrl]); // eslint-disable-line
+
   useEffect(() => {
     if (!targetAll && users.length === 0 && !usersLoading) {
       loadUsers();
@@ -172,9 +279,8 @@ export default function Notifications() {
       target: targetAll ? "all" : "users",
       userIds: targetAll ? [] : selectedIds,
     };
-    const headers = getAuthHeaders();
     await axios.post(`${backendUrl}/api/notification/admin/send`, payload, { headers });
-    await loadAdminList();
+    await Promise.all([loadAdminList(), loadStats(statsDays)]);
     setOpenPreview(false);
   };
 
@@ -205,19 +311,64 @@ export default function Notifications() {
       markUnread: editForm._mark === "unread" ? true : undefined,
       markRead: editForm._mark === "read" ? true : undefined,
     };
-    const headers = getAuthHeaders();
     await axios.patch(`${backendUrl}/api/notification/admin/${editItem._id}`, payload, { headers });
     setOpenEdit(false);
     setEditItem(null);
-    await loadAdminList();
+    await Promise.all([loadAdminList(), loadStats(statsDays)]);
   };
 
   const removeItem = async (id) => {
     if (!confirm("Excluir esta notificação?")) return;
-    const headers = getAuthHeaders();
     await axios.delete(`${backendUrl}/api/notification/admin/${id}`, { headers });
-    await loadAdminList();
+    await Promise.all([loadAdminList(), loadStats(statsDays)]);
   };
+
+  /* ------ UI Aux ------ */
+  const StatCard = ({ label, value }) => (
+    <div className="rounded-2xl border border-gray-200 bg-white p-4">
+      <div className="text-xs text-gray-500">{label}</div>
+      <div className="text-2xl font-bold">{fmt(value)}</div>
+    </div>
+  );
+
+  // Mini “gráfico” em SVG puro
+  const Chart = ({ data = [] }) => {
+    const w = 520;
+    const h = 140;
+    const pad = 24;
+    const days = data.map((d) => d.sent || 0);
+    const opens = data.map((d) => d.opens || 0);
+    const clicks = data.map((d) => d.clicks || 0);
+    const maxY = Math.max(1, ...days, ...opens, ...clicks);
+    const stepX = (w - pad * 2) / Math.max(1, data.length - 1);
+    const toPath = (arr) =>
+      arr.map((v, i) => {
+        const x = pad + i * stepX;
+        const y = h - pad - (v / maxY) * (h - pad * 2);
+        return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+      }).join(" ");
+    const gridY = Array.from({ length: 4 }, (_, i) => Math.round((maxY * (i + 1)) / 4));
+
+    return (
+      <svg width="100%" viewBox={`0 0 ${w} ${h}`} className="rounded-xl border border-gray-200 bg-white">
+        {gridY.map((gy, i) => {
+          const y = h - pad - (gy / maxY) * (h - pad * 2);
+          return <line key={i} x1={pad} y1={y} x2={w - pad} y2={y} stroke="#e5e7eb" strokeDasharray="2 4" />;
+        })}
+        <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="#e5e7eb" />
+        <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="#e5e7eb" />
+        <path d={toPath(days)} fill="none" strokeWidth="2" />
+        <path d={toPath(opens)} fill="none" strokeWidth="2" />
+        <path d={toPath(clicks)} fill="none" strokeWidth="2" />
+        <g transform={`translate(${pad}, ${pad - 8})`} fontSize="10">
+          <text>Enviadas — Aberturas — Cliques</text>
+        </g>
+      </svg>
+    );
+  };
+
+  // Preview com “nome de exemplo”
+  const previewBody = form.body.replace(/\{first_name\}|\{name\}/gi, "Ana");
 
   return (
     <main className="p-6 mt-10 md:p-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen text-gray-900">
@@ -229,6 +380,49 @@ export default function Notifications() {
       >
         Notificações
       </motion.h1>
+
+      {/* RESUMO + CONTROLES DE PERÍODO */}
+      <section className="mb-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm text-gray-600">
+              Performance (últimos <strong>{stats?.rangeDays || statsDays}</strong>d)
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-gray-600">Período:</label>
+              <select
+                value={statsDays}
+                onChange={async (e) => {
+                  const v = Number(e.target.value);
+                  setStatsDays(v);
+                  await loadStats(v);
+                }}
+                className="rounded-md border px-2 py-1 text-sm"
+              >
+                <option value={7}>7 dias</option>
+                <option value={14}>14 dias</option>
+                <option value={30}>30 dias</option>
+                <option value={60}>60 dias</option>
+                <option value={90}>90 dias</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <StatCard label="Enviadas" value={stats?.totals?.sent || 0} />
+            <StatCard label="Aberturas" value={stats?.totals?.opens || 0} />
+            <StatCard label="Cliques" value={stats?.totals?.clicks || 0} />
+          </div>
+
+          <div className="rounded-2xl overflow-hidden">
+            {statsLoading ? (
+              <div className="h-[160px] rounded-xl border border-gray-200 bg-white animate-pulse" />
+            ) : (
+              <Chart data={stats?.byDay || []} />
+            )}
+          </div>
+        </div>
+      </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* COLUNA ESQUERDA: formulário de envio */}
@@ -292,6 +486,10 @@ export default function Notifications() {
                 className="w-full rounded-md border px-3 py-2"
                 placeholder="https://..."
               />
+              {/* Info CTA sugerido (e-mail) */}
+              <div className="mt-1 text-[11px] text-gray-500">
+                CTA sugerido (e-mail): <strong>{smartCTA(form.title)}</strong>
+              </div>
             </div>
             <div className="md:col-span-2">
               <label className="text-xs text-gray-600">ID do Produto (opcional)</label>
@@ -310,6 +508,9 @@ export default function Notifications() {
                 onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
                 className="w-full rounded-md border px-3 py-2 h-28"
               />
+              <div className="mt-1 text-[11px] text-gray-500">
+                Use <code>{`{first_name}`}</code> ou <code>{`{name}`}</code> — substituímos pelo nome real no e-mail.
+              </div>
             </div>
           </div>
 
@@ -367,9 +568,15 @@ export default function Notifications() {
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-gray-900 truncate">{n.title}</div>
                       <div className="text-xs text-gray-600 line-clamp-2">{n.body}</div>
-                      <div className="text-[11px] text-gray-500 mt-1">
-                        {new Date(n.createdAt).toLocaleString("pt-BR")} · {n.user?.name || "Usuário"} (
-                        {n.user?.email || "-"})
+                      <div className="text-[11px] text-gray-500 mt-1 flex flex-wrap items-center gap-2">
+                        <span>{new Date(n.createdAt).toLocaleString("pt-BR")}</span>
+                        <span>· {n.user?.name || "Usuário"} ({n.user?.email || "-"})</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Aberturas: {n.openCount || 0}
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                          Cliques: {n.clickCount || 0}
+                        </span>
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -489,7 +696,7 @@ export default function Notifications() {
           </div>
           <div>
             <div className="font-semibold">{form.title}</div>
-            <div className="text-sm text-gray-700">{form.body}</div>
+            <div className="text-sm text-gray-700">{previewBody}</div>
           </div>
         </div>
         {!targetAll && (
@@ -552,6 +759,9 @@ export default function Notifications() {
               className="w-full rounded-md border px-3 py-2"
               placeholder="https://..."
             />
+            <div className="mt-1 text-[11px] text-gray-500">
+              CTA sugerido (e-mail): <strong>{smartCTA(editForm.title)}</strong>
+            </div>
           </div>
           <div className="md:col-span-2">
             <label className="text-xs text-gray-600">ID do Produto (opcional)</label>

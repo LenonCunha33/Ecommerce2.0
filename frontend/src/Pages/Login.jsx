@@ -163,6 +163,26 @@ export default function Login() {
 
   return (
     <div className="min-h-[calc(80dvh)] w-full bg-white text-black flex items-stretch justify-center px-2 sm:px-6 lg:px-8 py-6 sm:py-10">
+      {/* Estilos extras p/ label flutuar quando há valor e em autofill */}
+      <style>{`
+        /* quando o input tem valor, mantemos o label flutuando mesmo sem foco */
+        .field input[data-has-value="true"] ~ label {
+          top: -12px;
+          background: #fff;
+          padding: 0 4px;
+          font-size: 12px;
+          color: #000;
+        }
+        /* correção para autofill (Chrome/Safari) */
+        .field input:-webkit-autofill ~ label {
+          top: -12px;
+          background: #fff;
+          padding: 0 4px;
+          font-size: 12px;
+          color: #000;
+        }
+      `}</style>
+
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -182,22 +202,18 @@ export default function Login() {
               </Link>
             </div>
 
-            {/* === BLOCO AJUSTADO PARA MOBILE ===
-                - Mobile: aspecto fixo (3/4) -> container estável
-                - Desktop (≥lg): altura fixa como antes
-                - Imagem: object-contain (mostra a foto inteira), sem mudar o container */}
             <div className="px-4 sm:px-6 pb-6">
               <div
                 className="
                   relative w-full mx-auto bg-white ring-1 ring-black/5 overflow-hidden
                   rounded-3xl lg:rounded-2xl
-                  aspect-[3/4]   /* altura estável no mobile */
-                  lg:aspect-auto lg:h-[720px]  /* desktop mantém como estava */
+                  aspect-[3/4]
+                  lg:aspect-auto lg:h-[720px]
                 "
               >
                 <AnimatePresence mode="wait">
                   <motion.img
-                    key={SLIDES[idx] || 'placeholder'}
+                    key={SLIDES[idx] || "placeholder"}
                     src={SLIDES[idx]}
                     alt="Slide"
                     draggable={false}
@@ -207,7 +223,7 @@ export default function Login() {
                     transition={{ duration: 0.45 }}
                     className="
                       absolute inset-0 w-full h-full select-none
-                      object-cover  /* foto inteira no mobile */
+                      object-cover
                       rounded-3xl lg:rounded-none
                     "
                   />
@@ -231,7 +247,7 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Coluna do formulário (inalterada) */}
+          {/* Coluna do formulário */}
           <div className="bg-white flex items-center">
             <div className="w-full px-4 sm:px-8 py-8 sm:py-12">
               <motion.div
@@ -292,12 +308,14 @@ export default function Login() {
                 className="space-y-5"
               >
                 {mode === "cadastrar" && (
-                  <div className="relative">
+                  <div className="field relative">
                     <input
                       id="name"
                       type="text"
                       value={name}
                       onChange={handleNameChange}
+                      onKeyDown={handleKeyDown}
+                      data-has-value={String(!!name)}
                       className="peer w-full rounded-xl bg-white text-black placeholder-transparent border border-black/15 focus:border-black/60 outline-none px-4 py-3 transition"
                       placeholder="Nome completo"
                       autoComplete="name"
@@ -306,14 +324,23 @@ export default function Login() {
                     />
                     <label
                       htmlFor="name"
-                      className="pointer-events-none absolute left-4 top-3 text-black/50 transition-all peer-placeholder-shown:top-3 peer-focus:-top-3 peer-focus:bg-white peer-focus:px-1 peer-focus:text-xs peer-focus:text-black"
+                      className="
+                        pointer-events-none absolute left-4 top-3 text-black/50 transition-all
+                        peer-placeholder-shown:top-3
+                        peer-focus:-top-3 peer-focus:bg-white peer-focus:px-1 peer-focus:text-xs peer-focus:text-black
+                        peer-[&:not(:placeholder-shown)]:-top-3
+                        peer-[&:not(:placeholder-shown)]:bg-white
+                        peer-[&:not(:placeholder-shown)]:px-1
+                        peer-[&:not(:placeholder-shown)]:text-xs
+                        peer-[&:not(:placeholder-shown)]:text-black
+                      "
                     >
                       Nome completo
                     </label>
                   </div>
                 )}
 
-                <div className="relative">
+                <div className="field relative">
                   <input
                     ref={emailRef}
                     id="email"
@@ -321,6 +348,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    data-has-value={String(!!email)}
                     className="peer w-full rounded-xl bg-white text-black placeholder-transparent border border-black/15 focus:border-black/60 outline-none px-4 py-3 transition"
                     placeholder="E-mail"
                     autoComplete="email"
@@ -329,14 +357,23 @@ export default function Login() {
                   />
                   <label
                     htmlFor="email"
-                    className="pointer-events-none absolute left-4 top-3 text-black/50 transition-all peer-placeholder-shown:top-3 peer-focus:-top-3 peer-focus:bg-white peer-focus:px-1 peer-focus:text-xs peer-focus:text-black"
+                    className="
+                      pointer-events-none absolute left-4 top-3 text-black/50 transition-all
+                      peer-placeholder-shown:top-3
+                      peer-focus:-top-3 peer-focus:bg-white peer-focus:px-1 peer-focus:text-xs peer-focus:text-black
+                      peer-[&:not(:placeholder-shown)]:-top-3
+                      peer-[&:not(:placeholder-shown)]:bg-white
+                      peer-[&:not(:placeholder-shown)]:px-1
+                      peer-[&:not(:placeholder-shown)]:text-xs
+                      peer-[&:not(:placeholder-shown)]:text-black
+                    "
                   >
                     E-mail
                   </label>
                 </div>
 
                 {mode !== "recuperar" && (
-                  <div className="relative">
+                  <div className="field relative">
                     <input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -348,6 +385,7 @@ export default function Login() {
                         );
                         handleKeyDown(e);
                       }}
+                      data-has-value={String(!!password)}
                       className="peer w-full rounded-xl bg-white text-black placeholder-transparent border border-black/15 focus:border-black/60 outline-none px-4 py-3 transition pr-16"
                       placeholder="Senha"
                       autoComplete={mode === "entrar" ? "current-password" : "new-password"}
@@ -356,7 +394,16 @@ export default function Login() {
                     />
                     <label
                       htmlFor="password"
-                      className="pointer-events-none absolute left-4 top-3 text-black/50 transition-all peer-placeholder-shown:top-3 peer-focus:-top-3 peer-focus:bg-white peer-focus:px-1 peer-focus:text-xs peer-focus:text-black"
+                      className="
+                        pointer-events-none absolute left-4 top-3 text-black/50 transition-all
+                        peer-placeholder-shown:top-3
+                        peer-focus:-top-3 peer-focus:bg-white peer-focus:px-1 peer-focus:text-xs peer-focus:text-black
+                        peer-[&:not(:placeholder-shown)]:-top-3
+                        peer-[&:not(:placeholder-shown)]:bg-white
+                        peer-[&:not(:placeholder-shown)]:px-1
+                        peer-[&:not(:placeholder-shown)]:text-xs
+                        peer-[&:not(:placeholder-shown)]:text-black
+                      "
                     >
                       Senha
                     </label>

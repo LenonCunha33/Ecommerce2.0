@@ -1,43 +1,50 @@
-import { useContext, useEffect, useState } from 'react';
-import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
-import './App.css';
+// src/App.jsx
+import { useContext, useEffect, useState } from "react";
+import { Route, Routes, useLocation, Navigate } from "react-router-dom";
+import "./App.css";
 
-import Home from './Pages/Home';
-import Collection from './Pages/Collection';
-import About from './Pages/About';
-import Contact from './Pages/Contact';
-import Product from './Pages/Product';
-import Login from './Pages/Login';
-import ResetPassword from './Pages/ResetPassword';
-import Entrega from './Pages/Entrega';
-import Privacidade from './Pages/Privacidade';
-import Dashboard from './Pages/Dashboard';
-import Fitness from './Pages/Fitness';
-import PaymentCard from './Pages/PaymentCard';
-import PaymentBoleto from './Pages/PaymentBoleto';
+import Home from "./Pages/Home";
+import Collection from "./Pages/Collection";
+import About from "./Pages/About";
+import Contact from "./Pages/Contact";
+import Product from "./Pages/Product";
+import Login from "./Pages/Login";
+import ResetPassword from "./Pages/ResetPassword";
+import Entrega from "./Pages/Entrega";
+import Privacidade from "./Pages/Privacidade";
+import Dashboard from "./Pages/Dashboard";
+import Fitness from "./Pages/Fitness";
+import PaymentCard from "./Pages/PaymentCard";
+import PaymentBoleto from "./Pages/PaymentBoleto";
+import Casual from "./Pages/Casual";
 
-import Navbar from './Components/Navbar';
-import Footer from './Components/Footer';
-import GoogleLoader from './Components/GoogleLoader';
-import CookieBanner from './Components/CookieBanner';
-import ChatWidget from './Components/Chatbot/ChatWidget';
+import Navbar from "./Components/Navbar";
+import Footer from "./Components/Footer";
+import GoogleLoader from "./Components/GoogleLoader";
+import CookieBanner from "./Components/CookieBanner";
+import ChatWidget from "./Components/Chatbot/ChatWidget";
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { AnimatePresence, motion } from 'framer-motion';
+import useNotifAnalytics from "./hooks/useNotifAnalytics";
 
-import { ShopContext } from './Context/ShopContext';
-import Casual from './Pages/Casual';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AnimatePresence, motion } from "framer-motion";
 
-// 🔒 Protected Route usando o contexto (evita divergência com localStorage)
+import { ShopContext } from "./Context/ShopContext";
+
+/* Rota protegida via contexto (fonte da verdade) */
 function ProtectedRoute({ children }) {
   const { isLoggedIn } = useContext(ShopContext);
   return isLoggedIn ? children : <Navigate to="/login" replace />;
 }
 
-function App() {
-  const [showGoogleLoader, setShowGoogleLoader] = useState(false);
+export default function App() {
+  const { backendUrl, isLoggedIn } = useContext(ShopContext);
   const location = useLocation();
+  const [showGoogleLoader, setShowGoogleLoader] = useState(false);
+
+  // Analytics de notificações (somente logado)
+  useNotifAnalytics({ backendUrl, isLoggedIn });
 
   // Loader breve a cada troca de rota
   useEffect(() => {
@@ -77,10 +84,10 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-              {/* Produto deve ser público (não force login p/ ver) */}
+              {/* Produto público */}
               <Route path="/product/:productId" element={<Product />} />
 
-              {/* Pós-pagamento protegidos */}
+              {/* Pós-pagamento (protegidos) */}
               <Route
                 path="/pos-pagamento/cartao"
                 element={
@@ -124,5 +131,3 @@ function App() {
     </>
   );
 }
-
-export default App;
