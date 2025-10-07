@@ -112,9 +112,9 @@ const About = () => {
     { year: "Set/2025", text: "Nova plataforma com UX otimizada e entregas mais rápidas." },
     {
       /* ATUALIZAÇÃO: drop premium na segunda-feira */
-      year: "Segunda-feira (em breve)",
+      year: "Out/2025",
       text:
-        "Lançamento do Drop Casual • Linha Premium. Garanta o seu: pagamento via PIX, cartões, boleto e opção de parcelamento.",
+        "Lançamento do Drop Casual • Linha Athleisure, Pagamento via PIX, cartões, boleto e opção de parcelamento.",
     },
   ];
 

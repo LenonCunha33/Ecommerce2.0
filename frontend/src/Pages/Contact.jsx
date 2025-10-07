@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown, Mail, MessageCircle, MapPin, Clock, ShieldCheck,
-  Instagram, Facebook, Send, QrCode, CreditCard, Banknote, BadgePercent
+  Instagram, Facebook, Send, QrCode, CreditCard, Banknote, BadgePercent,
+  X, BookText, Info
 } from "lucide-react";
 import Title from "../Components/Title";
 import NewsLetterBox from "../Components/NewsLetterBox";
@@ -10,31 +11,33 @@ import { assets } from "../assets/assets";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "";
 
-const Contact = () => {
+export default function Contact() {
   const [openIndex, setOpenIndex] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [formOpen, setFormOpen] = useState(false); // ⬅️ Formulário via modal
+  const [fabOpen, setFabOpen] = useState(false);   // ⬅️ Mini-menu do WhatsApp
 
-  const COMPANY = {
+  const formRef = useRef(null);
+  const faqRef = useRef(null);
+  const mapRef = useRef(null);
+
+  const COMPANY = useMemo(() => ({
     name: "Marima",
     city: "Volta Redonda - Rio de Janeiro",
     address: "Atendemos Toda Região Sul Fluminense",
     email: "suporte.marima.loja@gmail.com",
-    phone: "+55 (24) 99999-9999",
-    whatsapp:
-      "https://wa.me/5524999999999?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido",
-    chat: "#",
+    phone: "+55 (24) 98146-7489",
+    whatsapp: "https://wa.me/5524981467489?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido",
     instagram: "https://www.instagram.com/use.marima.ofc/",
-    facebook:
-      "https://www.facebook.com/people/Marima/61579379169198/?mibextid=wwXIfr&rdid=YebtqQjpTKdzlyPU&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1FGBqEE2W3%2F%3Fmibextid%3DwwXIfr",
+    facebook: "https://www.facebook.com/people/Marima/61579379169198/?mibextid=wwXIfr",
     hours: "Seg a Sex, 9h - 18h (exceto feriados)",
-    sla: { whatsapp: "até 8h em horário comercial", email: "até 24h úteis", chat: "Imediato Quando Online" },
+    sla: { whatsapp: "até 8h em horário comercial", email: "até 24h úteis", chat: "Imediato quando online" },
     mapEmbed:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7342.90487159465!2d-44.1073275!3d-22.5228476!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9e7f0227e6a11f%3A0x3c8f4a6f6d3e60c3!2sCentro%2C%20Volta%20Redonda%20-%20RJ!5e0!3m2!1spt-BR!2sbr!4v1736440100000!5m2!1spt-BR!2sbr",
-  };
+  }), []);
 
-  /* NOVO: chips visuais de pagamento */
   const paymentChips = [
     { icon: <QrCode className="h-4 w-4" />, label: "PIX" },
     { icon: <CreditCard className="h-4 w-4" />, label: "Cartões" },
@@ -54,16 +57,23 @@ const Contact = () => {
         "Claro! Você tem até 7 dias corridos após o recebimento para solicitar devolução ou troca, conforme o CDC.",
     },
     {
-      /* ATUALIZADO: formas de pagamento */
       question: "Quais formas de pagamento aceitam?",
       answer:
         "Aceitamos PIX, Cartões e Boleto — com opção de parcelamento (sujeito às condições da operadora).",
     },
     {
       question: "Como falo com o suporte?",
-      answer: `Atendemos por E-mail e Chat. Prazo médio de resposta: E-mail ${COMPANY.sla.email}, Chat ${COMPANY.sla.chat}.`,
+      answer: `Atendemos por E-mail e WhatsApp. Prazo: E-mail ${COMPANY.sla.email} • WhatsApp ${COMPANY.sla.whatsapp}.`,
     },
   ];
+
+  const openForm = () => setFormOpen(true);
+  const closeForm = () => {
+    setError("");
+    setSent(false);
+    setSubmitting(false);
+    setFormOpen(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,8 +82,7 @@ const Contact = () => {
     setError("");
 
     try {
-      const formEl = e.currentTarget;
-      const raw = Object.fromEntries(new FormData(formEl).entries());
+      const raw = Object.fromEntries(new FormData(e.currentTarget).entries());
       const payload = {
         name: raw.name?.trim(),
         email: raw.email?.trim(),
@@ -94,7 +103,7 @@ const Contact = () => {
       }
 
       setSent(true);
-      formEl.reset();
+      formRef.current?.reset();
     } catch (err) {
       setError(err.message || "Erro inesperado ao enviar sua mensagem.");
     } finally {
@@ -102,57 +111,127 @@ const Contact = () => {
     }
   };
 
+  const scrollToFAQ = () => faqRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollToMap = () => mapRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="px-5 sm:px-10 lg:px-20 pt-12 pb-28 border-t max-w-screen-xl mx-auto"
+      className="px-5 sm:px-10 lg:px-20 pt-12 pb-24 border-t max-w-screen-xl mx-auto"
     >
-      <div className="text-2xl mb-6">
+      {/* Header */}
+      <div className="text-2xl mb-8">
         <Title text1="CONTATO" text2="CONOSCO" />
       </div>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <a
-          href={`mailto:${COMPANY.email}`}
-          className="group rounded-xl border border-neutral-900/10 bg-white p-4 shadow-sm hover:shadow-md transition cursor-pointer"
-          aria-label="Contato por e-mail"
+      {/* Ações rápidas (cards) */}
+      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
+        {/* Enviar mensagem (abre modal) */}
+        <button
+          onClick={openForm}
+          className="group rounded-xl border border-black/10 bg-white p-4 shadow-sm hover:shadow-md transition text-left"
+          aria-label="Enviar mensagem"
         >
           <div className="flex items-center gap-3">
-            <div className="rounded-lg border border-black p-2">
+            <div className="rounded-lg border border-black/20 p-2">
               <Mail className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold">E-mail</p>
+              <p className="text-sm font-semibold">Enviar mensagem</p>
               <p className="text-xs text-neutral-600 group-hover:text-neutral-900">
-                {COMPANY.email}
+                Formulário rápido
               </p>
             </div>
           </div>
           <p className="mt-2 text-xs text-neutral-600">Resposta {COMPANY.sla.email}</p>
-        </a>
+        </button>
 
+        {/* WhatsApp */}
         <a
-          href={COMPANY.chat}
-          className="group rounded-xl border border-neutral-900/10 bg-white p-4 shadow-sm hover:shadow-md transition cursor-pointer"
-          aria-label="Abrir chat de atendimento"
+          href={COMPANY.whatsapp}
+          target="_blank"
+          rel="noreferrer"
+          className="group rounded-xl border border-black/10 bg-white p-4 shadow-sm hover:shadow-md transition"
+          aria-label="Falar no WhatsApp"
         >
           <div className="flex items-center gap-3">
-            <div className="rounded-lg border border-black p-2">
+            <div className="rounded-lg border border-black/20 p-2">
               <MessageCircle className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold">Chat Online</p>
+              <p className="text-sm font-semibold">WhatsApp</p>
               <p className="text-xs text-neutral-600 group-hover:text-neutral-900">
-                Suporte em tempo real
+                Fale com a gente
               </p>
             </div>
           </div>
-          <p className="mt-2 text-xs text-neutral-600">Disponível: {COMPANY.sla.chat}</p>
+          <p className="mt-2 text-xs text-neutral-600">Tempo médio {COMPANY.sla.whatsapp}</p>
         </a>
+
+        {/* Blog */}
+        <a
+          href="/blog"
+          className="group rounded-xl border border-black/10 bg-white p-4 shadow-sm hover:shadow-md transition"
+          aria-label="Ir para o Blog"
+        >
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg border border-black/20 p-2">
+              <BookText className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold">Blog</p>
+              <p className="text-xs text-neutral-600 group-hover:text-neutral-900">
+                Conteúdos & novidades
+              </p>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-neutral-600">Dicas e tendências</p>
+        </a>
+
+        {/* FAQ */}
+        <button
+          onClick={scrollToFAQ}
+          className="group rounded-xl border border-black/10 bg-white p-4 shadow-sm hover:shadow-md transition text-left"
+          aria-label="Ir para perguntas frequentes"
+        >
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg border border-black/20 p-2">
+              <Info className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold">Perguntas frequentes</p>
+              <p className="text-xs text-neutral-600 group-hover:text-neutral-900">
+                Tire suas dúvidas
+              </p>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-neutral-600">Políticas e prazos</p>
+        </button>
+
+        {/* Loja / Mapa */}
+        <button
+          onClick={scrollToMap}
+          className="group rounded-xl border border-black/10 bg-white p-4 shadow-sm hover:shadow-md transition text-left"
+          aria-label="Ver localização e região"
+        >
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg border border-black/20 p-2">
+              <MapPin className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold">Nossa região</p>
+              <p className="text-xs text-neutral-600 group-hover:text-neutral-900">
+                Ver no mapa
+              </p>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-neutral-600">Sul Fluminense</p>
+        </button>
       </section>
 
+      {/* Coluna informativa + imagem */}
       <div className="flex flex-col-reverse sm:flex-row items-center gap-10">
         <motion.div
           initial={{ opacity: 0, x: -16 }}
@@ -170,14 +249,14 @@ const Contact = () => {
             </p>
 
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="rounded-lg border border-neutral-900/10 bg-white p-4">
+              <div className="rounded-lg border border-black/10 bg-white p-4">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
                   <span className="text-sm font-medium">Endereço</span>
                 </div>
                 <p className="mt-1 text-sm text-neutral-700">{COMPANY.address}</p>
               </div>
-              <div className="rounded-lg border border-neutral-900/10 bg-white p-4">
+              <div className="rounded-lg border border-black/10 bg-white p-4">
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
                   <span className="text-sm font-medium">Horário do Atendimento</span>
@@ -190,15 +269,14 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* NOVO: Formas de pagamento */}
-            <div className="mt-3 rounded-lg border border-neutral-900/10 bg-white p-4">
+            {/* Formas de pagamento */}
+            <div className="mt-3 rounded-lg border border-black/10 bg-white p-4">
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 <span className="text-sm font-medium">Formas de pagamento</span>
               </div>
               <p className="mt-1 text-sm text-neutral-700">
-                Aceitamos <strong>PIX</strong>, <strong>Cartões</strong> e <strong>Boleto</strong> —
-                com <strong>parcelamento</strong> disponível (sujeito às condições da operadora).
+                Aceitamos <strong>PIX</strong>, <strong>Cartões</strong> e <strong>Boleto</strong> — com <strong>parcelamento</strong> disponível.
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {paymentChips.map((p, i) => (
@@ -213,13 +291,14 @@ const Contact = () => {
               </div>
             </div>
 
+            {/* Sociais */}
             <div className="mt-4 flex items-center gap-3">
               <a
                 href={COMPANY.instagram}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
-                className="rounded-lg border border-neutral-900/15 p-2 hover:bg-neutral-50 transition cursor-pointer"
+                className="rounded-lg border border-black/15 p-2 hover:bg-neutral-50 transition"
               >
                 <Instagram className="h-5 w-5" />
               </a>
@@ -228,13 +307,13 @@ const Contact = () => {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
-                className="rounded-lg border border-neutral-900/15 p-2 hover:bg-neutral-50 transition cursor-pointer"
+                className="rounded-lg border border-black/15 p-2 hover:bg-neutral-50 transition"
               >
                 <Facebook className="h-5 w-5" />
               </a>
             </div>
 
-            <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-neutral-900/10 bg-white px-3 py-2 text-sm text-neutral-700">
+            <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-sm text-neutral-700">
               <ShieldCheck className="h-4 w-4" /> Suporte dedicado e política de trocas transparente.
             </div>
           </div>
@@ -251,144 +330,146 @@ const Contact = () => {
         />
       </div>
 
-      {/* Formulário — sem upload */}
-      <section className="mt-16">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900">Envie uma mensagem</h3>
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-xl border border-neutral-900/10 bg-white p-4 sm:p-6 shadow-sm"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="name" className="text-sm font-medium text-neutral-800">
-                Nome
-              </label>
-              <input
-                id="name"
-                name="name"
-                required
-                className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black focus:ring-0"
-                placeholder="Seu nome completo"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="text-sm font-medium text-neutral-800">
-                E-mail
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
-                placeholder="voce@email.com"
-              />
-            </div>
-            <div>
-              <label htmlFor="subject" className="text-sm font-medium text-neutral-800">
-                Assunto
-              </label>
-              <input
-                id="subject"
-                name="subject"
-                required
-                className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
-                placeholder="Dúvida, suporte, parceria…"
-              />
-            </div>
-            <div>
-              <label htmlFor="orderId" className="text-sm font-medium text-neutral-800">
-                Nº do pedido (opcional)
-              </label>
-              <input
-                id="orderId"
-                name="orderId"
-                className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
-                placeholder="#12345"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label htmlFor="message" className="text-sm font-medium text-neutral-800">
-                Mensagem
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={5}
-                required
-                className="mt-1 w-full resize-y rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
-                placeholder="Conte para nós como podemos ajudar"
-              />
-            </div>
-          </div>
+      {/* ===== MODAL DO FORMULÁRIO ===== */}
+      <AnimatePresence>
+        {formOpen && (
+          <motion.div
+            className="fixed inset-0 z-[60] grid place-items-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            aria-modal="true"
+            role="dialog"
+          >
+            <div className="absolute inset-0 bg-black/40" onClick={closeForm} />
 
-          <div className="mt-5 flex items-center justify-between">
-            <p className="text-xs text-neutral-600">
-              Ao enviar, você concorda com nossa{" "}
-              <a
-                href="/privacidade"
-                className="underline underline-offset-2 hover:opacity-80"
-              >
-                Política de Privacidade
-              </a>
-              .
-            </p>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center gap-2 rounded-lg border border-black bg-black px-4 py-2.5 text-sm font-bold text-white transition active:translate-y-[1px] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 24, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/10"
             >
-              <Send className="h-4 w-4" />
-              {submitting ? "Enviando..." : "Enviar mensagem"}
-            </button>
-          </div>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Envie uma mensagem</h3>
+                  <p className="text-sm text-neutral-600 mt-1">
+                    Tempo de resposta: {COMPANY.sla.email}.
+                  </p>
+                </div>
+                <button
+                  onClick={closeForm}
+                  className="rounded-lg border border-black/10 p-1.5 hover:bg-neutral-50"
+                  aria-label="Fechar"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-          <AnimatePresence>
-            {sent && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25 }}
-                className="mt-3 rounded-lg border border-emerald-600/20 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
-              >
-                Recebemos sua mensagem! Responderemos em breve.
-              </motion.div>
-            )}
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25 }}
-                className="mt-3 rounded-lg border border-red-600/20 bg-red-50 px-3 py-2 text-sm text-red-700"
-              >
-                {error}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </form>
-      </section>
+              <form ref={formRef} onSubmit={handleSubmit} className="mt-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="text-sm font-medium text-neutral-800">Nome</label>
+                    <input
+                      id="name" name="name" required
+                      className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
+                      placeholder="Seu nome completo"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="text-sm font-medium text-neutral-800">E-mail</label>
+                    <input
+                      id="email" name="email" type="email" required
+                      className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
+                      placeholder="voce@email.com"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="subject" className="text-sm font-medium text-neutral-800">Assunto</label>
+                    <input
+                      id="subject" name="subject" required
+                      className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
+                      placeholder="Dúvida, suporte, parceria…"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="orderId" className="text-sm font-medium text-neutral-800">Nº do pedido (opcional)</label>
+                    <input
+                      id="orderId" name="orderId"
+                      className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
+                      placeholder="#12345"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label htmlFor="message" className="text-sm font-medium text-neutral-800">Mensagem</label>
+                    <textarea
+                      id="message" name="message" rows={5} required
+                      className="mt-1 w-full resize-y rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-black"
+                      placeholder="Conte para nós como podemos ajudar"
+                    />
+                  </div>
+                </div>
 
-      <section id="faq" className="mt-16">
+                <div className="mt-5 flex items-center justify-between">
+                  <p className="text-xs text-neutral-600">
+                    Ao enviar, você concorda com nossa{" "}
+                    <a href="/privacidade" className="underline underline-offset-2 hover:opacity-80">
+                      Política de Privacidade
+                    </a>.
+                  </p>
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="inline-flex items-center gap-2 rounded-lg border border-black bg-black px-4 py-2.5 text-sm font-bold text-white transition active:translate-y-[1px] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <Send className="h-4 w-4" />
+                    {submitting ? "Enviando..." : "Enviar"}
+                  </button>
+                </div>
+
+                <AnimatePresence>
+                  {sent && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.25 }}
+                      className="mt-3 rounded-lg border border-emerald-600/20 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+                    >
+                      Recebemos sua mensagem! Responderemos em breve.
+                    </motion.div>
+                  )}
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.25 }}
+                      className="mt-3 rounded-lg border border-red-600/20 bg-red-50 px-3 py-2 text-sm text-red-700"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== FAQ ===== */}
+      <section id="faq" ref={faqRef} className="mt-16">
         <h3 className="text-xl font-semibold mb-6 text-gray-900">Perguntas Frequentes</h3>
         <div className="space-y-3">
           {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="rounded-xl border border-neutral-900/10 bg-white p-4 shadow-sm"
-            >
+            <div key={index} className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
               <button
                 className="flex w-full items-center justify-between text-left font-medium text-neutral-800"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
               >
                 <span>{faq.question}</span>
-                <ChevronDown
-                  className={`h-5 w-5 transition-transform ${
-                    openIndex === index ? "rotate-180" : ""
-                  }`}
-                />
+                <ChevronDown className={`h-5 w-5 transition-transform ${openIndex === index ? "rotate-180" : ""}`} />
               </button>
               <AnimatePresence initial={false}>
                 {openIndex === index && (
@@ -408,27 +489,63 @@ const Contact = () => {
         </div>
       </section>
 
+      {/* ===== MAPA ===== */}
       {COMPANY.mapEmbed && COMPANY.mapEmbed.length > 20 && (
-        <section className="mt-16">
-          <h3 className="text-xl font-semibold mb-4 text-gray-900">
-            Conheça Nossa Região
-          </h3>
-          <div className="overflow-hidden rounded-xl border border-neutral-900/10">
-            <iframe
-              title="Mapa da loja"
-              src={COMPANY.mapEmbed}
-              className="h-64 w-full"
-              loading="lazy"
-            />
+        <section ref={mapRef} className="mt-16">
+          <h3 className="text-xl font-semibold mb-4 text-gray-900">Conheça Nossa Região</h3>
+          <div className="overflow-hidden rounded-xl border border-black/10">
+            <iframe title="Mapa da loja" src={COMPANY.mapEmbed} className="h-64 w-full" loading="lazy" />
           </div>
         </section>
       )}
 
+      {/* Newsletter */}
       <div className="mt-20">
         <NewsLetterBox />
       </div>
+
+      {/* ===== FAB WhatsApp (flutuante) ===== */}
+      <div className="fixed bottom-5 right-5 z-[55]">
+        <AnimatePresence>
+          {fabOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              className="mb-2 space-y-2"
+            >
+              <a
+                href={COMPANY.whatsapp}
+                target="_blank"
+                rel="noreferrer"
+                className="block rounded-lg border border-black/10 bg-white px-3 py-2 text-sm shadow-sm hover:shadow transition"
+              >
+                Falar com suporte
+              </a>
+              <button
+                onClick={openForm}
+                className="block w-full text-left rounded-lg border border-black/10 bg-white px-3 py-2 text-sm shadow-sm hover:shadow transition"
+              >
+                Enviar mensagem
+              </button>
+              <a
+                href="/blog"
+                className="block rounded-lg border border-black/10 bg-white px-3 py-2 text-sm shadow-sm hover:shadow transition"
+              >
+                Ver blog
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button
+          onClick={() => setFabOpen((v) => !v)}
+          aria-label="Abrir ações do WhatsApp"
+          className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white shadow-lg hover:brightness-95 active:translate-y-[1px] transition"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </button>
+      </div>
     </motion.div>
   );
-};
-
-export default Contact;
+}

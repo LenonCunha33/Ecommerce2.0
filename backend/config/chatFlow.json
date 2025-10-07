@@ -12,7 +12,7 @@
         { "label": "Trocas, devoluções e suporte", "next": "trocas_suporte" },
         { "label": "Minha conta", "next": "minha_conta" },
         { "label": "Políticas do site", "next": "politicas" },
-        { "label": "Falar no WhatsApp", "action": { "type": "open_url", "url": "https://wa.me/55SEUNUMERO" }, "next": "fim" }
+        { "label": "Falar no WhatsApp", "action": { "type": "open_url", "url": "https://wa.me/5524981467489" }, "next": "fim" }
       ]
     },
 
